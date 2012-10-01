@@ -1,6 +1,6 @@
-require 'tilt/haml'
-require '../../app/models/store/user'
-require '../../app/models/store/item'
+require 'haml'
+require 'models/store/user'
+require 'models/store/item'
 
 class Main < Sinatra::Application
 

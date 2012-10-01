@@ -2,11 +2,11 @@ require 'rubygems'
 require 'sinatra'
 require 'haml'
 
-require '../app/models/store/item'
-require '../app/models/store/user'
+require 'models/store/item'
+require 'models/store/user'
 
-require 'app/controllers/main'
-require 'app/controllers/authentication'
+require 'controllers/authentication'
+require 'controllers/main'
 
 class App < Sinatra::Base
 

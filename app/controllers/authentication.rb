@@ -1,6 +1,6 @@
 require 'haml'
-require '../../app/models/store/item'
-require '../../app/models/store/user'
+require 'models/store/item'
+require 'models/store/user'
 
 class Authentication < Sinatra::Application
 
