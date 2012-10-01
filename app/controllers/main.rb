@@ -30,13 +30,19 @@ class Main < Sinatra::Application
     buyer = App.get_user_by_name(session[:name])
     buyer.buy_item(item)
 
-    redirect '/'
+    redirect back
   end
 
   get "/users" do
     redirect '/login' unless session[:name]
 
     haml :users
+  end
+
+  get "/items" do
+    redirect '/login' unless session[:name]
+
+    haml :items
   end
 
   post "/act_deact/:item_id/:activate" do
@@ -48,6 +54,6 @@ class Main < Sinatra::Application
     item = App.get_item_by_id(Integer(params[:item_id]))
     item.active = activate
 
-    redirect "/profile/#{item.owner.name}"
+    redirect back
   end
 end

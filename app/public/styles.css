@@ -27,6 +27,7 @@ html *
 }
 #hor-minimalist-b tbody tr:hover td
 {
+    background: #eff2ff;
 	color: #009;
 }
 

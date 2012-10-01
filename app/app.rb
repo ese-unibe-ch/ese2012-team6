@@ -31,6 +31,10 @@ class App < Sinatra::Base
     return @@users
   end
 
+  def self.get_items
+    return @@items
+  end
+
   def self.get_user_by_name(name)
     return @@users.detect{|user| user.name == name}
   end
@@ -65,6 +69,7 @@ class App < Sinatra::Base
     App.add_item(liver)
     App.add_item(heart)
     App.add_item(meg)
+    App.add_item(random)
   end
 end
 

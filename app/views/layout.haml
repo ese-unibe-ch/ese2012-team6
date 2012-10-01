@@ -5,4 +5,10 @@
     %title
       Awesome Trading App
   %body
+    -if session[:name] != nil
+      %p
+        Logged in as
+        %a{:href => url("/")} #{session[:name]}
+    -else
+      %p Not logged in!
     =yield

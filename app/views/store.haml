@@ -4,13 +4,13 @@
   Your credits: $#{current_user.credits}
 %p
   Items currently in store:
-
 %table{:id => "hor-minimalist-b"}
   %thead
     %tr
-      %th Name
+      %th Item
       %th Price
       %th Owner
+      %th
   %tbody
     -for user in users
       -for item in user.get_active_items
@@ -25,9 +25,11 @@
             -if user != current_user
               %form{:action => "/buy/#{item.id}", :method => "POST"}
                 %input{:type => "submit", :value => "Buy", :text => "buyBtn", :class => "styled-button-4"}
-
 %a{:href => url("/profile/#{current_user.name}")} My Profile
-%a{:href => url("/users")} List all users
+%br
+%a{:href => url("/users")} All Users
+%br
+%a{:href => url("/items")} All Items
 %br
 %a{:href => url("/logout")} Logout
 
