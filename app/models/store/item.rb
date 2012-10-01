@@ -1,8 +1,11 @@
 module Store
   class Item
-    attr_accessor :name, :price, :owner, :active
+    attr_accessor :name, :id, :price, :owner, :active
+    @@last_id = 0
 
     def initialize
+      @@last_id += 1
+      self.id = @@last_id
       self.active = false
     end
 

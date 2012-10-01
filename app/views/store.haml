@@ -1,0 +1,24 @@
+%h1
+  Hello #{current_name}
+%h2
+  Items currently in store:
+%table
+  %tr
+    %th
+      Name
+    %th
+      Price
+    %th
+      Owner
+  -for user in users
+    -for item in user.get_active_items
+      %tr
+        %td
+          #{item.name}
+        %td
+          #{item.price}
+        %td
+          %a{:href => url("/profile/#{item.owner.id}")} #{item.owner.name}
+        %td
+          %form{:action => "/buy/#{item.id}"}
+            %input{:type => "submit", :value => "Buy", :text => "buyBtn", :class => "button"}

@@ -13,6 +13,8 @@ class Authentication < Sinatra::Application
     password = params[:password]
 
     fail "Empty username or password" if name.nil? or password.nil?
+    fail "User does not exist" unless App.user_exist?()
+    redirect '/login' if name != password
 
     session[:name] = name
     redirect '/'
