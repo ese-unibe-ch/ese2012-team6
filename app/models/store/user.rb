@@ -5,7 +5,7 @@ module Store
     def initialize
       self.name = ""
       self.credits = 100
-      self.items = Array.new
+      self.items = []
     end
 
     def self.named(name)
@@ -16,23 +16,19 @@ module Store
 
     def propose_item(name, price)
       item = Item.named_priced_with_owner(name, price, self)
-      self.items.push(item)
+      self.items << item
       return item
     end
 
     def get_active_items
-      active_items = Array.new
-      self.items.each do |item|
-        if item.active == true
-          active_items.push(item)
-        end
-      end
+      active_items = []
+      active_items = self.items.select {|i| i.active?}
 
       return active_items
     end
 
     def add_item(item)
-      self.items.push(item)
+      self.items << item
       item.owner = self
     end
 
@@ -60,7 +56,7 @@ module Store
       seller.credits += item.price
 
       item.owner = self
-      item.active = false
+      item.set_inactive
 
       self.add_item(item)
       self.credits -= item.price
