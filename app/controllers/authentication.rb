@@ -14,12 +14,6 @@ class Authentication < Sinatra::Application
 
     fail "Empty username or password" if name.nil? or password.nil?
 
-    student = University::Student.by_name name
-    # Here, authentication succeeds if username==password
-    # In a real application, we would of
-    # course check the password differently.
-    fail "Username or password are not valid" if student.nil? or password != name
-
     session[:name] = name
     redirect '/'
   end

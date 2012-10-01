@@ -9,7 +9,6 @@ class Main < Sinatra::Application
     redirect '/login' unless session[:name]
 
     haml :list_students, :locals => { :time => Time.now ,
-                                      :students => University::Student.all,
                                       :current_name => session[:name] }
   end
 
