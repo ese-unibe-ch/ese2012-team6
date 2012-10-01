@@ -20,11 +20,11 @@ class App < Sinatra::Base
   set :public_folder, 'app/public'
 
   def self.add_user(user)
-    @@users << user unless @@users.include?(user) or @@users.index{|x| x.id == user.id}
+    @@users << user unless (@@users.include?(user) or @@users.index{|x| x.name == user.name} != nil)
   end
 
   def self.add_item(item)
-    @@items << item unless @@items.include?(item) or @@items.index{|x| x.id == user.id}
+    @@items << item unless (@@items.include?(item) or @@items.index{|x| x.id == item.id} != nil)
   end
 
   def self.get_users
@@ -44,16 +44,23 @@ class App < Sinatra::Base
   end
 
   configure :development do
+    user_admin = Store::User.named("admin")
+    App.add_user(user_admin)
     user_ese = Store::User.named("ese")
     App.add_user(user_ese)
-    umbrella_corp = Store::User.named("Umbrella Corp")
+    umbrella_corp = Store::User.named("umbrellacorp")
     App.add_user(umbrella_corp)
-    peter_griffin = Store::User.named("Peter Griffin")
+    peter_griffin = Store::User.named("petergriffin")
     App.add_user(peter_griffin)
 
-    liver = user_ese.propose_item("Liver", 40).set_active
-    heart = user_ese.propose_item("Heart", 80).set_active
-    meg = peter_griffin.propose_item("Meg", 2).set_active
+    liver = user_ese.propose_item("Liver", 40)
+    heart = umbrella_corp.propose_item("Heart", 80)
+    meg = peter_griffin.propose_item("Meg", 2)
+    random = umbrella_corp.propose_item("Random", 50)
+
+    liver.set_active
+    heart.set_active
+    meg.set_active
 
     App.add_item(liver)
     App.add_item(heart)

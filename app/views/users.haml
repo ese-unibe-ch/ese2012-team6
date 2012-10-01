@@ -1,0 +1,17 @@
+%h1
+  The following users are registered by the system
+%table{:id => "hor-minimalist-b"}
+  %thead
+    %tr
+      %th Name
+      %th Credits
+      %th No. of items
+  %tbody
+    -for user in App.get_users
+      %tr
+        %td
+          %a{:href => url("/profile/#{user.name}")} #{user.name}
+        %td
+          #{user.credits}
+        %td
+          #{user.items.size}
