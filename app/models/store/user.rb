@@ -21,7 +21,6 @@ module Store
     end
 
     def get_active_items
-      active_items = []
       active_items = self.items.select {|i| i.active?}
 
       return active_items
