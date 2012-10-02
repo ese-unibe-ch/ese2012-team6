@@ -1,9 +1,8 @@
 require 'haml'
-require 'models/store/user'
-require 'models/store/item'
+require './models/store/user'
+require './models/store/item'
 
 class Main < Sinatra::Application
-
   get "/" do
     redirect '/login' unless session[:name]
     user_name = session[:name]
@@ -31,16 +30,14 @@ class Main < Sinatra::Application
     buy_success, buy_message = buyer.buy_item(item)
 
     if buy_success
-      session[:error_msg] = nil
       redirect back
     else
-      session[:error_msg] = buy_message
-      redirect '/error'
+      redirect url("/error/#{buy_message}")
     end
   end
 
-  get "/error" do
-    haml :error, :locals => { :error_message => session[:error_msg]}
+  get "/error/:error_msg" do
+    haml :error, :locals => { :error_message => params[:error_msg]}
   end
 
   get "/users" do

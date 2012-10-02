@@ -1,0 +1,35 @@
+!!! XML
+!!! 5
+%html{:xmlns => "http://www.w3.org/1999/xhtml", "xml:lang" => "en", :lang => "en"}
+  %head
+    %link{:rel => "stylesheet", :href => url("styles.css"), :type => "text/css"}
+    %title
+      Awesome Trading App
+  %body
+    #outer
+      #inner
+        #status_container
+          -current_user = session[:name]
+          #login_status
+            -if current_user != nil
+              Logged in as
+              %a{:href => url("/profile/#{current_user}")}
+                #{current_user}
+            -else
+              Not logged in!
+          #credit_status
+            -if current_user != nil
+              Credits: $#{App.get_user_by_name(current_user).credits}
+          #nav_menu
+            -if current_user != nil
+              %ul
+                %li
+                  %a{:href => url("/")} Store
+                %li
+                  %a{:href => url("/users")} Users
+                %li
+                  %a{:href => url("/items")} Items
+                %li
+                  %a{:href => url("/logout")} Logout
+        %hr.styled-line
+        =yield
