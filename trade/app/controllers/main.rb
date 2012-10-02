@@ -1,6 +1,6 @@
 require 'haml'
-require './models/store/user'
-require './models/store/item'
+require_relative('../models/store/user')
+require_relative('../models/store/item')
 
 class Main < Sinatra::Application
 
@@ -17,7 +17,7 @@ class Main < Sinatra::Application
   get "/profile/:user_name" do
     redirect '/login' unless session[:name]
 
-    haml :profile, :locals => { :user => @user }
+    haml :profile, :locals => { :user => App.get_user_by_name(params[:user_name])}
   end
 
   post "/buy/:item_id" do
@@ -36,7 +36,21 @@ class Main < Sinatra::Application
   end
 
   get "/error/:error_msg" do
-    haml :error, :locals => { :error_message => params[:error_msg]}
+
+    case params[:error_msg]
+      when "item_no_owner"
+        error_message = "Item does not belong to anybody"
+      when "not_enough_credits"
+        error_message = "Buyer does not have enough credits"
+      when "buy_inactive_item"
+        error_message = "Trying to buy inactive item"
+      when "seller_not_own_item"
+        error_message = "Seller does not own item to buy"
+      when "user_no_exists"
+        error_message = "User is not registered in the system"
+    end
+
+    haml :error, :locals => { :error_message => error_message}
   end
 
   get "/users" do

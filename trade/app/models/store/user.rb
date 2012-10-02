@@ -42,13 +42,13 @@ module Store
       seller = item.owner
 
       if seller.nil?
-        return false, "Item does not belong to anybody"
+        return false, "item_no_owner" #Item does not belong to anybody
       elsif self.credits < item.price
-        return false, "Buyer does not have enough credits"
+        return false, "not_enough_credits" #Buyer does not have enough credits
       elsif !item.active?
-        return false, "Trying to buy inactive item"
+        return false, "buy_inactive_item" #Trying to buy inactive item
       elsif !seller.items.include?(item)
-        return false, "Seller does not own item to buy"
+        return false, "seller_not_own_item" #Seller does not own item to buy
       end
 
       seller.remove_item(item)

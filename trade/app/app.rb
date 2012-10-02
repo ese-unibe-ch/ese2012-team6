@@ -1,12 +1,13 @@
 require 'rubygems'
 require 'sinatra'
 require 'haml'
+require 'require_relative'
 
-require 'models/store/item.rb'
-require 'models/store/user.rb'
+require_relative('models/store/item')
+require_relative('models/store/user')
 
-require 'controllers/authentication.rb'
-require 'controllers/main.rb'
+require_relative('controllers/authentication')
+require_relative('controllers/main')
 
 class App < Sinatra::Base
 
