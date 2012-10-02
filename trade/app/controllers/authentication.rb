@@ -5,6 +5,8 @@ require './models/store/user'
 class Authentication < Sinatra::Application
 
   get "/login" do
+    redirect '/' if session[:name]
+
     haml :login
   end
 

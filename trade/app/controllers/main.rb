@@ -3,21 +3,21 @@ require './models/store/user'
 require './models/store/item'
 
 class Main < Sinatra::Application
+
+  before do
+    @user = App.get_user_by_name(session[:name])
+  end
+
   get "/" do
     redirect '/login' unless session[:name]
-    user_name = session[:name]
-    current_user = App.get_user_by_name(user_name)
 
-    haml :store, :locals => { :users => App.get_users, :current_name => user_name, :current_user => current_user }
+    haml :store, :locals => { :users => App.get_users, :current_name => @user.name, :current_user => @user }
   end
 
   get "/profile/:user_name" do
     redirect '/login' unless session[:name]
 
-    user_name = params[:user_name]
-    user = App.get_user_by_name(user_name)
-
-    haml :profile, :locals => { :user => user }
+    haml :profile, :locals => { :user => @user }
   end
 
   post "/buy/:item_id" do
@@ -26,8 +26,7 @@ class Main < Sinatra::Application
     item_id = Integer(params[:item_id])
     item = App.get_item_by_id(item_id)
 
-    buyer = App.get_user_by_name(session[:name])
-    buy_success, buy_message = buyer.buy_item(item)
+    buy_success, buy_message = @user.buy_item(item)
 
     if buy_success
       redirect back

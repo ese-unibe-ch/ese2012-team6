@@ -10,16 +10,6 @@
       #inner
         #status_container
           -current_user = session[:name]
-          #login_status
-            -if current_user != nil
-              Logged in as
-              %a{:href => url("/profile/#{current_user}")}
-                #{current_user}
-            -else
-              Not logged in!
-          #credit_status
-            -if current_user != nil
-              Credits: $#{App.get_user_by_name(current_user).credits}
           #nav_menu
             -if current_user != nil
               %ul
@@ -31,5 +21,15 @@
                   %a{:href => url("/items")} Items
                 %li
                   %a{:href => url("/logout")} Logout
+          #credit_status
+            -if current_user != nil
+              Credits: $#{App.get_user_by_name(current_user).credits}
+          #login_status
+            -if current_user != nil
+              Logged in as
+              %a{:href => url("/profile/#{current_user}")}
+                #{current_user}
+            -else
+              Not logged in!
         %hr.styled-line
         =yield

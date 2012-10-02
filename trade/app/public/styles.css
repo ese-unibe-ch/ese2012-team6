@@ -41,7 +41,7 @@ hr.styled-line {
     float: left;
     width: 33%;
     height: 100%;
-    text-align: left;
+    text-align: right;
     vertical-align: middle;
 }
 
@@ -57,7 +57,7 @@ hr.styled-line {
     float: left;
     width: 33%;
     height: 100%;
-    text-align: right;
+    text-align: left;
     vertical-align: middle;
 }
 
