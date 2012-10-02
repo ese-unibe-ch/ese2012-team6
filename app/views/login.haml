@@ -1,10 +1,17 @@
-%h1 Login
+%h2 Login
 %form(action="/login" method="POST" )
-  %label
-    Username
-    %input(type="text" name="username" class="textbox8")
-  %br
-  %label
-    Password
-    %input(type="password" name="password" class="textbox8")
-  %input(type="submit" text="submit" class="styled-button-4")
+  %table
+    %tr
+      %td
+        %label Username
+      %td
+        %input(type="text" name="username" class="textbox8")
+    %tr
+      %td
+        %label Password
+      %td
+        %input(type="password" name="password" class="textbox8")
+    %tr
+      %td
+      %td(align="right")
+        %input(type="submit" text="submit" class="styled-button-4" value="Login")

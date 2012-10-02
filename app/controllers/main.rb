@@ -28,9 +28,19 @@ class Main < Sinatra::Application
     item = App.get_item_by_id(item_id)
 
     buyer = App.get_user_by_name(session[:name])
-    buyer.buy_item(item)
+    buy_success, buy_message = buyer.buy_item(item)
 
-    redirect back
+    if buy_success
+      session[:error_msg] = nil
+      redirect back
+    else
+      session[:error_msg] = buy_message
+      redirect '/error'
+    end
+  end
+
+  get "/error" do
+    haml :error, :locals => { :error_message => session[:error_msg]}
   end
 
   get "/users" do

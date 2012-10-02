@@ -11,6 +11,7 @@
       %th Price
       %th Active
       %th
+      %th
   %tbody
     -for item in user.items
       %tr
@@ -31,3 +32,7 @@
             -else
               %form{:action => "/act_deact/#{item.id}/true", :method => "POST"}
                 %input{:type => "submit", :value => "Activate", :text => "deacBtn", :class => "styled-button-4"}
+        %td
+          -if item.owner.name != session[:name] and item.active?
+            %form{:action => "/buy/#{item.id}", :method => "POST"}
+              %input{:type => "submit", :value => "Buy", :text => "buyBtn", :class => "styled-button-4"}

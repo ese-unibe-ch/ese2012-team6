@@ -2,11 +2,40 @@ html *
 {
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
 }
+
+body {
+    margin: 0px;
+}
+
+p.no_top_margin {
+    margin-top: 0px;
+}
+
+p.logged_in_status {
+    margin-top: 0px;
+    text-align: left;
+}
+
+p.credit_status {
+    margin-top: 0px;
+    text-align: center;
+}
+
+hr.styled-line {
+    border: 0;
+    height: 1px;
+    background: #333;
+}
+
+table#status_table {
+    width: 100%;
+}
+
 #hor-minimalist-b
 {
 	font-size: 12px;
 	background: #fff;
-	margin: 45px;
+	margin: 2em;
 
 	border-collapse: collapse;
 	text-align: left;
@@ -45,11 +74,24 @@ html *
     font-size:11px;
     font-weight:700;
     padding:2px 6px;
-    height:22px
+    height:22px;
+    margin:0px;
 }
 
 .textbox8 {
     width: 230px;
     border: 1px solid #3366FF;
     border-left: 4px solid #3366FF;
+}
+
+#outer {
+    background-color: #BBBBDD;
+}
+
+#inner {
+    background-color: #FFFFFF;
+    width: 800px;
+    margin: 0px auto;
+    height: 1000px;
+    padding: 1em;
 }

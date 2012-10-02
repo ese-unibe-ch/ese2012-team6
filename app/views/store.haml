@@ -25,11 +25,3 @@
             -if user != current_user
               %form{:action => "/buy/#{item.id}", :method => "POST"}
                 %input{:type => "submit", :value => "Buy", :text => "buyBtn", :class => "styled-button-4"}
-%a{:href => url("/profile/#{current_user.name}")} My Profile
-%br
-%a{:href => url("/users")} All Users
-%br
-%a{:href => url("/items")} All Items
-%br
-%a{:href => url("/logout")} Logout
-
