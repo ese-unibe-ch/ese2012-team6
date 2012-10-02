@@ -43,6 +43,7 @@ hr.styled-line {
     height: 100%;
     text-align: right;
     vertical-align: middle;
+    font-size: 12px;
 }
 
 #credit_status {

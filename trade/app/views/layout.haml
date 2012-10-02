@@ -19,8 +19,6 @@
                   %a{:href => url("/users")} Users
                 %li
                   %a{:href => url("/items")} Items
-                %li
-                  %a{:href => url("/logout")} Logout
           #credit_status
             -if current_user != nil
               Credits: $#{App.get_user_by_name(current_user).credits}
@@ -29,6 +27,8 @@
               Logged in as
               %a{:href => url("/profile/#{current_user}")}
                 #{current_user}
+              |
+              %a{:href => url("/logout")} Logout
             -else
               Not logged in!
         %hr.styled-line
