@@ -48,6 +48,8 @@ class Main < Sinatra::Application
         error_message = "Seller does not own item to buy"
       when "user_no_exists"
         error_message = "User is not registered in the system"
+      when "login_no_pwd_user"
+        error_message = "Empty username or password"
     end
 
     haml :error, :locals => { :error_message => error_message}
