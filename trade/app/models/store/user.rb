@@ -1,9 +1,10 @@
 module Store
   class User
-    attr_accessor :name, :credits, :items
+    attr_accessor :name, :credits, :items, :password
 
     def initialize
       self.name = ""
+      self.password = nil
       self.credits = 100
       self.items = []
     end
@@ -11,6 +12,14 @@ module Store
     def self.named(name)
       user = User.new
       user.name = name
+      user.password = name
+      return user
+    end
+
+    def self.named_with_pwd(name, password)
+      user = User.new
+      user.name = name
+      user.password = password
       return user
     end
 

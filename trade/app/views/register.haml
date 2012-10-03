@@ -1,0 +1,22 @@
+%h2 Register
+%form(action="/register" method="POST" )
+  %table
+    %tr
+      %td
+        %label Username
+      %td
+        %input(type="text" name="username" class="textbox8")
+    %tr
+      %td
+        %label Password
+      %td
+        %input(type="password" name="password" class="textbox8")
+    %tr
+      %td
+        %label Repeat Password
+      %td
+        %input(type="password" name="rep_password" class="textbox8")
+    %tr
+      %td
+      %td(align="right")
+        %input(type="submit" text="submit" class="styled-button-4" value="Register")

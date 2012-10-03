@@ -16,7 +16,9 @@ class Authentication < Sinatra::Application
 
     redirect '/error/login_no_pwd_user' if name.nil? or password.nil? or name == "" or password == ""
     redirect '/error/user_no_exists' unless App.user_exist?(name)
-    redirect '/login' unless name == password and App.user_exist?(name)
+
+    saved_password = App.get_user_by_name(name).password
+    redirect '/login' if password != saved_password
 
     session[:name] = name
     redirect '/'

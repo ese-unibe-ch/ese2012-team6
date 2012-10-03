@@ -14,27 +14,6 @@ class Main < Sinatra::Application
     haml :store, :locals => { :users => App.get_users, :current_name => @user.name, :current_user => @user }
   end
 
-  get "/profile/:user_name" do
-    redirect '/login' unless session[:name]
-
-    haml :profile, :locals => { :user => App.get_user_by_name(params[:user_name])}
-  end
-
-  post "/buy/:item_id" do
-    redirect '/login' unless session[:name]
-
-    item_id = Integer(params[:item_id])
-    item = App.get_item_by_id(item_id)
-
-    buy_success, buy_message = @user.buy_item(item)
-
-    if buy_success
-      redirect back
-    else
-      redirect url("/error/#{buy_message}")
-    end
-  end
-
   get "/error/:error_msg" do
 
     case params[:error_msg]
@@ -50,32 +29,12 @@ class Main < Sinatra::Application
         error_message = "User is not registered in the system"
       when "login_no_pwd_user"
         error_message = "Empty username or password"
+      when "user_already_exists"
+        error_message = "Username already exists! Please choose another one"
+      when "pwd_rep_no_match"
+        error_message = "Passwords do not match. Please try again"
     end
 
     haml :error, :locals => { :error_message => error_message}
-  end
-
-  get "/users" do
-    redirect '/login' unless session[:name]
-
-    haml :users
-  end
-
-  get "/items" do
-    redirect '/login' unless session[:name]
-
-    haml :items
-  end
-
-  post "/act_deact/:item_id/:activate" do
-    redirect '/login' unless session[:name]
-
-    activate_str = params[:activate]
-    activate = (activate_str == "true")
-
-    item = App.get_item_by_id(Integer(params[:item_id]))
-    item.active = activate
-
-    redirect back
   end
 end

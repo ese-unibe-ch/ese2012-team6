@@ -24,14 +24,30 @@
           -else
             %input{:type => "checkbox", :disabled => "disabled"}
         %td
-          -if item.owner.name == session[:name] or session[:name] == "admin"
+          -if item.owner == current_user or current_user.name == "admin"
             -if item.active?
               %form{:action => "/act_deact/#{item.id}/false", :method => "POST"}
                 %input{:type => "submit", :value => "Deactivate", :text => "deacBtn", :class => "styled-button-4"}
             -else
               %form{:action => "/act_deact/#{item.id}/true", :method => "POST"}
-                %input{:type => "submit", :value => "Activate", :text => "deacBtn", :class => "styled-button-4"}
+                %input.styled-button-4{:type => "submit", :value => "Activate", :text => "deacBtn"}
         %td
-          -if item.owner.name != session[:name] and item.active?
+          -if item.owner.name != current_user.name and item.active?
             %form{:action => "/buy/#{item.id}", :method => "POST"}
-              %input{:type => "submit", :value => "Buy", :text => "buyBtn", :class => "styled-button-4"}
+              %input.styled-button-4{:type => "submit", :value => "Buy", :text => "buyBtn"}
+        %td
+          -if !item.active?
+            %form{:action => "/delete_item/#{item.id}", :method => "POST"}
+              %input.styled-button-4{:type => "submit", :value => "Delete", :text => "delBtn"}
+    %tr
+      %form{:action => "/create_item", :method => "POST"}
+        %td
+          %input.textbox8(type="text" name="item_name" style="width: 60px")
+        %td
+          %input.textbox8(type="text" name="item_price" style="width: 30px")
+        %td
+          %a{:href => url("/profile/#{current_user.name}")}
+            #{current_user.name}
+        %td
+          %input.styled-button-4{:type => "submit", :value => "Create", :text => "createBtn"}
+

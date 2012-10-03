@@ -8,11 +8,17 @@ require_relative('models/store/user')
 
 require_relative('controllers/authentication')
 require_relative('controllers/main')
+require_relative('controllers/register')
+require_relative('controllers/item')
+require_relative('controllers/user')
 
 class App < Sinatra::Base
 
   use Authentication
   use Main
+  use Register
+  use Item
+  use User
 
   @@users = []
   @@items = []
@@ -26,6 +32,11 @@ class App < Sinatra::Base
 
   def self.add_item(item)
     @@items << item unless (@@items.include?(item) or @@items.index{|x| x.id == item.id} != nil)
+  end
+
+  def self.delete_item(item)
+    fail "Cannot delete active items" if item.active?
+    @@items.delete(item)
   end
 
   def self.get_users

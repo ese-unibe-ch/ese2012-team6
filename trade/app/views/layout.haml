@@ -31,5 +31,8 @@
               %a{:href => url("/logout")} Logout
             -else
               Not logged in!
+              |
+              %a{:href => url("/register")}
+                Register
         %hr.styled-line
         =yield
