@@ -14,7 +14,7 @@ class Authentication < Sinatra::Application
     name = params[:username]
     password = params[:password]
 
-    redirect '/error/login_no_pwd_user'if name.nil? or password.nil? or name == "" or password == ""
+    redirect '/error/login_no_pwd_user' if name.nil? or password.nil? or name == "" or password == ""
     redirect '/error/user_no_exists' unless App.user_exist?(name)
     redirect '/login' unless name == password and App.user_exist?(name)
 
