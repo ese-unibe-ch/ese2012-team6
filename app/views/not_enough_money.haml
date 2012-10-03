@@ -1,0 +1,9 @@
+%link(rel="stylesheet" type="text/css" href="/style.css")
+%h1 Welcome #{user_name}
+%h4 Your Money: #{money} $
+%a{:href => "/"} Home
+%br/
+%a{:href => "/show_my_items"} My Items
+%br/
+%a{:href => "/logout"} Logout
+%h3 Transaction failed, you have not enough money! You have to deposit at least #{difference} $ into your account.
