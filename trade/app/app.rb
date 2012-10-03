@@ -62,15 +62,18 @@ class App < Sinatra::Base
     heart = umbrella_corp.propose_item("Heart", 80)
     meg = peter_griffin.propose_item("Meg", 2)
     random = umbrella_corp.propose_item("Random", 50)
+    bender = umbrella_corp.propose_item("Bender", 110)
 
     liver.set_active
     heart.set_active
     meg.set_active
+    bender.set_active
 
     App.add_item(liver)
     App.add_item(heart)
     App.add_item(meg)
     App.add_item(random)
+    App.add_item(bender)
   end
 end
 
