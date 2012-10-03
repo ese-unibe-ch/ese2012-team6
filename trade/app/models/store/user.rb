@@ -1,26 +1,39 @@
+require 'bcrypt'
+
 module Store
   class User
-    attr_accessor :name, :credits, :items, :password
+    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt
 
     def initialize
       self.name = ""
-      self.password = nil
       self.credits = 100
       self.items = []
+      self.pwd_hash = ""
+      self.pwd_salt = ""
     end
 
     def self.named(name)
       user = User.new
       user.name = name
-      user.password = name
+
+      user.pwd_salt = BCrypt::Engine.generate_salt
+      user.pwd_hash = BCrypt::Engine.hash_secret(name, user.pwd_salt)
+
       return user
     end
 
     def self.named_with_pwd(name, password)
       user = User.new
       user.name = name
-      user.password = password
+
+      user.pwd_salt = BCrypt::Engine.generate_salt
+      user.pwd_hash = BCrypt::Engine.hash_secret(password, user.pwd_salt)
+
       return user
+    end
+
+    def password_matches?(password)
+      return self.pwd_hash == BCrypt::Engine.hash_secret(password, self.pwd_salt)
     end
 
     def propose_item(name, price)
