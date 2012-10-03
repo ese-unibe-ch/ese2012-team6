@@ -46,6 +46,10 @@ hr.styled-line {
     font-size: 12px;
 }
 
+#login_status a:hover {
+    text-decoration: underline;
+}
+
 #credit_status {
     float: left;
     width: 33%;
@@ -71,19 +75,11 @@ hr.styled-line {
 {
     display: inline;
     list-style-type: none;
-    padding-right: 1em;
+    padding: 4px 10px;
 }
 
-table#status_table {
-    width: 100%;
-}
-
-table#nav_table {
-    width: 100%;
-}
-
-table#nav_table tbody {
-    text-align: right;
+#nav_menu li:hover {
+    background-color: #CCCCDD;
 }
 
 #hor-minimalist-b
@@ -113,6 +109,10 @@ table#nav_table tbody {
 {
     background: #eff2ff;
 	color: #009;
+}
+
+#hor-minimalist-b a:hover {
+    text-decoration: underline;
 }
 
 .styled-button-4 {
