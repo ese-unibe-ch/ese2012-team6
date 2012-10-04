@@ -1,10 +1,10 @@
 %h2
   Store
 %p
-  Your credits: $#{current_user.credits}
+  Your credits: $#{@user.credits}
 %p
   Items currently in store:
-%table{:id => "hor-minimalist-b"}
+%table#hor-minimalist-b
   %thead
     %tr
       %th Item
@@ -22,6 +22,6 @@
           %td
             %a{:href => url("/profile/#{item.owner.name}")} #{item.owner.name}
           %td
-            -if user != current_user
+            -if user != @user
               %form{:action => "/buy/#{item.id}", :method => "POST"}
                 %input{:type => "submit", :value => "Buy", :text => "buyBtn", :class => "styled-button-4"}

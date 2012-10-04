@@ -1,6 +1,6 @@
 %h3
   The following items are registered by the system
-%table{:id => "hor-minimalist-b"}
+%table#hor-minimalist-b
   %thead
     %tr
       %th Name
@@ -9,7 +9,7 @@
       %th Active
       %th
   %tbody
-    -for item in App.get_items
+    -for item in @database.get_items
       %tr
         %td
           #{item.name}

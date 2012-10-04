@@ -1,7 +1,8 @@
 class Item < Sinatra::Application
 
   before do
-    @user = App.get_user_by_name(session[:name])
+    @database = Storage::Database.instance
+    @user = @database.get_user_by_name(session[:name])
   end
 
   get "/items" do
@@ -16,7 +17,7 @@ class Item < Sinatra::Application
     activate_str = params[:activate]
     activate = (activate_str == "true")
 
-    item = App.get_item_by_id(Integer(params[:item_id]))
+    item = @database.get_item_by_id(Integer(params[:item_id]))
     item.active = activate
 
     redirect back
@@ -24,8 +25,8 @@ class Item < Sinatra::Application
 
   post "/delete_item/:item_id" do
     item_id = Integer(params[:item_id])
-    item = App.get_item_by_id(item_id)
-    App.delete_item(item)
+    item = @database.get_item_by_id(item_id)
+    @database.delete_item(item)
 
     redirect back
   end
@@ -37,7 +38,7 @@ class Item < Sinatra::Application
     item_price = Integer(params[:item_price])
 
     item = @user.propose_item(item_name, item_price)
-    App.add_item(item)
+    @database.add_item(item)
 
     redirect back
   end

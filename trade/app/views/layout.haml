@@ -9,9 +9,8 @@
     #outer
       #inner
         #status_container
-          -current_user = session[:name]
           #nav_menu
-            -if current_user != nil
+            -if @user != nil
               %ul
                 %li
                   %a{:href => url("/")} Store
@@ -20,15 +19,15 @@
                 %li
                   %a{:href => url("/items")} Items
           #credit_status
-            -if current_user != nil
+            -if @user != nil
               %span
-                Credits: $#{App.get_user_by_name(current_user).credits}
+                Credits: $#{@user.credits}
           #login_status
             %span
-              -if current_user != nil
+              -if @user != nil
                 Logged in as
-                %a{:href => url("/profile/#{current_user}")}
-                  #{current_user}
+                %a{:href => url("/profile/#{@user.name}")}
+                  #{@user.name}
                 |
                 %a{:href => url("/logout")} Logout
               -else

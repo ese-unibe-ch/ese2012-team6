@@ -5,13 +5,14 @@ require_relative('../models/store/item')
 class Main < Sinatra::Application
 
   before do
-    @user = App.get_user_by_name(session[:name])
+    @database = Storage::Database.instance
+    @user = @database.get_user_by_name(session[:name])
   end
 
   get "/" do
     redirect '/login' unless session[:name]
 
-    haml :store, :locals => { :users => App.get_users, :current_name => @user.name, :current_user => @user }
+    haml :store, :locals => { :users => @database.get_users, :current_name => @user.name, :current_user => @user }
   end
 
   get "/error/:error_msg" do

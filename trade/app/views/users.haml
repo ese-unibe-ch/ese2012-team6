@@ -1,13 +1,13 @@
 %h3
   The following users are registered by the system
-%table{:id => "hor-minimalist-b"}
+%table#hor-minimalist-b
   %thead
     %tr
       %th Name
       %th Credits
       %th No. of items
   %tbody
-    -for user in App.get_users
+    -for user in @database.get_users
       %tr
         %td
           %a{:href => url("/profile/#{user.name}")} #{user.name}
