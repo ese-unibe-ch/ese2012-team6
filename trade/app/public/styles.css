@@ -1,15 +1,36 @@
-html *
-{
-    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+html {
+    font-family: verdana,helvetica,arial,sans-serif;;
+    height: 100%;
 }
 
 body {
     margin: 0px;
+    height: 100%;
+}
+
+h1, h2, h3 {
+    color: #23496B;
 }
 
 a, a.visited {
     text-decoration: none;
     color: #23496B;
+}
+
+#outer {
+    background-color: #BCD;
+    padding: 1em 0;
+    height: 100%;
+    position: relative;
+}
+
+#inner {
+    background-color: #FFFFFF;
+    width: 800px;
+    margin: 0px auto;
+    min-height: 400px;
+    padding: 1em;
+    position: relative;
 }
 
 p.no_top_margin {
@@ -29,21 +50,25 @@ p.credit_status {
 hr.styled-line {
     border: 0;
     height: 1px;
+    margin: 0;
     background: #333;
 }
 
 #status_container {
     width: 100%;
-    height: 1em;
+    background-color: #BCD;
+    height: 2em;
+    position: relative;
+    display: table;
 }
 
 #login_status {
-    float: left;
-    width: 33%;
+    float: right;
     height: 100%;
     text-align: right;
-    vertical-align: middle;
     font-size: 12px;
+    display: table-cell;
+    padding: 10px 1em
 }
 
 #login_status a:hover {
@@ -55,7 +80,8 @@ hr.styled-line {
     width: 33%;
     height: 100%;
     text-align: center;
-    vertical-align: middle;
+    display: table-cell;
+    padding: 8px 0;
 }
 
 #nav_menu {
@@ -63,23 +89,39 @@ hr.styled-line {
     width: 33%;
     height: 100%;
     text-align: left;
-    vertical-align: middle;
+    display: table-cell;
 }
 
 #nav_menu ul {
+    list-style-type: none;
+    display: block;
     margin: 0px;
     padding: 0px;
+    height:100%;
 }
 
 #nav_menu li
 {
+    height:100%;
+    float: left;
     display: inline;
-    list-style-type: none;
-    padding: 4px 10px;
 }
 
 #nav_menu li:hover {
-    background-color: #CCCCDD;
+    background-color: rgb(206, 224, 241);
+}
+
+#nav_menu li a {
+    height:100%;
+    display: block;
+    padding: 8px 1em;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+#content {
+    padding: 1em;
 }
 
 #hor-minimalist-b
@@ -125,7 +167,7 @@ hr.styled-line {
     -moz-border-radius:0;
     border:1px solid #999;
     color:#666;
-    font-family:'Lucida Grande',Tahoma,Verdana,Arial,Sans-serif;
+    font-family:verdana,helvetica,arial,sans-serif;;
     font-size:11px;
     font-weight:700;
     padding:2px 6px;
@@ -133,24 +175,27 @@ hr.styled-line {
     margin:0px;
 }
 
+.delete-color {
+    background-color: rgba(255, 50, 15, 0.41);
+}
+
+.buy-color {
+    background-color: rgba(118, 212, 0, 0.61)
+}
+
 .textbox8 {
     /*width: 230px;*/
-    border: 1px solid #3366FF;
-    border-left: 4px solid #3366FF;
+    border: 1px solid #BCD;
+    border-left: 4px solid #BCD;
 }
 
-#outer {
-    background-color: #BBBBDD;
-    padding: 1em;
-    height: 100%;
-    position: relative;
+#list_actions {
+    min-width: 80px;
 }
 
-#inner {
-    background-color: #FFFFFF;
-    width: 800px;
-    margin: 0px auto;
-    min-height: 400px;
-    padding: 1em;
-    position: relative;
+#button_container {
+    margin-right: 1em;
+    float:left;
+    display:inline;
 }
+

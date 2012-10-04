@@ -8,7 +8,6 @@
       %th Owner
       %th Active
       %th
-      %th
   %tbody
     -for item in App.get_items
       %tr
@@ -24,21 +23,24 @@
           -else
             %input{:type => "checkbox", :disabled => "disabled"}
         %td
-          -if item.owner == current_user or current_user.name == "admin"
-            -if item.active?
-              %form{:action => "/act_deact/#{item.id}/false", :method => "POST"}
-                %input{:type => "submit", :value => "Deactivate", :text => "deacBtn", :class => "styled-button-4"}
-            -else
-              %form{:action => "/act_deact/#{item.id}/true", :method => "POST"}
-                %input.styled-button-4{:type => "submit", :value => "Activate", :text => "deacBtn"}
-        %td
-          -if item.owner.name != current_user.name and item.active?
-            %form{:action => "/buy/#{item.id}", :method => "POST"}
-              %input.styled-button-4{:type => "submit", :value => "Buy", :text => "buyBtn"}
-        %td
-          -if !item.active?
-            %form{:action => "/delete_item/#{item.id}", :method => "POST"}
-              %input.styled-button-4{:type => "submit", :value => "Delete", :text => "delBtn"}
+          #list_actions
+            -if item.owner == current_user or current_user.name == "admin"
+              -if item.active?
+                #button_container
+                  %form{:action => "/act_deact/#{item.id}/false", :method => "POST"}
+                    %input.styled-button-4{:type => "submit", :value => "Deactivate", :text => "deacBtn"}
+              -else
+                #button_container
+                  %form{:action => "/act_deact/#{item.id}/true", :method => "POST"}
+                    %input.styled-button-4{:type => "submit", :value => "Activate", :text => "deacBtn"}
+            -if item.owner.name != current_user.name and item.active?
+              #button_container
+                %form{:action => "/buy/#{item.id}", :method => "POST"}
+                  %input.styled-button-4.buy-color{:type => "submit", :value => "Buy", :text => "buyBtn"}
+            -if !item.active?
+              #button_container
+                %form{:action => "/delete_item/#{item.id}", :method => "POST"}
+                  %input.styled-button-4.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
     %tr
       %form{:action => "/create_item", :method => "POST"}
         %td
@@ -49,5 +51,6 @@
           %a{:href => url("/profile/#{current_user.name}")}
             #{current_user.name}
         %td
-          %input.styled-button-4{:type => "submit", :value => "Create", :text => "createBtn"}
+        %td
+          %input.styled-button-4{:type => "submit", :value => "Propose", :text => "createBtn"}
 

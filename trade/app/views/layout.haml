@@ -21,18 +21,20 @@
                   %a{:href => url("/items")} Items
           #credit_status
             -if current_user != nil
-              Credits: $#{App.get_user_by_name(current_user).credits}
+              %span
+                Credits: $#{App.get_user_by_name(current_user).credits}
           #login_status
-            -if current_user != nil
-              Logged in as
-              %a{:href => url("/profile/#{current_user}")}
-                #{current_user}
-              |
-              %a{:href => url("/logout")} Logout
-            -else
-              Not logged in!
-              |
-              %a{:href => url("/register")}
-                Register
-        %hr.styled-line
-        =yield
+            %span
+              -if current_user != nil
+                Logged in as
+                %a{:href => url("/profile/#{current_user}")}
+                  #{current_user}
+                |
+                %a{:href => url("/logout")} Logout
+              -else
+                Not logged in!
+                |
+                %a{:href => url("/register")}
+                  Register
+        #content
+          =yield

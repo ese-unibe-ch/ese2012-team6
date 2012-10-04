@@ -35,6 +35,8 @@ class Main < Sinatra::Application
         error_message = "Passwords do not match. Please try again"
     end
 
-    haml :error, :locals => { :error_message => error_message}
+    last_page = back
+
+    haml :error, :locals => { :error_message => error_message, :last_page => last_page}
   end
 end
