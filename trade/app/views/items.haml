@@ -24,7 +24,7 @@
             %input{:type => "checkbox", :disabled => "disabled"}
         %td
           #list_actions
-            -if item.owner == current_user or current_user.name == "admin"
+            -if item.owner == @user or @user.name == "admin"
               -if item.active?
                 #button_container
                   %form{:action => "/act_deact/#{item.id}/false", :method => "POST"}
@@ -33,11 +33,11 @@
                 #button_container
                   %form{:action => "/act_deact/#{item.id}/true", :method => "POST"}
                     %input.styled-button-4{:type => "submit", :value => "Activate", :text => "deacBtn"}
-            -if item.owner.name != current_user.name and item.active?
+            -if item.owner != @user and item.active?
               #button_container
                 %form{:action => "/buy/#{item.id}", :method => "POST"}
                   %input.styled-button-4.buy-color{:type => "submit", :value => "Buy", :text => "buyBtn"}
-            -if !item.active?
+            -if !item.active? and @user == item.owner
               #button_container
                 %form{:action => "/delete_item/#{item.id}", :method => "POST"}
                   %input.styled-button-4.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
@@ -48,8 +48,8 @@
         %td
           %input.textbox8(type="text" name="item_price" style="width: 30px")
         %td
-          %a{:href => url("/profile/#{current_user.name}")}
-            #{current_user.name}
+          %a{:href => url("/profile/#{@user.name}")}
+            #{@user.name}
         %td
         %td
           %input.styled-button-4{:type => "submit", :value => "Propose", :text => "createBtn"}
