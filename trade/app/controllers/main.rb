@@ -13,9 +13,7 @@ class Main < Sinatra::Application
     redirect '/login' unless session[:name]
 
     haml :store, :locals => {
-        :users => @database.get_users,
-        :current_name => @user.name,
-        :current_user => @user
+        :users => @database.get_users
     }
   end
 

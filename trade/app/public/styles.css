@@ -33,10 +33,6 @@ a, a.visited {
     position: relative;
 }
 
-p.no_top_margin {
-    margin-top: 0px;
-}
-
 p.logged_in_status {
     margin-top: 0px;
     text-align: left;
@@ -86,7 +82,6 @@ hr.styled-line {
 
 #nav_menu {
     float: left;
-    width: 33%;
     height: 100%;
     text-align: left;
     display: table-cell;
@@ -114,10 +109,11 @@ hr.styled-line {
 #nav_menu li a {
     height:100%;
     display: block;
-    padding: 8px 1em;
+    padding: 10px 1em;
     text-align: center;
     text-transform: uppercase;
     font-weight: bold;
+    font-size: 14px;
 }
 
 #content {
@@ -202,4 +198,26 @@ hr.styled-line {
 #ralign {
     text-align: right;
 }
+
+#picture_container {
+    padding: 1em 2em 1em 1em;
+    border-right: 1px solid;
+    border-color: #23496B;
+    float: left;
+}
+
+#details_container {
+    padding: 1em;
+    float:left;
+}
+
+#details_container p {
+    margin-left: 1em;
+}
+
+.no_top_margin {
+    margin-top: 0px;
+}
+
+
 
