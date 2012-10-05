@@ -12,7 +12,7 @@
     -for item in @database.get_items
       %tr
         %td
-          #{item.name}
+          %a{:href => url("/item/#{item.id}")} #{item.name}
         %td#ralign
           #{item.price}
         %td

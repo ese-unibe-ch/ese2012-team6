@@ -12,7 +12,11 @@ class Main < Sinatra::Application
   get "/" do
     redirect '/login' unless session[:name]
 
-    haml :store, :locals => { :users => @database.get_users, :current_name => @user.name, :current_user => @user }
+    haml :store, :locals => {
+        :users => @database.get_users,
+        :current_name => @user.name,
+        :current_user => @user
+    }
   end
 
   get "/error/:error_msg" do
@@ -38,6 +42,9 @@ class Main < Sinatra::Application
 
     last_page = back
 
-    haml :error, :locals => { :error_message => error_message, :last_page => last_page}
+    haml :error, :locals => {
+        :error_message => error_message,
+        :last_page => last_page
+    }
   end
 end

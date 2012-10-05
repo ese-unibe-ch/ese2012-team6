@@ -1,12 +1,13 @@
 module Store
   class Item
-    attr_accessor :name, :id, :price, :owner, :active
+    attr_accessor :name, :id, :price, :owner, :active, :description
     @@last_id = 0
 
     def initialize
       @@last_id += 1
       self.id = @@last_id
       self.active = false
+      self.description = "Template Description"
     end
 
     def self.named_priced_with_owner(name, price, owner)
@@ -33,5 +34,8 @@ module Store
       return self.active
     end
 
+    def editable?
+      return (not self.active)
+    end
   end
 end

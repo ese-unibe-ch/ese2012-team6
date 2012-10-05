@@ -86,7 +86,7 @@ module Store
     end
 
     def can_edit?(item)
-      return (item.owner.eql?(self) and not item.active?)
+      return (item.owner.eql?(self) and item.editable?)
     end
 
     alias :can_delete? :can_edit?

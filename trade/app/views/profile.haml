@@ -19,7 +19,7 @@
     -for item in viewed_user.items
       %tr
         %td
-          #{item.name}
+          %a{:href => url("/item/#{item.id}")} #{item.name}
         %td
           #{item.price}
         %td
@@ -50,4 +50,5 @@
             %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
           %td
           %td
-            %input.styled-button-4{:type => "submit", :value => "Propose", :text => "createBtn"}
+            #button_container
+              %input.styled-button-4{:type => "submit", :value => "Propose", :text => "createBtn"}
