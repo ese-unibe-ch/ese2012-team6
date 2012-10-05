@@ -1,9 +1,12 @@
 %h2
-  #{user.name}'s Profile
+  -if is_my_profile
+    My Profile
+  -else
+    #{viewed_user.name}'s Profile
 %p
-  #{user.name}'s credits: $#{user.credits}
+  #{is_my_profile ? "Your " : viewed_user.name + "'s"} credits: $#{viewed_user.credits}
 %h3
-  #{user.name} owns the following items:
+  #{is_my_profile ? "You own" : viewed_user.name + " owns"} the following items:
 %table{:id => "hor-minimalist-b"}
   %thead
     %tr
@@ -13,8 +16,7 @@
       %th
       %th
   %tbody
-    -active_user_name = session[:name]
-    -for item in user.items
+    -for item in viewed_user.items
       %tr
         %td
           #{item.name}
@@ -26,14 +28,26 @@
           -else
             %input{:type => "checkbox", :disabled => "disabled"}
         %td
-          -if user.name == active_user_name or active_user_name == "admin"
-            -if item.active?
-              %form{:action => "/act_deact/#{item.id}/false", :method => "POST"}
-                %input{:type => "submit", :value => "Deactivate", :text => "deacBtn", :class => "styled-button-4"}
-            -else
-              %form{:action => "/act_deact/#{item.id}/true", :method => "POST"}
-                %input{:type => "submit", :value => "Activate", :text => "deacBtn", :class => "styled-button-4"}
-        %td
-          -if item.owner.name != active_user_name and item.active?
-            %form{:action => "/buy/#{item.id}", :method => "POST"}
-              %input{:type => "submit", :value => "Buy", :text => "buyBtn", :class => "styled-button-4"}
+          #action_buttons
+            -if @user.can_activate?(item) or @user.name == "admin"
+              #button_container
+                -if item.active?
+                  %form{:action => "/act_deact/#{item.id}/false", :method => "POST"}
+                    %input.styled-button-4{:type => "submit", :value => "Deactivate", :text => "deacBtn"}
+                -else
+                  %form{:action => "/act_deact/#{item.id}/true", :method => "POST"}
+                    %input.styled-button-4{:type => "submit", :value => "Activate", :text => "deacBtn"}
+            -if @user.can_delete?(item)
+              #button_container
+                %form{:action => "/delete_item/#{item.id}", :method => "POST"}
+                  %input.styled-button-4.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
+    -if is_my_profile
+      %tr
+        %form{:action => "/create_item", :method => "POST"}
+          %td
+            %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
+          %td
+            %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
+          %td
+          %td
+            %input.styled-button-4{:type => "submit", :value => "Propose", :text => "createBtn"}

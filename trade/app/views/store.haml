@@ -24,4 +24,4 @@
           %td
             -if user != @user
               %form{:action => "/buy/#{item.id}", :method => "POST"}
-                %input{:type => "submit", :value => "Buy", :text => "buyBtn", :class => "styled-button-4"}
+                %input.styled-button-4.buy-color{:type => "submit", :value => "Buy", :text => "buyBtn"}

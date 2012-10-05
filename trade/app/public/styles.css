@@ -189,7 +189,7 @@ hr.styled-line {
     border-left: 4px solid #BCD;
 }
 
-#list_actions {
+#action_buttons {
     min-width: 80px;
 }
 
@@ -197,5 +197,9 @@ hr.styled-line {
     margin-right: 1em;
     float:left;
     display:inline;
+}
+
+#ralign {
+    text-align: right;
 }
 
