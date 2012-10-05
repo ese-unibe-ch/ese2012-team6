@@ -22,18 +22,3 @@
             %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
           -else
             %input{:type => "checkbox", :disabled => "disabled"}
-        %td
-          #action_buttons
-            -if @user.can_activate?(item) or @user.name == "admin"
-              -if item.active?
-                #button_container
-                  %form{:action => "/act_deact/#{item.id}/false", :method => "POST"}
-                    %input.styled-button-4{:type => "submit", :value => "Deactivate", :text => "deacBtn"}
-              -else
-                #button_container
-                  %form{:action => "/act_deact/#{item.id}/true", :method => "POST"}
-                    %input.styled-button-4{:type => "submit", :value => "Activate", :text => "deacBtn"}
-            -if @user.can_buy?(item)
-              #button_container
-                %form{:action => "/buy/#{item.id}", :method => "POST"}
-                  %input.styled-button-4.buy-color{:type => "submit", :value => "Buy", :text => "buyBtn"}
