@@ -27,6 +27,9 @@ class Item < Sinatra::Application
 
     item_id = Integer(params[:item_id])
     item = @database.get_item_by_id(item_id)
+
+    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
+
     haml :edit_item, :locals => {
         :item => item
     }
@@ -40,8 +43,6 @@ class Item < Sinatra::Application
     item_price = params[:item_price]
     item_description = params[:item_description]
     item = @database.get_item_by_id(item_id)
-
-    redirect back unless @user.can_edit?(item)
 
     item.name = item_name
     item.price = item_price
@@ -58,7 +59,7 @@ class Item < Sinatra::Application
 
     item = @database.get_item_by_id(Integer(params[:item_id]))
 
-    redirect back unless @user.can_activate?(item)
+    redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
 
     item.active = activate
 
