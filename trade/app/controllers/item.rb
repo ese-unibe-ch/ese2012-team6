@@ -8,9 +8,7 @@ class Item < Sinatra::Application
   get "/items" do
     redirect '/login' unless session[:name]
 
-    haml :all_items, :locals => {
-        :current_user => @user
-    }
+    haml :all_items
   end
 
   get "/item/:item_id" do
