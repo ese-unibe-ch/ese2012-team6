@@ -22,7 +22,7 @@ class Item < Sinatra::Application
     }
   end
 
-  get "/get_to_edit_item/:item_id" do
+  get "/edit_item/:item_id" do
     redirect '/login' unless session[:name]
 
     item_id = Integer(params[:item_id])

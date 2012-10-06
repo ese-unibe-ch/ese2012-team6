@@ -39,7 +39,7 @@
                     %input.styled-button-4{:type => "submit", :value => "Activate", :text => "deacBtn"}
             -if @user.can_edit?(item) or @user.name == "admin"
               #button_container
-                %form{:action => "/get_to_edit_item/#{item.id}", :method => "GET"}
+                %form{:action => "/edit_item/#{item.id}", :method => "GET"}
                   %input.styled-button-4{:type => "submit", :value => "Edit", :text => "editBtn"}
             -if @user.can_delete?(item)
               #button_container
