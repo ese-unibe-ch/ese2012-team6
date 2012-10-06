@@ -1,0 +1,29 @@
+%h2
+  Store
+%p
+  Your credits: $#{@user.credits}
+%h3
+  Items currently in store:
+%table#hor-minimalist-b
+  %thead
+    %tr
+      %th Item
+      %th Price
+      %th Owner
+      %th
+  %tbody
+    -for user in users
+      -for item in user.get_active_items
+        %tr
+          %td
+            %a{:href => url("/item/#{item.id}")} #{item.name}
+          %td
+            #{item.price}
+          %td
+            %a{:href => url("/profile/#{item.owner.name}")} #{item.owner.name}
+          %td
+            #action_buttons
+              -if user != @user
+                #button_container
+                  %form{:action => "/buy/#{item.id}", :method => "POST"}
+                    %input.styled-button-4.buy-color{:type => "submit", :value => "Buy", :text => "buyBtn"}

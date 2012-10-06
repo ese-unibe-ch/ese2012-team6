@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="RUBY_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="backports (v2.6.4, ruby-1.8.7-p302) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="bcrypt-ruby (v3.0.1, ruby-1.8.7-p302) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="bundler (v1.2.1, ruby-1.8.7-p302) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="eventmachine (v1.0.0, ruby-1.8.7-p302) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="haml (v3.1.7, ruby-1.8.7-p302) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rack (v1.4.1, ruby-1.8.7-p302) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rack-protection (v1.2.0, ruby-1.8.7-p302) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rack-test (v0.6.2, ruby-1.8.7-p302) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="require_relative (v1.0.3, ruby-1.8.7-p302) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="sinatra (v1.3.3, ruby-1.8.7-p302) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="sinatra-contrib (v1.3.1, ruby-1.8.7-p302) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="tilt (v1.3.3, ruby-1.8.7-p302) [gem]" level="application" />
+  </component>
+</module>
+

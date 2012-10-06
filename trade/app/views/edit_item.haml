@@ -1,0 +1,22 @@
+%h2
+  Item Details
+#picture_container
+  %img{:src => "/images/no_image.gif", :width => "200", :height => "200" }
+#details_container
+  %form{:action => "/edit_item/#{item.id}", :method => "POST"}
+    %h3.no_top_margin
+      Name
+    %p
+      %input.textbox8(type="text" name="item_name" style="width: 60px" value="#{item.name}")
+    %h3
+      Price
+    %p
+      %input.textbox8(type="text" name="item_price" style="width: 60px" value="#{item.price}")
+    %h3
+      Description
+    %p
+      %input.textbox8(type="text" name="item_description" style="width: 120px" value="#{item.description}")
+    %p
+      #button_container
+        %input.styled-button-4{:type => "submit", :value => "Save", :text => "createBtn"}
+

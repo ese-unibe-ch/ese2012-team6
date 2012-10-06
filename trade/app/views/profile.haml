@@ -1,0 +1,58 @@
+%h2
+  -if is_my_profile
+    My Profile
+  -else
+    #{viewed_user.name}'s Profile
+%p
+  #{is_my_profile ? "Your " : viewed_user.name + "'s"} credits: $#{viewed_user.credits}
+%h3
+  #{is_my_profile ? "You own" : viewed_user.name + " owns"} the following items:
+%table{:id => "hor-minimalist-b"}
+  %thead
+    %tr
+      %th Name
+      %th Price
+      %th Active
+      %th
+      %th
+  %tbody
+    -for item in viewed_user.items
+      %tr
+        %td
+          %a{:href => url("/item/#{item.id}")} #{item.name}
+        %td
+          #{item.price}
+        %td
+          -if item.active?
+            %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
+          -else
+            %input{:type => "checkbox", :disabled => "disabled"}
+        %td
+          #action_buttons
+            -if @user.can_activate?(item) or @user.name == "admin"
+              #button_container
+                -if item.active?
+                  %form{:action => "/act_deact/#{item.id}/false", :method => "POST"}
+                    %input.styled-button-4{:type => "submit", :value => "Deactivate", :text => "deacBtn"}
+                -else
+                  %form{:action => "/act_deact/#{item.id}/true", :method => "POST"}
+                    %input.styled-button-4{:type => "submit", :value => "Activate", :text => "deacBtn"}
+            -if @user.can_edit?(item) or @user.name == "admin"
+              #button_container
+                %form{:action => "/edit_item/#{item.id}", :method => "GET"}
+                  %input.styled-button-4{:type => "submit", :value => "Edit", :text => "editBtn"}
+            -if @user.can_delete?(item)
+              #button_container
+                %form{:action => "/delete_item/#{item.id}", :method => "POST"}
+                  %input.styled-button-4.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
+    -if is_my_profile
+      %tr
+        %form{:action => "/create_item", :method => "POST"}
+          %td
+            %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
+          %td
+            %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
+          %td
+          %td
+            #button_container
+              %input.styled-button-4{:type => "submit", :value => "Propose", :text => "createBtn"}

@@ -1,0 +1,17 @@
+%h3
+  The following users are registered by the system
+%table#hor-minimalist-b
+  %thead
+    %tr
+      %th Name
+      %th Credits
+      %th No. of items
+  %tbody
+    -for user in @database.get_users
+      %tr
+        %td
+          %a{:href => url("/profile/#{user.name}")} #{user.name}
+        %td.ralign
+          #{user.credits}
+        %td.ralign
+          #{user.items.size}

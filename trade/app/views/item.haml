@@ -1,0 +1,17 @@
+%h2
+  Item Details
+#picture_container
+  %img{:src => "/images/no_image.gif", :width => "200", :height => "200" }
+#details_container
+  %h3.no_top_margin
+    Name
+  %p
+    #{item.name}
+  %h3
+    Price
+  %p
+    #{item.price}
+  %h3
+    Description
+  %p
+    #{item.description}
