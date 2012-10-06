@@ -17,6 +17,8 @@ class Item < Sinatra::Application
     item_id = Integer(params[:item_id])
     item = @database.get_item_by_id(item_id)
 
+    redirect "/user/#{@user.name}" if item.nil?
+
     haml :item, :locals => {
       :item => item
     }

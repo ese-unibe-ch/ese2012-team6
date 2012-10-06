@@ -118,6 +118,8 @@ hr.styled-line {
 
 #content {
     padding: 1em;
+    width: 100%;
+    display: table;
 }
 
 #hor-minimalist-b
@@ -187,7 +189,14 @@ hr.styled-line {
 
 #action_buttons {
     min-width: 80px;
+    display: inline-block;
 }
+
+#action_buttons.float_right {
+   float: right;
+}
+
+
 
 #button_container {
     margin-right: 1em;
@@ -213,6 +222,11 @@ hr.styled-line {
 
 #details_container p {
     margin-left: 1em;
+    display: table;
+}
+
+#item_details {
+    display: table;
 }
 
 .no_top_margin {

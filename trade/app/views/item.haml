@@ -1,17 +1,36 @@
 %h2
   Item Details
-#picture_container
-  %img{:src => "/images/no_image.gif", :width => "200", :height => "200" }
-#details_container
-  %h3.no_top_margin
-    Name
-  %p
-    #{item.name}
-  %h3
-    Price
-  %p
-    #{item.price}
-  %h3
-    Description
-  %p
-    #{item.description}
+#action_buttons.float_right
+  -if @user.can_activate?(item) or @user.name == "admin"
+    #button_container
+      -if item.active?
+        %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
+          %input.styled-button-4{:type => "submit", :value => "Deactivate", :text => "deacBtn"}
+      -else
+        %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
+          %input.styled-button-4{:type => "submit", :value => "Activate", :text => "deacBtn"}
+  -if @user.can_edit?(item) or @user.name == "admin"
+    #button_container
+      %form{:action => "/item/#{item.id}/edit", :method => "GET"}
+        %input.styled-button-4{:type => "submit", :value => "Edit", :text => "editBtn"}
+  -if @user.can_delete?(item)
+    #button_container
+      %form{:action => "/item/#{item.id}", :method => "POST"}
+        %input{:name => "_method", :type => "hidden", :value => "delete"}
+        %input.styled-button-4.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
+#item_details
+  #picture_container
+    %img{:src => "/images/no_image.gif", :width => "200", :height => "200" }
+  #details_container
+    %h3.no_top_margin
+      Name
+    %p
+      #{item.name}
+    %h3
+      Price
+    %p
+      #{item.price}
+    %h3
+      Description
+    %p
+      #{item.description}
