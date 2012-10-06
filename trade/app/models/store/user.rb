@@ -2,7 +2,7 @@ require 'bcrypt'
 
 module Store
   class User
-    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt
+    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description
 
     def initialize
       self.name = ""
@@ -10,6 +10,7 @@ module Store
       self.items = []
       self.pwd_hash = ""
       self.pwd_salt = ""
+      self.description = ""
     end
 
     def self.named(name)
@@ -28,6 +29,18 @@ module Store
 
       user.pwd_salt = BCrypt::Engine.generate_salt
       user.pwd_hash = BCrypt::Engine.hash_secret(password, user.pwd_salt)
+
+      return user
+    end
+
+    def self.named_pwd_description(name, password, description)
+      user = User.new
+      user.name = name
+
+      user.pwd_salt = BCrypt::Engine.generate_salt
+      user.pwd_hash = BCrypt::Engine.hash_secret(password, user.pwd_salt)
+
+      user.description = description
 
       return user
     end

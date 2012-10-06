@@ -219,5 +219,15 @@ hr.styled-line {
     margin-top: 0px;
 }
 
+.about_yourself {
+    width: 300px;
+    height: 60px;
+    resize: none;
+}
+
+.bold {
+    font-weight: bold;
+}
+
 
 

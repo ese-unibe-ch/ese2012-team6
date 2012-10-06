@@ -3,20 +3,30 @@
   %table
     %tr
       %td
-        %label Username
+        %label.bold Username:
       %td
         %input.textbox8{:type => "text", :name => "username"}
+    %tr{:height=> "16px"}
     %tr
       %td
-        %label Password
+        %label.bold Password:
       %td
         %input.textbox8{:type => "password", :name => "password"}
     %tr
       %td
-        %label Repeat Password
+        %label.bold Repeat Password:
       %td
         %input.textbox8{:type => "password", :name => "rep_password"}
+    %tr{:height=> "16px"}
+    %tr
+      %td
+        %label About Yourself:
+      %td
+        %textarea.textbox8.about_yourself{:name => "description"}
     %tr
       %td
       %td{:align => "right"}
         %input.styled-button-4{:type => "submit", :text => "submit", :value => "Register"}
+%p
+  Fields in bold must be filled in!
+%a{:href => url("/")} Go Back
