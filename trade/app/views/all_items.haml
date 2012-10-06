@@ -1,0 +1,24 @@
+%h3
+  The following items are registered by the system
+%table#hor-minimalist-b
+  %thead
+    %tr
+      %th Name
+      %th Price
+      %th Owner
+      %th Active
+      %th
+  %tbody
+    -for item in @database.get_items
+      %tr
+        %td
+          %a{:href => url("/item/#{item.id}")} #{item.name}
+        %td#ralign
+          #{item.price}
+        %td
+          %a{:href => url("/profile/#{item.owner.name}")} #{item.owner.name}
+        %td
+          -if item.active?
+            %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
+          -else
+            %input{:type => "checkbox", :disabled => "disabled"}

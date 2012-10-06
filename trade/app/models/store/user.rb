@@ -85,6 +85,20 @@ module Store
       return true, "Transaction successful"
     end
 
+    def can_edit?(item)
+      return (item.owner.eql?(self) and item.editable?)
+    end
+
+    alias :can_delete? :can_edit?
+
+    def can_buy?(item)
+      return (not item.owner.eql?(self) and item.active?)
+    end
+
+    def can_activate?(item)
+      return item.owner.eql?(self)
+    end
+
     def to_s
       return "#{self.name}, #{self.credits}"
     end

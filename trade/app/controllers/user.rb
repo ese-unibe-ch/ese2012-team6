@@ -8,7 +8,13 @@ class User < Sinatra::Application
   get "/profile/:user_name" do
     redirect '/login' unless session[:name]
 
-    haml :profile, :locals => { :user => @database.get_user_by_name(params[:user_name])}
+    viewed_user = @database.get_user_by_name(params[:user_name])
+    is_my_profile = @user == viewed_user
+
+    haml :profile, :locals => {
+        :viewed_user => viewed_user,
+        :is_my_profile => is_my_profile
+    }
   end
 
   post "/buy/:item_id" do
@@ -29,6 +35,6 @@ class User < Sinatra::Application
   get "/users" do
     redirect '/login' unless session[:name]
 
-    haml :users
+    haml :all_users
   end
 end
