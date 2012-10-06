@@ -60,16 +60,7 @@ class Item < Sinatra::Application
     redirect back
   end
 
-  post "/delete_item/:item_id" do
-    item_id = Integer(params[:item_id])
-    item = @database.get_item_by_id(item_id)
-    @database.delete_item(item)
-    @user.remove_item(item)
-
-    redirect back
-  end
-
-  post "/create_item" do
+  put "/item" do
     redirect back if params[:item_name] == "" or params[:item_price] == ""
 
     item_name = params[:item_name]
@@ -77,6 +68,16 @@ class Item < Sinatra::Application
 
     item = @user.propose_item(item_name, item_price)
     @database.add_item(item)
+
+    redirect back
+  end
+
+  delete "/item/:item_id" do
+
+    item_id = Integer(params[:item_id])
+    item = @database.get_item_by_id(item_id)
+    @database.delete_item(item)
+    @user.remove_item(item)
 
     redirect back
   end
