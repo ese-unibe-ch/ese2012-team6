@@ -32,14 +32,14 @@
             -if @user.can_activate?(item) or @user.name == "admin"
               #button_container
                 -if item.active?
-                  %form{:action => "/act_deact/#{item.id}/false", :method => "POST"}
+                  %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
                     %input.styled-button-4{:type => "submit", :value => "Deactivate", :text => "deacBtn"}
                 -else
-                  %form{:action => "/act_deact/#{item.id}/true", :method => "POST"}
+                  %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
                     %input.styled-button-4{:type => "submit", :value => "Activate", :text => "deacBtn"}
             -if @user.can_edit?(item) or @user.name == "admin"
               #button_container
-                %form{:action => "/edit_item/#{item.id}", :method => "GET"}
+                %form{:action => "/item/#{item.id}/edit", :method => "GET"}
                   %input.styled-button-4{:type => "submit", :value => "Edit", :text => "editBtn"}
             -if @user.can_delete?(item)
               #button_container

@@ -10,7 +10,7 @@
     -for user in @database.get_users
       %tr
         %td
-          %a{:href => url("/profile/#{user.name}")} #{user.name}
+          %a{:href => url("/user/#{user.name}")} #{user.name}
         %td.ralign
           #{user.credits}
         %td.ralign

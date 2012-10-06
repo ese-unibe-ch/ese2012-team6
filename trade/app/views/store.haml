@@ -20,7 +20,7 @@
           %td
             #{item.price}
           %td
-            %a{:href => url("/profile/#{item.owner.name}")} #{item.owner.name}
+            %a{:href => url("/user/#{item.owner.name}")} #{item.owner.name}
           %td
             #action_buttons
               -if user != @user

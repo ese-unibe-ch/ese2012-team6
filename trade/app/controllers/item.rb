@@ -22,7 +22,7 @@ class Item < Sinatra::Application
     }
   end
 
-  get "/edit_item/:item_id" do
+  get "/item/:item_id/edit" do
     redirect '/login' unless session[:name]
 
     item_id = Integer(params[:item_id])
@@ -32,7 +32,7 @@ class Item < Sinatra::Application
     }
   end
 
-  post "/edit_item/:item_id" do
+  post "/item/:item_id/edit" do
     redirect '/login' unless session[:name]
 
     item_id = Integer(params[:item_id])
@@ -41,6 +41,8 @@ class Item < Sinatra::Application
     item_description = params[:item_description]
     item = @database.get_item_by_id(item_id)
 
+    redirect back unless @user.can_edit?(item)
+
     item.name = item_name
     item.price = item_price
     item.description = item_description
@@ -48,13 +50,16 @@ class Item < Sinatra::Application
     redirect "/item/#{item_id}"
   end
 
-  post "/act_deact/:item_id/:activate" do
+  post "/item/:item_id/act_deact/:activate" do
     redirect '/login' unless session[:name]
 
     activate_str = params[:activate]
     activate = (activate_str == "true")
 
     item = @database.get_item_by_id(Integer(params[:item_id]))
+
+    redirect back unless @user.can_activate?(item)
+
     item.active = activate
 
     redirect back

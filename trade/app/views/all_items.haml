@@ -16,7 +16,7 @@
         %td#ralign
           #{item.price}
         %td
-          %a{:href => url("/profile/#{item.owner.name}")} #{item.owner.name}
+          %a{:href => url("/user/#{item.owner.name}")} #{item.owner.name}
         %td
           -if item.active?
             %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}

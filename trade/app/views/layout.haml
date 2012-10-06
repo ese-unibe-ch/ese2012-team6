@@ -19,14 +19,14 @@
                 %li
                   %a{:href => url("/items")} Items
                 %li
-                  %a{:href => url("/profile/#{@user.name}")} My Profile
+                  %a{:href => url("/user/#{@user.name}")} My Profile
             #credit_status
               %span
                 Credits: $#{@user.credits}
             #login_status
               %span
                 Logged in as
-                %a{:href => url("/profile/#{@user.name}")}
+                %a{:href => url("/user/#{@user.name}")}
                   #{@user.name}
                 |
                 %a{:href => url("/logout")} Logout

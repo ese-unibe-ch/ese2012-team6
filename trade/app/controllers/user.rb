@@ -5,7 +5,7 @@ class User < Sinatra::Application
     @user = @database.get_user_by_name(session[:name])
   end
 
-  get "/profile/:user_name" do
+  get "/user/:user_name" do
     redirect '/login' unless session[:name]
 
     viewed_user = @database.get_user_by_name(params[:user_name])
@@ -17,7 +17,7 @@ class User < Sinatra::Application
     }
   end
 
-  post "/buy/:item_id" do
+  post "/user/buy/:item_id" do
     redirect '/login' unless session[:name]
 
     item_id = Integer(params[:item_id])

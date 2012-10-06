@@ -3,7 +3,7 @@
 #picture_container
   %img{:src => "/images/no_image.gif", :width => "200", :height => "200" }
 #details_container
-  %form{:action => "/edit_item/#{item.id}", :method => "POST"}
+  %form{:action => "/item/#{item.id}/edit", :method => "POST"}
     %h3.no_top_margin
       Name
     %p
@@ -19,4 +19,3 @@
     %p
       #button_container
         %input.styled-button-4{:type => "submit", :value => "Save", :text => "createBtn"}
-
