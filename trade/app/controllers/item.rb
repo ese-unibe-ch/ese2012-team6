@@ -22,6 +22,32 @@ class Item < Sinatra::Application
     }
   end
 
+  get "/get_to_edit_item/:item_id" do
+    redirect '/login' unless session[:name]
+
+    item_id = Integer(params[:item_id])
+    item = @database.get_item_by_id(item_id)
+    haml :edit_item, :locals => {
+        :item => item
+    }
+  end
+
+  post "/edit_item/:item_id" do
+    redirect '/login' unless session[:name]
+
+    item_id = Integer(params[:item_id])
+    item_name = params[:item_name]
+    item_price = params[:item_price]
+    item_description = params[:item_description]
+    item = @database.get_item_by_id(item_id)
+
+    item.name = item_name
+    item.price = item_price
+    item.description = item_description
+
+    redirect "/item/#{item_id}"
+  end
+
   post "/act_deact/:item_id/:activate" do
     redirect '/login' unless session[:name]
 

@@ -37,5 +37,6 @@ module Store
     def editable?
       return (not self.active)
     end
+
   end
 end
