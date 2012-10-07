@@ -19,7 +19,10 @@
     -for item in viewed_user.items
       %tr
         %td
-          %a{:href => url("/item/#{item.id}")} #{item.name}
+          %a.tooltip{:href => url("/item/#{item.id}")}
+            =item.name
+            %span.classic
+              =item.description
         %td
           #{item.price}
         %td

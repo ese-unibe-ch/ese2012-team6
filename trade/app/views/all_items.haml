@@ -12,11 +12,15 @@
     -for item in @database.get_items
       %tr
         %td
-          %a{:href => url("/item/#{item.id}")} #{item.name}
+          %a.tooltip{:href => url("/item/#{item.id}")}
+            =item.name
+            %span.classic
+              =item.description
         %td#ralign
           #{item.price}
         %td
-          %a{:href => url("/user/#{item.owner.name}")} #{item.owner.name}
+          %a{:href => url("/user/#{item.owner.name}")}
+            #{item.owner.name}
         %td
           -if item.active?
             %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}

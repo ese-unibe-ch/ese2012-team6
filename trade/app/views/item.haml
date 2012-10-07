@@ -18,6 +18,11 @@
       %form{:action => "/item/#{item.id}", :method => "POST"}
         %input{:name => "_method", :type => "hidden", :value => "delete"}
         %input.styled-button-4.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
+%p
+  -if item.active?
+    This item is currently open for trading
+  -else
+    This item is currently closed for trading
 #item_details
   #picture_container
     %img{:src => "/images/no_image.gif", :width => "200", :height => "200" }
