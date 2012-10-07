@@ -219,6 +219,7 @@ hr.styled-line {
     max-width: 50%;
     padding: 1em;
     float:left;
+    word-wrap: break-word;
 }
 
 #details_container p {
@@ -242,6 +243,10 @@ hr.styled-line {
 
 .bold {
     font-weight: bold;
+}
+
+.without_points {
+    list-style-type: none;
 }
 
 

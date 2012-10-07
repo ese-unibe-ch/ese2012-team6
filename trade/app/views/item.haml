@@ -32,5 +32,9 @@
       #{item.price}
     %h3
       Description
-    %p
-      #{item.description}
+    - lines = ("#{item.description}").split("\n")
+    - unless lines.empty?
+      - lines.each do |line|
+        %li.without_points=line
+
+
