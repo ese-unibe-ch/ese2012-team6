@@ -54,7 +54,10 @@ class Item < Sinatra::Application
 
     item_id = Integer(params[:item_id])
     item_name = params[:item_name]
-    item_price = params[:item_price]
+
+    fail "Not a valid number" unless Store::Item.valid_price?(params[:item_price])
+
+    item_price = Integer(params[:item_price])
     item_description = params[:item_description]
     item = @database.get_item_by_id(item_id)
 
@@ -86,6 +89,9 @@ class Item < Sinatra::Application
     redirect back if params[:item_name] == "" or params[:item_price] == ""
 
     item_name = params[:item_name]
+
+    fail "Not a valid number" unless Store::Item.valid_price?(params[:item_price])
+
     item_price = Integer(params[:item_price])
     item_description = params[:item_description]
 

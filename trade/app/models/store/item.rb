@@ -18,6 +18,10 @@ module Store
       return item
     end
 
+    def self.valid_price?(price)
+      return (!!(price =~ /^[-+]?[1-9]([0-9]*)?$/) && Integer(price) >= 0)
+    end
+
     def to_s
       return "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
     end
