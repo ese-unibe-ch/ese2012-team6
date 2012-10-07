@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 html {
     font-family: verdana,helvetica,arial,sans-serif;;
     height: 100%;
@@ -220,6 +221,7 @@ hr.styled-line {
     max-width: 50%;
     padding: 1em;
     float:left;
+    word-wrap: break-word;
 }
 
 #details_container p {
@@ -275,6 +277,8 @@ hr.styled-line {
 * html a:hover { background: transparent; }
 .classic {background: #FFFFAA; border: 1px solid #FFAD33; }
 
-
+.without_points {
+    list-style-type: none;
+}
 
 
