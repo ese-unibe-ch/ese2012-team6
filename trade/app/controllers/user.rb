@@ -20,6 +20,21 @@ class User < Sinatra::Application
     }
   end
 
+  # Display user profile edit page
+  get "/user/:user_name/edit" do
+    redirect '/login' unless session[:name]
+
+    haml :edit_profile
+  end
+
+  # Handles user profile edit request
+  post "/user/:user_name/edit" do
+
+    # TO DO!!!
+
+    redirect "/user/#{@user.name}"
+  end
+
   # Handles user buy request
   post "/user/buy/:item_id" do
     redirect '/login' unless session[:name]

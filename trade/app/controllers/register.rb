@@ -16,13 +16,14 @@ class Register < Sinatra::Application
 
   # Handles registration inputs and creates new user in database
   post "/register" do
-    user_name = params[:username]
-    user_pwd = params[:password]
-    user_repeated_pwd = params[:rep_password]
-    user_description = params[:description]
+    user_name = params[:username].gsub(/\s+/, "") #remove all whitespaces
+    user_pwd = params[:password].gsub(/\s+/, "")
+    user_repeated_pwd = params[:rep_password].gsub(/\s+/, "")
+    user_description = params[:description].strip #remove leading and trailing whitespaces
 
     redirect 'error/user_already_exists' if @database.user_exists?(user_name)
     redirect 'error/pwd_rep_no_match' if user_pwd != user_repeated_pwd
+    redirect 'error/no_user_name' if user_name == ""
 
     new_user = Store::User.named_pwd_description(user_name, user_pwd, user_description)
     @database.add_user(new_user)

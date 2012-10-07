@@ -3,6 +3,14 @@
     My Profile
   -else
     #{viewed_user.name}'s Profile
+#action_buttons.float_right
+  -if is_my_profile
+    #button_container
+      %form{:action => "/item/new", :method => "GET"}
+        %input.styled-button-4{:type => "submit", :value => "Create new item"}
+    #button_container
+      %form{:action => "/user/#{@user.name}/edit", :method => "GET"}
+        %input.styled-button-4{:type => "submit", :value => "Edit Profile"}
 %p
   #{is_my_profile ? "Your " : viewed_user.name + "'s"} credits: $#{viewed_user.credits}
 %h3
@@ -13,7 +21,6 @@
       %th Name
       %th Price
       %th Active
-      %th
       %th
   %tbody
     -for item in viewed_user.items
@@ -60,4 +67,4 @@
           %td
             #button_container
               %input{:name => "_method", :type => "hidden", :value => "put"}
-              %input.styled-button-4{:type => "submit", :value => "Propose", :text => "createBtn"}
+              %input.styled-button-4{:type => "submit", :value => "Quick Add", :text => "createBtn"}

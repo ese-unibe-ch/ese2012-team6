@@ -197,10 +197,8 @@ hr.styled-line {
    float: right;
 }
 
-
-
 #button_container {
-    margin-right: 1em;
+    margin-right: 8px;
     float:left;
     display:inline;
 }

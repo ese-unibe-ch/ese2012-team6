@@ -14,6 +14,12 @@ class Item < Sinatra::Application
     haml :all_items
   end
 
+  # shows item creation form. This must be placed before /item/:item_id handler because the other would intercept
+  # this one
+  get "/item/new" do
+    haml :new_item
+  end
+
   # shows an item details page
   get "/item/:item_id" do
     redirect '/login' unless session[:name]
@@ -81,11 +87,14 @@ class Item < Sinatra::Application
 
     item_name = params[:item_name]
     item_price = Integer(params[:item_price])
+    item_description = params[:item_description]
 
     item = @user.propose_item(item_name, item_price)
+    item.description = item_description unless item_description.nil? or item_description == ""
+
     @database.add_item(item)
 
-    redirect back
+    redirect "/user/#{@user.name}"
   end
 
   # handles item deletion

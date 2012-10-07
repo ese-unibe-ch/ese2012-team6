@@ -1,5 +1,5 @@
 %h2
-  Item Details
+  Edit Item
 #item_details
   #picture_container
     %img{:src => "/images/no_image.gif", :width => "200", :height => "200" }
@@ -18,6 +18,5 @@
       %p
         %textarea.textbox8.about_yourself{:name => "item_description"}
           #{item.description}
-      %p
-        #button_container
-          %input.styled-button-4{:type => "submit", :value => "Save", :text => "createBtn"}
+      #button_container
+        %input.styled-button-4{:type => "submit", :value => "Save", :text => "createBtn"}

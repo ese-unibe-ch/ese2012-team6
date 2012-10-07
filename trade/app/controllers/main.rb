@@ -38,6 +38,8 @@ class Main < Sinatra::Application
         error_message = "Username already exists! Please choose another one"
       when "pwd_rep_no_match"
         error_message = "Passwords do not match. Please try again"
+      when "no_user_name"
+        error_message = "You must choose a user name"
     end
 
     last_page = back
