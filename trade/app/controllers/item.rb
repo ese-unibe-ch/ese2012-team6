@@ -1,3 +1,5 @@
+
+# Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
 
   before do
@@ -5,12 +7,14 @@ class Item < Sinatra::Application
     @user = @database.get_user_by_name(session[:name])
   end
 
+  # shows all items in the system
   get "/items" do
     redirect '/login' unless session[:name]
 
     haml :all_items
   end
 
+  # shows an item details page
   get "/item/:item_id" do
     redirect '/login' unless session[:name]
 
@@ -24,6 +28,7 @@ class Item < Sinatra::Application
     }
   end
 
+  # shows a page for easy item editing
   get "/item/:item_id/edit" do
     redirect '/login' unless session[:name]
 
@@ -37,6 +42,7 @@ class Item < Sinatra::Application
     }
   end
 
+  # handles item editing, updates model in database
   post "/item/:item_id/edit" do
     redirect '/login' unless session[:name]
 
@@ -53,6 +59,7 @@ class Item < Sinatra::Application
     redirect "/item/#{item_id}"
   end
 
+  # handles item activation/deactivation request
   post "/item/:item_id/act_deact/:activate" do
     redirect '/login' unless session[:name]
 
@@ -68,6 +75,7 @@ class Item < Sinatra::Application
     redirect back
   end
 
+  # handles new item creation, must be PUT request
   put "/item" do
     redirect back if params[:item_name] == "" or params[:item_price] == ""
 
@@ -80,6 +88,7 @@ class Item < Sinatra::Application
     redirect back
   end
 
+  # handles item deletion
   delete "/item/:item_id" do
 
     item_id = Integer(params[:item_id])

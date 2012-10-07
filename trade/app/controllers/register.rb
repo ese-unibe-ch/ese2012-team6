@@ -2,16 +2,19 @@ require 'haml'
 require_relative('../models/store/item')
 require_relative('../models/store/user')
 
+# Handles all requests concerning user registration
 class Register < Sinatra::Application
 
   before do
     @database = Storage::Database.instance
   end
 
+  # Shows registration form
   get "/register" do
     haml :register
   end
 
+  # Handles registration inputs and creates new user in database
   post "/register" do
     user_name = params[:username]
     user_pwd = params[:password]

@@ -9,6 +9,7 @@ class Main < Sinatra::Application
     @user = @database.get_user_by_name(session[:name])
   end
 
+  # Default page handler, shows store page
   get "/" do
     redirect '/login' unless session[:name]
 
@@ -17,6 +18,7 @@ class Main < Sinatra::Application
     }
   end
 
+  # Error handler, shows error message
   get "/error/:error_msg" do
 
     case params[:error_msg]

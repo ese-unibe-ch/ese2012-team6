@@ -2,6 +2,7 @@ require 'haml'
 require_relative('../models/store/item')
 require_relative('../models/store/user')
 
+# Handles all requests concerning User Authentication, namely Login and Logout
 class Authentication < Sinatra::Application
 
   before do
@@ -9,12 +10,14 @@ class Authentication < Sinatra::Application
     @user = @database.get_user_by_name(session[:name])
   end
 
+  # GET handler for login request, shows login form
   get "/login" do
     redirect '/' if session[:name]
 
     haml :login
   end
 
+  # POST handler for login request, processes input and logs user in if possible
   post "/login" do
     name = params[:username]
     password = params[:password]
@@ -28,6 +31,7 @@ class Authentication < Sinatra::Application
     redirect '/'
   end
 
+  # GET handler for logout request, logs out the user
   get "/logout" do
     session[:name] = nil
     redirect '/login'

@@ -1,3 +1,5 @@
+
+# Handles all requests concerning user display and actions
 class User < Sinatra::Application
 
   before do
@@ -5,6 +7,7 @@ class User < Sinatra::Application
     @user = @database.get_user_by_name(session[:name])
   end
 
+  # Handles user display page, shows profile of user
   get "/user/:user_name" do
     redirect '/login' unless session[:name]
 
@@ -17,6 +20,7 @@ class User < Sinatra::Application
     }
   end
 
+  # Handles user buy request
   post "/user/buy/:item_id" do
     redirect '/login' unless session[:name]
 
@@ -32,6 +36,7 @@ class User < Sinatra::Application
     end
   end
 
+  # Shows a list of all users
   get "/users" do
     redirect '/login' unless session[:name]
 
