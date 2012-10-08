@@ -1,5 +1,5 @@
 %h2
   Edit Profile
 %form{:action => "/user/#{@user.name}/edit", :method => "POST"}
-  #button_container
-    %input.styled-button-4{:type => "submit", :value => "Save Changes"}
+  %div.button_container
+    %input.styled-button{:type => "submit", :value => "Save Changes"}

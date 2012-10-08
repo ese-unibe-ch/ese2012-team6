@@ -1,6 +1,6 @@
 %h3
   The following items are registered by the system
-%table#hor-minimalist-b
+%table.table-minimalistic
   %thead
     %tr
       %th Name
@@ -16,7 +16,7 @@
             =item.name
             %span.classic
               =item.description
-        %td#ralign
+        %td.ralign
           #{item.price}
         %td
           %a{:href => url("/user/#{item.owner.name}")}

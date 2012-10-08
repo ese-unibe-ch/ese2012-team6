@@ -12,9 +12,9 @@
   %p
     %textarea.textbox8.about_yourself{:name => "item_description"}
       =item_desc
-  #button_container
+  %div#button_container
     -if edit
-      %input.styled-button-4{:type => "submit", :value => "Save Changes"}
+      %input.styled-button{:type => "submit", :value => "Save Changes"}
     -else
       %input{:name => "_method", :type => "hidden", :value => "PUT"}
-      %input.styled-button-4{:type => "submit", :value => "Create Item"}
+      %input.styled-button{:type => "submit", :value => "Create Item"}

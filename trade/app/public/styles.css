@@ -122,7 +122,7 @@ hr.styled-line {
     display: table;
 }
 
-#hor-minimalist-b
+.table-minimalistic
 {
 	font-size: 12px;
 	background: #fff;
@@ -131,7 +131,7 @@ hr.styled-line {
 	border-collapse: collapse;
 	text-align: left;
 }
-#hor-minimalist-b th
+.table-minimalistic th
 {
 	font-size: 14px;
 	font-weight: normal;
@@ -139,23 +139,23 @@ hr.styled-line {
 	padding: 10px 8px;
 	border-bottom: 2px solid #6678b1;
 }
-#hor-minimalist-b td
+.table-minimalistic td
 {
 	border-bottom: 1px solid #ccc;
 	color: #669;
 	padding: 6px 8px;
 }
-#hor-minimalist-b tbody tr:hover td
+.table-minimalistic tbody tr:hover td
 {
     background: #eff2ff;
 	color: #009;
 }
 
-#hor-minimalist-b a:hover {
+.table-minimalistic a:hover {
     text-decoration: underline;
 }
 
-.styled-button-4 {
+.styled-button {
     background-color:#EEE;
     border-radius:0;
     -webkit-border-radius:0;
@@ -170,7 +170,7 @@ hr.styled-line {
     margin:0px;
 }
 
-.styled-button-4:hover{
+.styled-button:hover{
     border:1px solid black;
 }
 
@@ -188,40 +188,39 @@ hr.styled-line {
     border-left: 4px solid #BCD;
 }
 
-#action_buttons {
+.action_buttons {
     min-width: 80px;
     display: inline-block;
 }
 
-#action_buttons.float_right {
+.action_buttons.float_right {
    float: right;
 }
-
-#button_container {
+.button_container {
     margin-right: 8px;
     float:left;
     display:inline;
 }
 
-#ralign {
+.ralign {
     text-align: right;
 }
 
-#picture_container {
+.picture_container {
     padding: 1em 2em 1em 1em;
     border-right: 1px solid;
     border-color: #23496B;
     float: left;
 }
 
-#details_container {
+.details_container {
     max-width: 50%;
     padding: 1em;
     float:left;
     word-wrap: break-word;
 }
 
-#details_container p {
+.details_container p {
     margin-left: 1em;
     display: table;
 }
@@ -274,8 +273,12 @@ hr.styled-line {
 * html a:hover { background: transparent; }
 .classic {background: #FFFFAA; border: 1px solid #FFAD33; }
 
-.without_points {
+ul.description {
+    padding: 0;
+}
+li.without_points {
     list-style-type: none;
+    margin-left: 1em;
 }
 
 

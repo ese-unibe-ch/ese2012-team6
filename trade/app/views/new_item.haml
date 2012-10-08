@@ -1,7 +1,7 @@
 %h2
   Propose new item
-#item_details
-  #picture_container
+%div#item_details
+  %div.picture_container
     %img{:src => "/images/no_image.gif", :width => "200", :height => "200" }
-  #details_container
+  %div.details_container
     =haml :"/partials/item_edit_form", :locals => {:action_url => "/item", :item_name => "", :item_price => "", :item_desc => "", :edit => false}
