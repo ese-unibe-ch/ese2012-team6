@@ -164,7 +164,7 @@ hr.styled-line {
     color:#666;
     font-family:verdana,helvetica,arial,sans-serif;;
     font-size:13px;
-    font-weight:700;
+    font-weight: normal;
     padding:2px 6px;
     /*height:22px;*/
     margin:0px;
@@ -174,15 +174,16 @@ hr.styled-line {
 }
 
 .styled-button:hover{
-    border:1px solid black;
+    /*border:1px solid black; */
+    box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.35);
 }
 
 .delete-color {
-    background-color: rgba(255, 50, 15, 0.41);
+    background-color: rgba(255, 50, 15, 0.35);
 }
 
 .buy-color {
-    background-color: rgba(118, 212, 0, 0.61)
+    background-color: rgba(118, 212, 0, 0.44)
 }
 
 .textbox8 {
@@ -274,7 +275,7 @@ hr.styled-line {
 .classic { padding: 0.8em 1em; }
 
 * html a:hover { background: transparent; }
-.classic {background: #FFFFAA; border: 1px solid #FFAD33; }
+.classic {background: #c2dbff; border: 1px solid #6677ff; }
 
 ul.description {
     padding: 0;

@@ -49,7 +49,8 @@
                     %input.styled-button.small{:type => "submit", :value => "Activate"}
             -if @user.can_edit?(item) or @user.name == "admin"
               %div.button_container
-                %form{:action => "/item/#{item.id}/edit", :method => "GET"}
+                %a.styled-button.small{:href => "/item/#{item.id}/edit"} Edit
+                -#%form{:action => "/item/#{item.id}/edit", :method => "GET"}
                   %input.styled-button.small{:type => "submit", :value => "Edit"}
             -if @user.can_delete?(item)
               %div.button_container
