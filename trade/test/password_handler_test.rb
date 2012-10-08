@@ -1,7 +1,8 @@
 require 'test/unit'
-require '../app/models/store/password_handler'
-require '../../trade/app/models/store/user'
-require '../../trade/app/models/store/item'
+require 'require_relative'
+require_relative('../app/models/security/password_handler')
+require_relative('../app/models/store/user')
+require_relative('../app/models/store/item')
 
 
 class Password_Handler_Test < Test::Unit::TestCase
@@ -9,7 +10,7 @@ class Password_Handler_Test < Test::Unit::TestCase
     puts "hello"
     pw1 = "Test1"
     pw2 = "Test2test"
-    pw_handler = Store::Password_Handler.new
+    pw_handler = Security::PasswordHandler.new
     assert_equal(false, pw_handler.is_safe_pw?(pw1))
     assert_equal(true, pw_handler.is_safe_pw?(pw2))
   end
@@ -18,7 +19,7 @@ class Password_Handler_Test < Test::Unit::TestCase
     puts "hello"
     pw1 = "Testtest"
     pw2 = "Test2test"
-    pw_handler = Store::Password_Handler.new
+    pw_handler = Security::PasswordHandler.new
     assert_equal(false, pw_handler.is_safe_pw?(pw1))
     assert_equal(true, pw_handler.is_safe_pw?(pw2))
   end
@@ -27,7 +28,7 @@ class Password_Handler_Test < Test::Unit::TestCase
     puts "hello"
     pw1 = "test1test"
     pw2 = "Test2test"
-    pw_handler = Store::Password_Handler.new
+    pw_handler = Security::PasswordHandler.new
     assert_equal(false, pw_handler.is_safe_pw?(pw1))
     assert_equal(true, pw_handler.is_safe_pw?(pw2))
   end
