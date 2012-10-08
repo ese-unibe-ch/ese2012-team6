@@ -1,6 +1,7 @@
 require 'haml'
 require_relative('../models/store/item')
 require_relative('../models/store/user')
+require_relative('../models/security/password_handler')
 
 # Handles all requests concerning user registration
 class Register < Sinatra::Application
@@ -21,7 +22,10 @@ class Register < Sinatra::Application
     user_repeated_pwd = params[:rep_password].gsub(/\s+/, "")
     user_description = params[:description].strip #remove leading and trailing whitespaces
 
+    password_checker = Security::PasswordHandler.new
+
     redirect 'error/user_already_exists' if @database.user_exists?(user_name)
+    redirect 'error/pwd_unsafe' unless password_checker.is_safe_pw?(user_pwd)
     redirect 'error/pwd_rep_no_match' if user_pwd != user_repeated_pwd
     redirect 'error/no_user_name' if user_name == ""
 

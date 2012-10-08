@@ -1,5 +1,5 @@
-module Store
-  class Password_Handler
+module Security
+  class PasswordHandler
 
 
     #safe Password if 8 digits and at least one Number, one Capital letter
