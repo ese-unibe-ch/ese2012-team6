@@ -169,7 +169,8 @@ hr.styled-line {
     /*height:22px;*/
     margin:0px;
 }
-.styled-button.small {
+
+.small {
    font-size: 11px;
 }
 
@@ -283,6 +284,10 @@ ul.description {
 li.without_points {
     list-style-type: none;
     margin-left: 1em;
+}
+
+a.back:hover {
+    text-decoration: underline;
 }
 
 

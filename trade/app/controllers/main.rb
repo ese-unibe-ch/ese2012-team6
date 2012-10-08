@@ -43,6 +43,8 @@ class Main < Sinatra::Application
       when "pwd_unsafe"
         error_message = "Your password is unsafe. It must be at least 8 characters long and contain
                         at least one upper case letter and at least one number"
+      when "invalid_price"
+        error_message = "You entered an invalid price. Please enter a positive numeric value"
     end
 
     last_page = back

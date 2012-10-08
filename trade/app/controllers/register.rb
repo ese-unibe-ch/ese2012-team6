@@ -24,10 +24,10 @@ class Register < Sinatra::Application
 
     password_checker = Security::PasswordHandler.new
 
+    redirect 'error/no_user_name' if user_name == ""
     redirect 'error/user_already_exists' if @database.user_exists?(user_name)
     redirect 'error/pwd_unsafe' unless password_checker.is_safe_pw?(user_pwd)
     redirect 'error/pwd_rep_no_match' if user_pwd != user_repeated_pwd
-    redirect 'error/no_user_name' if user_name == ""
 
     new_user = Store::User.named_pwd_description(user_name, user_pwd, user_description)
     @database.add_user(new_user)

@@ -18,11 +18,16 @@
       %form{:action => "/item/#{item.id}", :method => "POST"}
         %input{:name => "_method", :type => "hidden", :value => "delete"}
         %input.styled-button.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
+  -if @user.can_buy?(item)
+    %div.button_container
+      #button_container
+        %form{:action => "/user/buy/#{item.id}", :method => "POST"}
+          %input.styled-button.buy-color{:type => "submit", :value => "Buy"}
 %p
   -if item.active?
-    This item is currently open for trading
+    This item is currently being traded
   -else
-    This item is currently closed for trading
+    This item is currently not being traded
 %div#item_details
   %div.picture_container
     %img{:src => "/images/no_image.gif", :width => "200", :height => "200" }
