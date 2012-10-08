@@ -100,8 +100,12 @@ class Item < Sinatra::Application
 
     @database.add_item(item)
 
-    redirect "/user/#{@user.name}"
-  end
+    if back == url("/item/new?")
+      redirect "/item/#{item.id}"
+    else
+      redirect back
+    end
+end
 
   # handles item deletion
   delete "/item/:item_id" do

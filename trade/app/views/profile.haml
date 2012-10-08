@@ -43,19 +43,19 @@
               %div.button_container
                 -if item.active?
                   %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
-                    %input.styled-button{:type => "submit", :value => "Deactivate"}
+                    %input.styled-button.small{:type => "submit", :value => "Deactivate"}
                 -else
                   %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
-                    %input.styled-button{:type => "submit", :value => "Activate"}
+                    %input.styled-button.small{:type => "submit", :value => "Activate"}
             -if @user.can_edit?(item) or @user.name == "admin"
               %div.button_container
                 %form{:action => "/item/#{item.id}/edit", :method => "GET"}
-                  %input.styled-button{:type => "submit", :value => "Edit"}
+                  %input.styled-button.small{:type => "submit", :value => "Edit"}
             -if @user.can_delete?(item)
               %div.button_container
                 %form{:action => "/item/#{item.id}", :method => "POST"}
                   %input{:name => "_method", :type => "hidden", :value => "delete"}
-                  %input.styled-button.delete-color{:type => "submit", :value => "Delete"}
+                  %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
     -if is_my_profile
       %tr
         %form{:action => "/item", :method => "POST"}
@@ -67,4 +67,4 @@
           %td
             %div.button_container
               %input{:name => "_method", :type => "hidden", :value => "put"}
-              %input.styled-button{:type => "submit", :value => "Quick Add"}
+              %input.styled-button.small{:type => "submit", :value => "Quick Add"}
