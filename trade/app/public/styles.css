@@ -290,4 +290,8 @@ a.back:hover {
     text-decoration: underline;
 }
 
+p#error_message {
+    color: red;
+}
+
 
