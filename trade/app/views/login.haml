@@ -1,5 +1,5 @@
 %h2 Login
-%form{:action => "/login", :method => "POST"}
+%form{:action => "/login", :method => "POST", :onsubmit => "return validate_login(this);"}
   %table
     %tr
       %td
@@ -15,3 +15,18 @@
       %td
       %td{:align => "right"}
         %input.styled-button{:type => "submit", :text => "submit", :value => "Login"}
+:javascript
+  function validate_login(form) {
+    if (form.username.value == "") {
+      form.username.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
+      document.getElementById('error_message').innerHTML = "Please enter a username"
+      return false
+    }
+    else if (form.password.value == "") {
+      form.password.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
+      document.getElementById('error_message').innerHTML = "Please enter a password"
+      return false
+    }
+
+    return true;
+  }
