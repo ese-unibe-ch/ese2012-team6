@@ -122,6 +122,9 @@ hr.styled-line {
     display: table;
     word-break: break-all;
 }
+#content p{
+    padding-left: 1em;
+}
 
 .table-minimalistic
 {

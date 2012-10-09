@@ -7,7 +7,7 @@ module Store
       @@last_id += 1
       self.id = @@last_id
       self.active = false
-      self.description = "Template Description"
+      self.description = ""
     end
 
     def self.named_priced_with_owner(name, price, owner)

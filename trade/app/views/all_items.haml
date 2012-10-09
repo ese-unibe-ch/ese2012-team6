@@ -15,6 +15,8 @@
           %a.tooltip{:href => url("/item/#{item.id}")}
             =item.name
             %span.classic
+              -if item.description == ""
+                No description available
               - lines = ("#{item.description}").split("\n")
                 - unless lines.empty?
                 - lines.each do |line|

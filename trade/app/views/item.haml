@@ -23,7 +23,7 @@
       #button_container
         %form{:action => "/user/buy/#{item.id}", :method => "POST"}
           %input.styled-button.buy-color{:type => "submit", :value => "Buy"}
-%p
+%h4
   -if item.active?
     This item is currently being traded
   -else
@@ -42,9 +42,13 @@
       #{item.price}
     %h3
       Description
-    %ul.description
-      - lines = ("#{item.description}").split("\n")
-      - unless lines.empty?
-        - lines.each do |line|
-          %li.without_points
-            = line
+    -if item.description == ""
+      %p
+        No description available
+    -else
+      %ul.description
+        - lines = ("#{item.description}").split("\n")
+        - unless lines.empty?
+          - lines.each do |line|
+            %li.without_points
+              = line
