@@ -1,7 +1,6 @@
 require 'test/unit'
-require '../app/models/security/password_handler'
-
-
+require 'require_relative'
+require_relative '../app/models/security/password_handler'
 
 class Password_Handler_Test < Test::Unit::TestCase
   def test_length

@@ -1,6 +1,7 @@
 require 'test/unit'
-require '../app/models/store/item'
-require '../app/models/store/user'
+require 'require_relative'
+require_relative '../app/models/store/item'
+require_relative '../app/models/store/user'
 
 class ItemTest < Test::Unit::TestCase
   def test_item_name

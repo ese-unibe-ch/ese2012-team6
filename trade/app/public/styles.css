@@ -1,11 +1,9 @@
 html {
     font-family: verdana,helvetica,arial,sans-serif;;
-    height: 100%;
 }
 
 body {
     margin: 0px;
-    height: 100%;
 }
 
 h1, h2, h3 {
@@ -20,7 +18,7 @@ a, a.visited {
 #outer {
     background-color: #BCD;
     padding: 1em 0;
-    height: 100%;
+    min-height: 1000px;
     position: relative;
 }
 
