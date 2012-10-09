@@ -15,7 +15,11 @@
           %a.tooltip{:href => url("/item/#{item.id}")}
             =item.name
             %span.classic
-              =item.description
+              - lines = ("#{item.description}").split("\n")
+                - unless lines.empty?
+                - lines.each do |line|
+                  %li.without_points
+                    = line
         %td.ralign
           #{item.price}
         %td
