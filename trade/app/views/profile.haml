@@ -17,15 +17,15 @@
   $#{viewed_user.credits}
 %h3
   #{is_my_profile ? "Your " : viewed_user.name + "'s"} description:
--if viewed_user.description == ""
-  %p
+%p
+  -if viewed_user.description == ""
     No description available
--else
-  -lines = ("#{viewed_user.description}").split("\n")
-  -unless lines.empty?
-    -lines.each do |line|
-      =line
-      %br
+  -else
+    -lines = ("#{viewed_user.description}").split("\n")
+    -unless lines.empty?
+      -lines.each do |line|
+        =line
+        %br
 %h3
   #{is_my_profile ? "You own" : viewed_user.name + " owns"} the following items:
 -if viewed_user.items.empty? and not is_my_profile
