@@ -1,4 +1,4 @@
-%form{:action => action_url, :method => "POST"}
+%form{:action => action_url, :method => "POST", :onsubmit => "return validate_login(this);"}
   %h3.no_top_margin
     Name
   %p
@@ -18,3 +18,18 @@
     -else
       %input{:name => "_method", :type => "hidden", :value => "PUT"}
       %input.styled-button{:type => "submit", :value => "Create Item"}
+:javascript
+  function validate_login(form) {
+    if (form.item_name.value == "") {
+      form.item_name.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
+      document.getElementById('error_message').innerHTML = "Please enter an item name"
+      return false
+    }
+    else if (form.item_price.value == "") {
+      form.item_price.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
+      document.getElementById('error_message').innerHTML = "Please enter a price for the item"
+      return false
+    }
+
+    return true;
+  }
