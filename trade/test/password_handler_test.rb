@@ -1,8 +1,6 @@
 require 'test/unit'
-require 'require_relative'
-require_relative('../app/models/security/password_handler')
-require_relative('../app/models/store/user')
-require_relative('../app/models/store/item')
+require '../app/models/security/password_handler'
+
 
 
 class Password_Handler_Test < Test::Unit::TestCase
