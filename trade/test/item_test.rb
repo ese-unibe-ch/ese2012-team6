@@ -41,4 +41,12 @@ class ItemTest < Test::Unit::TestCase
     assert(!Store::Item.valid_price?(p5), "empty is an invalid price")
   end
 
+  def test_is_editable?
+    item = Store::Item.named_priced_with_owner("test",20,nil)
+    item.set_active
+    assert_equal(false,item.editable?)
+    item.set_inactive
+    assert_equal(true,item.editable?)
+  end
+
 end
