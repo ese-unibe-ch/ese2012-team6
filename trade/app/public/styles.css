@@ -120,6 +120,7 @@ hr.styled-line {
     padding: 1em;
     width: 100%;
     display: table;
+    word-break: break-all;
 }
 
 .table-minimalistic

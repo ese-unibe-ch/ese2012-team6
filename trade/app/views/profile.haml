@@ -15,9 +15,8 @@
   #{is_my_profile ? "Your " : viewed_user.name + "'s"} credits: $#{viewed_user.credits}
 %h3
   #{is_my_profile ? "Your " : viewed_user.name + "'s"} description
-%u3
-  #{viewed_user.description}
-
+%p
+  #{viewed_user.description == "" ? "No description available" : viewed_user.description}
 %h3
   #{is_my_profile ? "You own" : viewed_user.name + " owns"} the following items:
 %table.table-minimalistic
