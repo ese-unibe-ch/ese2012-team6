@@ -62,11 +62,23 @@ class Item < Sinatra::Application
     item_description = params[:item_description]
     item = @database.get_item_by_id(item_id)
 
+    file = params[:file_upload]
+    filename = item.id_image_to_filename(item_id, file[:filename])
+    FileUtils::cp(file[:tempfile].path, File.join("public", "images", filename))
+
     item.name = item_name
     item.price = item_price
     item.description = item_description
+    item.image_path = filename
 
     redirect "/item/#{item_id}"
+  end
+
+  #returns the selected image. (Only usable with URL request)
+  get "/item/:item_id/images/:image_path" do
+    item_id = Integer(params[:item_id])
+    item = @database.get_item_by_id(item_id)
+    send_file(File.join("public","images", params[:image_path]))
   end
 
   # handles item activation/deactivation request

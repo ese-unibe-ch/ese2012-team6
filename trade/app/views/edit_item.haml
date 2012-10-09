@@ -2,6 +2,6 @@
   Edit Item
 %div#item_details
   %div.picture_container
-    %img{:src => "/images/no_image.gif", :width => "200", :height => "200" }
+    %img{:src => "/images/#{item.image_path}", :width => "200", :height => "200" }
   %div.details_container
     =haml :"/partials/item_edit_form", :locals => {:action_url => "/item/#{item.id}/edit",:item_name => item.name,:item_price => item.price,:item_desc => item.description, :edit => true}

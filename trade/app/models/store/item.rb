@@ -1,6 +1,6 @@
 module Store
   class Item
-    attr_accessor :name, :id, :price, :owner, :active, :description
+    attr_accessor :name, :id, :price, :owner, :active, :description, :image_path
     @@last_id = 0
 
     def initialize
@@ -8,6 +8,7 @@ module Store
       self.id = @@last_id
       self.active = false
       self.description = ""
+      self.image_path = "no_image.gif"
     end
 
     def self.named_priced_with_owner(name, price, owner)
@@ -20,6 +21,10 @@ module Store
 
     def self.valid_price?(price)
       return (!!(price =~ /^[-+]?[1-9]([0-9]*)?$/) && Integer(price) >= 0)
+    end
+
+    def id_image_to_filename(id, path)
+      "#{id}_#{path}"
     end
 
     def to_s
