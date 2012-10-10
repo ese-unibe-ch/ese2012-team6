@@ -19,7 +19,7 @@
   %h3
     Change image
   %div#button_container
-    %input.styled-button(type='file' name="file_upload" accept="image/*")
+    %input.styled-button{:type => 'file', :name => "file_upload", :accept => "image/*"}
   %p
   %div#button_container
     -if edit

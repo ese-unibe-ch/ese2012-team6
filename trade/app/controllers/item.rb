@@ -112,6 +112,11 @@ class Item < Sinatra::Application
     item = @user.propose_item(item_name, item_price)
     item.description = item_description unless item_description.nil? or item_description == ""
 
+    file = params[:file_upload]
+    filename = item.id_image_to_filename(item.id, file[:filename])
+    FileUtils::cp(file[:tempfile].path, File.join("public", "images", filename))
+    item.image_path = filename
+
     @database.add_item(item)
 
     if back == url("/item/new?")
