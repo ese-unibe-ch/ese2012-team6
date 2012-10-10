@@ -12,14 +12,11 @@
       %form{:action => "/user/#{@user.name}/edit", :method => "GET"}
         %input.styled-button{:type => "submit", :value => "Edit Profile"}
 %h3
-  -if is_my_profile
-    "Your credits:"
-    -else viewed_user.name.
-      else viewed_user.name + "'s"
+  #{is_my_profile ? "Your Account" : "Account of " + viewed_user.name}:
 %p
   $#{viewed_user.credits}
 %h3
-  #{is_my_profile ? "Your " : viewed_user.name + "'s"} description:
+  #{is_my_profile ? "Your Description" : "Description of " + viewed_user.name}:
 %p
   -if viewed_user.description == ""
     No description available
