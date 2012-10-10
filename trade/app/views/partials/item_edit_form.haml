@@ -24,6 +24,7 @@
       %input.styled-button{:type => "submit", :value => "Create Item"}
 :javascript
   function validate_login(form) {
+    form.item_name.value = form.item_name.value.trim()
     if (form.item_name.value == "") {
       form.item_name.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
       document.getElementById('error_message').innerHTML = "Please enter an item name"

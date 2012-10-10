@@ -78,7 +78,7 @@
                     %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
       -if is_my_profile
         %tr
-          %form{:action => "/item", :method => "POST"}
+          %form{:action => "/item", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
             %td
               %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
             %td
@@ -88,3 +88,19 @@
               %div.button_container
                 %input{:name => "_method", :type => "hidden", :value => "put"}
                 %input.styled-button.small{:type => "submit", :value => "Quick Add"}
+          :javascript
+            function validate_quick_add(form) {
+                form.item_name.value = form.item_name.value.trim()
+                if (form.item_name.value == "") {
+                  form.item_name.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
+                  document.getElementById('error_message').innerHTML = "Please enter an item name"
+                  return false
+                }
+                else if (form.item_price.value == "") {
+                  form.item_price.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
+                  document.getElementById('error_message').innerHTML = "Please enter a price for the item"
+                  return false
+                }
+
+                return true;
+              }
