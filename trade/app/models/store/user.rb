@@ -49,6 +49,11 @@ module Store
       return self.pwd_hash == BCrypt::Engine.hash_secret(password, self.pwd_salt)
     end
 
+    def change_password(password)
+      self.pwd_salt = BCrypt::Engine.generate_salt
+      self.pwd_hash = BCrypt::Engine.hash_secret(password, self.pwd_salt)
+    end
+
     def propose_item(name, price)
       item = Item.named_priced_with_owner(name, price, self)
       self.items << item

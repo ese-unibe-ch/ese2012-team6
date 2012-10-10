@@ -45,6 +45,8 @@ class Main < Sinatra::Application
                         at least one upper case letter and at least one number"
       when "invalid_price"
         error_message = "You entered an invalid price. Please enter a positive numeric value"
+      when "wrong_password"
+        error_message = "You entered a wrong password"
     end
 
     last_page = back

@@ -1,5 +1,60 @@
 %h2
   Edit Profile
-%form{:action => "/user/#{@user.name}/edit", :method => "POST"}
+%h3
+  Change your properties
+%h5
+  You must enter your old password to save changes
+%form{:action => "/user/#{@user.name}/edit", :method => "POST", :onsubmit => "return validate_edit(this);"}
+  %table
+    %tr
+      %td
+        %label.bold Old Password:
+      %td
+        %input.textbox8{:type => "password", :name => "password_old"}
+    %tr
+      %td
+        %label New Password*:
+      %td
+        %input.textbox8{:type => "password", :name => "password_new"}
+    %tr
+      %td
+        %label Repeat Password:
+      %td
+        %input.textbox8{:type => "password", :name => "rep_password"}
+    %tr{:style=> "height: 16px"}
+    %tr
+      %td
+        %label About Yourself:
+      %td
+        %textarea.textbox8.about_yourself{:name => "description"}
+          - lines = ("#{@user.description}").split("\n")
+          - unless lines.empty?
+            - lines.each do |line|
+              =line
   %div.button_container
     %input.styled-button{:type => "submit", :value => "Save Changes"}
+%br
+%p.small
+  *) Password must be at least 8 characters long and consist of lowercase letters, uppercase letters and
+  numbers
+:javascript
+  function validate_edit(form) {
+    if (form.password_old.value == "") {
+      form.password_old.style.backgroundColor = "rgba(245, 106, 82, 0.41)";
+      document.getElementById('error_message').innerHTML = "You must enter your old password";
+      return false;
+    }
+
+    if (form.password_new.value != "") {
+      if (form.rep_password.value == "") {
+         form.rep_password.style.backgroundColor = "rgba(245, 106, 82, 0.41)";
+         document.getElementById('error_message').innerHTML = "You must repeat your new password";
+         return false;
+      }
+      if (form.rep_password.value != form.password_new.value) {
+         document.getElementById('error_message').innerHTML = "Your passwords do not match";
+         return false;
+      }
+    }
+    return true;
+  }
