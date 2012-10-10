@@ -1,6 +1,6 @@
 module Store
   class Item
-    attr_accessor :name, :id, :price, :owner, :active, :description, :image_path
+    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path
     @@last_id = 0
 
     def initialize
@@ -9,6 +9,7 @@ module Store
       self.active = false
       self.description = ""
       self.image_path = "no_image.gif"
+      self.edit_time = Time.now
     end
 
     def self.named_priced_with_owner(name, price, owner)

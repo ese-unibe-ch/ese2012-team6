@@ -24,6 +24,8 @@ class Item < Sinatra::Application
   get "/item/:item_id" do
     redirect '/login' unless session[:name]
 
+    user = @database.get_user_by_name(session[:name])
+    user.open_item_page_time = Time.now
     item_id = Integer(params[:item_id])
     item = @database.get_item_by_id(item_id)
 
@@ -89,9 +91,20 @@ class Item < Sinatra::Application
     activate = (activate_str == "true")
 
     item = @database.get_item_by_id(Integer(params[:item_id]))
+    user = @database.get_user_by_name(session[:name])
+
+    changed_owner = false
+    if user.open_item_page_time < item.edit_time
+      changed_owner = true
+    end
 
     redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
 
+    if changed_owner
+      redirect url("/error/not_owner_of_item")
+    end
+
+    item.edit_time = Time.now
     item.active = activate
 
     redirect back
