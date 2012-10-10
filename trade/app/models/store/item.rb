@@ -25,6 +25,9 @@ module Store
     end
 
     def id_image_to_filename(id, path)
+      if path == nil
+        return "no_image.gif"
+      end
       "#{id}_#{path}"
     end
 

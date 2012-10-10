@@ -65,8 +65,13 @@ class Item < Sinatra::Application
     item = @database.get_item_by_id(item_id)
 
     file = params[:file_upload]
-    filename = item.id_image_to_filename(item_id, file[:filename])
-    FileUtils::cp(file[:tempfile].path, File.join("public", "images", filename))
+
+    if file != nil
+      filename = item.id_image_to_filename(item_id, file[:filename])
+      FileUtils::cp(file[:tempfile].path, File.join("public", "images", filename))
+    else
+      filename = "no_image.gif"
+    end
 
     item.name = item_name
     item.price = item_price
@@ -123,11 +128,17 @@ class Item < Sinatra::Application
     item_description = params[:item_description]
 
     item = @user.propose_item(item_name, item_price)
-    item.description = item_description unless item_description.nil? or item_description == ""
+    item.description = item_description
 
     file = params[:file_upload]
-    filename = item.id_image_to_filename(item.id, file[:filename])
-    FileUtils::cp(file[:tempfile].path, File.join("public", "images", filename))
+
+    if file != nil
+      filename = item.id_image_to_filename(item_id, file[:filename])
+      FileUtils::cp(file[:tempfile].path, File.join("public", "images", filename))
+    else
+      filename = "no_image.gif"
+    end
+
     item.image_path = filename
 
     @database.add_item(item)
