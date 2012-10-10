@@ -2,7 +2,7 @@ require 'bcrypt'
 
 module Store
   class User
-    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description
+    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description, :image_path
 
     def initialize
       self.name = ""
@@ -11,6 +11,7 @@ module Store
       self.pwd_hash = ""
       self.pwd_salt = ""
       self.description = ""
+      self.image_path = 'no_image.gif'
     end
 
     def self.named(name)
@@ -119,6 +120,10 @@ module Store
 
     def to_s
       return "#{self.name}, #{self.credits}"
+    end
+
+    def self.id_image_to_filename(id, path)
+      "#{id}_#{path}"
     end
   end
 end

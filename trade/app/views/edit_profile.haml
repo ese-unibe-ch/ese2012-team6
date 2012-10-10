@@ -58,3 +58,8 @@
     }
     return true;
   }
+
+%h2 Upload User Picture
+%form(action = "/user/#{@user.name}/images" method = "POST" enctype="multipart/form-data")
+  %input(type='file' name="file_upload" accept="image/*")
+  %input(type='submit' value='Upload File')

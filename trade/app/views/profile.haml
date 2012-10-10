@@ -12,7 +12,10 @@
       %form{:action => "/user/#{@user.name}/edit", :method => "GET"}
         %input.styled-button{:type => "submit", :value => "Edit Profile"}
 %h3
-  #{is_my_profile ? "Your " : viewed_user.name + "'s"} credits:
+  -if is_my_profile
+    "Your credits:"
+    -else viewed_user.name.
+      else viewed_user.name + "'s"
 %p
   $#{viewed_user.credits}
 %h3
@@ -26,6 +29,10 @@
       -lines.each do |line|
         =line
         %br
+
+%div.picture_container.float_right
+  %img{:src => "/images/#{viewed_user.image_path}", :width => "200", :height => "200" }
+
 %h3
   #{is_my_profile ? "You own" : viewed_user.name + " owns"} the following items:
 -if viewed_user.items.empty? and not is_my_profile

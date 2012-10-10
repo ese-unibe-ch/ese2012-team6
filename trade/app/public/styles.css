@@ -220,6 +220,11 @@ hr.styled-line {
     float: left;
 }
 
+.picture_container.float_right{
+    float: right;
+    border: 0;
+}
+
 .details_container {
     max-width: 50%;
     padding: 1em;
