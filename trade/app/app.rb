@@ -12,6 +12,7 @@ require_relative('controllers/main')
 require_relative('controllers/register')
 require_relative('controllers/item')
 require_relative('controllers/user')
+require_relative('controllers/activity_logger')
 
 class App < Sinatra::Base
 
@@ -20,6 +21,7 @@ class App < Sinatra::Base
   use Register
   use Item
   use User
+  use ActivityLogger
 
   enable :sessions
   set :public_folder, 'app/public'

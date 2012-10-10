@@ -1,3 +1,5 @@
+require_relative '../models/analytics/activity_logger'
+require_relative '../models/analytics/activity'
 
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
@@ -55,16 +57,13 @@ class Item < Sinatra::Application
     item_id = Integer(params[:item_id])
     item_name = params[:item_name]
 
-    #fail "Not a valid number" unless Store::Item.valid_price?(params[:item_price])
     redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
 
     item_price = Integer(params[:item_price])
     item_description = params[:item_description]
     item = @database.get_item_by_id(item_id)
 
-    item.name = item_name
-    item.price = item_price
-    item.description = item_description
+    item.update(item_name, item_price, item_description)
 
     redirect "/item/#{item_id}"
   end
@@ -74,13 +73,12 @@ class Item < Sinatra::Application
     redirect '/login' unless session[:name]
 
     activate_str = params[:activate]
-    activate = (activate_str == "true")
 
     item = @database.get_item_by_id(Integer(params[:item_id]))
 
     redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
 
-    item.active = activate
+    item.update_status(activate_str)
 
     redirect back
   end
@@ -91,7 +89,6 @@ class Item < Sinatra::Application
 
     item_name = params[:item_name]
 
-    #fail "Not a valid number" unless Store::Item.valid_price?(params[:item_price])
     redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
 
     item_price = Integer(params[:item_price])
@@ -99,8 +96,6 @@ class Item < Sinatra::Application
 
     item = @user.propose_item(item_name, item_price)
     item.description = item_description unless item_description.nil? or item_description == ""
-
-    @database.add_item(item)
 
     if back == url("/item/new?")
       redirect "/item/#{item.id}"
@@ -114,7 +109,6 @@ end
 
     item_id = Integer(params[:item_id])
     item = @database.get_item_by_id(item_id)
-    @database.delete_item(item)
     @user.remove_item(item)
 
     redirect back

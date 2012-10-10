@@ -57,6 +57,10 @@ module Store
     def propose_item(name, price)
       item = Item.named_priced_with_owner(name, price, self)
       self.items << item
+
+      Storage::Database.instance.add_item(item)
+      Analytics::ActivityLogger.log_activity(Analytics::ItemAddActivity.with_creator_item(self, item.id))
+
       return item
     end
 
@@ -75,6 +79,7 @@ module Store
       if self.items.include?(item)
         item.owner = nil
         self.items.delete(item)
+        Storage::Database.instance.delete_item(item)
       end
     end
 

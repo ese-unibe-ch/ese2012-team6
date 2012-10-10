@@ -19,6 +19,8 @@
                   %a{:href => url("/items")} Items
                 %li
                   %a{:href => url("/user/#{@user.name}")} My Profile
+                %li
+                  %a{:href => url("/activities")} Activities
             %div#credit_status
               %span
                 Credits: $#{@user.credits}

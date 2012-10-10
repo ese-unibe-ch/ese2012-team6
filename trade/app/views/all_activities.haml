@@ -1,0 +1,17 @@
+%h3
+  Monitor the latest activities
+%table.table-minimalistic
+  %thead
+    %tr
+      %th Timestamp
+      %th Type
+      %th What
+  %tbody
+    -for activity in activities
+      %tr
+        %td
+          =activity.timestamp.to_s
+        %td
+          =activity.type
+        %td
+          =activity.what_happened
