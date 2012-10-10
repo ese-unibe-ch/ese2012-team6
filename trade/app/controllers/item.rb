@@ -103,11 +103,11 @@ class Item < Sinatra::Application
       changed_owner = true
     end
 
-    redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
-
     if changed_owner
       redirect url("/error/not_owner_of_item")
     end
+
+    redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
 
     item.edit_time = Time.now
     item.active = activate
