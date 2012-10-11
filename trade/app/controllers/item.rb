@@ -67,16 +67,17 @@ class Item < Sinatra::Application
     file = params[:file_upload]
 
     if file != nil
-      filename = item.id_image_to_filename(item_id, file[:filename])
-      FileUtils::cp(file[:tempfile].path, File.join("public", "images", filename))
-    else
-      filename = "no_image.gif"
+      if item.image_path != "no_image.gif"
+        FileUtils::remove_file("public/images/#{item.image_path}", force = false)
+      end
+      item.image_path = item.id_image_to_filename(item_id, file[:filename])
+      FileUtils::cp(file[:tempfile].path, File.join("public", "images", item.image_path))
     end
 
     item.name = item_name
     item.price = item_price
     item.description = item_description
-    item.image_path = filename
+   # item.image_path = filename
 
     redirect "/item/#{item_id}"
   end
