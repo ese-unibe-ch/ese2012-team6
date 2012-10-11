@@ -2,6 +2,7 @@ require 'bcrypt'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
+require_relative '../storage/database'
 
 module Store
   class User

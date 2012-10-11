@@ -4,5 +4,4 @@ require_relative '../app/models/analytics/activity'
 
 class ActivityLoggerTest < Test::Unit::TestCase
   # UG: TODO
-  test
 end
