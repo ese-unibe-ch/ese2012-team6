@@ -147,9 +147,6 @@ module Analytics
     end
 
     def what_happened
-      db = Storage::Database.instance
-      item = db.get_item_by_id(self.item_id)
-
       return "User #{self.actor_name} deleted item ##{self.item_id} #{self.item_name}"
     end
   end
