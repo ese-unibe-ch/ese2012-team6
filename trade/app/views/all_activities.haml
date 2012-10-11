@@ -6,6 +6,7 @@
       %th Timestamp
       %th Type
       %th What
+      %th
   %tbody
     -for activity in activities
       %tr
@@ -15,3 +16,5 @@
           =activity.type
         %td
           =activity.what_happened
+        %td
+          %a{:href => "/activity/#{activity.id}"} Details

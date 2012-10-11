@@ -19,12 +19,24 @@ class ActivityLogger < Sinatra::Application
 
   end
 
-  get '/activity/:act_id' do
+  get "/activity/:act_id" do
     redirect '/login' unless @user
-    activity = Analytics::ActivityLogger.by_id(act_id)
+
+    activity_id = params[:act_id]
+    activity = Analytics::ActivityLogger.by_id(Integer(activity_id))
+
+    actor = @database.get_user_by_name(activity.actor_name)
+    item = @database.get_item_by_id(activity.item_id)
+
+    actor_still_in_system = !actor.nil?
+    item_still_in_system = !item.nil?
 
     haml :activity, :locals => {
-        :activity => activity
+        :activity => activity,
+        :actor => actor,
+        :item => item,
+        :actor_still_in_system => actor_still_in_system,
+        :item_still_in_system => item_still_in_system
     }
   end
 end

@@ -1,0 +1,25 @@
+%h2
+  Activity Details
+%p
+  At #{activity.timestamp}, user
+  - if actor_still_in_system
+    %a.underlined{:href => "/user/#{actor.name}"} #{actor.name}
+  - else
+    =activity.actor_name
+  did the following modifications to item
+  - if item_still_in_system
+    %a.underlined{:href => "/item/#{item.id}"} #{item.name}
+  - else
+    =activity.item_name
+
+- case activity.type
+  - when Analytics::ActivityType::ITEM_ADD
+    ToDo
+  - when Analytics::ActivityType::ITEM_BUY
+    ToDo
+  - when Analytics::ActivityType::ITEM_DELETE
+    ToDo
+  - when Analytics::ActivityType::ITEM_STATUS_CHANGE
+    ToDo
+  - when Analytics::ActivityType::ITEM_EDIT
+    ToDo
