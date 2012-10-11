@@ -13,6 +13,7 @@
     <orderEntry type="library" scope="PROVIDED" name="rack-protection (v1.2.0, ruby-1.8.7-p302) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rack-test (v0.6.2, ruby-1.8.7-p302) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rcov (v1.0.0, ruby-1.8.7-p302) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rdiscount (v1.6.8, ruby-1.8.7-p302) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="require_relative (v1.0.3, ruby-1.8.7-p302) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="sinatra (v1.3.3, ruby-1.8.7-p302) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="sinatra-contrib (v1.3.1, ruby-1.8.7-p302) [gem]" level="application" />

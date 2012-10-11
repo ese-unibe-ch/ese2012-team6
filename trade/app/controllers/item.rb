@@ -1,3 +1,5 @@
+require 'rdiscount'
+
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
 
@@ -28,9 +30,13 @@ class Item < Sinatra::Application
 
     redirect "/user/#{@user.name}" if item.nil?
 
+    marked_down_description = RDiscount.new(item.description, :smart, :filter_html)
+
     haml :item, :locals => {
-      :item => item
+      :item => item,
+      :marked_down_description => marked_down_description.to_html
     }
+
   end
 
   # shows a page for easy item editing
