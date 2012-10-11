@@ -1,6 +1,3 @@
-require_relative '../models/analytics/activity_logger'
-require_relative '../models/analytics/activity'
-
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
 
@@ -63,6 +60,9 @@ class Item < Sinatra::Application
     item_description = params[:item_description]
     item = @database.get_item_by_id(item_id)
 
+    # UG: necessary because item.update fails if item owner can not edit item, e.g if the item is active
+    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
+
     item.update(item_name, item_price, item_description)
 
     redirect "/item/#{item_id}"
@@ -109,7 +109,7 @@ end
 
     item_id = Integer(params[:item_id])
     item = @database.get_item_by_id(item_id)
-    @user.remove_item(item)
+    @user.delete_item(item)
 
     redirect back
   end

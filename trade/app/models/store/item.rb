@@ -1,3 +1,6 @@
+require_relative '../analytics/activity_logger'
+require_relative '../analytics/activity'
+
 module Store
   class Item
     attr_accessor :name, :id, :price, :owner, :active, :description
@@ -40,7 +43,7 @@ module Store
 
       if old_status != new_status
         self.active = new_status
-        Analytics::ActivityLogger.log_activity(Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self.id, new_status))
+        Analytics::ActivityLogger.log_activity(Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status))
       end
     end
 
@@ -53,16 +56,19 @@ module Store
     end
 
     def update(name, price, desc)
+
       fail if not self.editable?
 
       old_vals = [self.name, self.price, self.description]
       new_vals = [name, price, desc]
 
-      self.name = name
-      self.price = price
-      self.description = desc
+      if old_vals != new_vals
+        self.name = name
+        self.price = price
+        self.description = desc
 
-      Analytics::ActivityLogger.log_activity(Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self.id, old_vals, new_vals))
+        Analytics::ActivityLogger.log_activity(Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals))
+      end
     end
   end
 end

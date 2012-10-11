@@ -1,5 +1,8 @@
 require 'bcrypt'
 
+require_relative '../analytics/activity_logger'
+require_relative '../analytics/activity'
+
 module Store
   class User
     attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description
@@ -59,7 +62,7 @@ module Store
       self.items << item
 
       Storage::Database.instance.add_item(item)
-      Analytics::ActivityLogger.log_activity(Analytics::ItemAddActivity.with_creator_item(self, item.id))
+      Analytics::ActivityLogger.log_activity(Analytics::ItemAddActivity.with_creator_item(self, item))
 
       return item
     end
@@ -79,8 +82,14 @@ module Store
       if self.items.include?(item)
         item.owner = nil
         self.items.delete(item)
-        Storage::Database.instance.delete_item(item)
       end
+    end
+
+    def delete_item(item)
+      self.remove_item(item)
+      Storage::Database.instance.delete_item(item)
+
+      Analytics::ActivityLogger.log_activity(Analytics::ItemDeleteActivity.with_remover_item(self, item))
     end
 
     def buy_item(item)
@@ -104,6 +113,8 @@ module Store
 
       self.add_item(item)
       self.credits -= item.price
+
+      Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price(self, item))
 
       return true, "Transaction successful"
     end
