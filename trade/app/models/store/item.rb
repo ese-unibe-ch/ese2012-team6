@@ -35,6 +35,27 @@ module Store
       return "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
     end
 
+    #following 4 setters need to modify the edit_time. Therefore they are overwritten.
+    def active=(anything)
+      self.edit_time = Time.now
+      @active = anything
+    end
+
+    def price=(anything)
+      self.edit_time = Time.now
+      @price = anything
+    end
+
+    def name=(anything)
+      self.edit_time = Time.now
+      @name = anything
+    end
+
+    def description=(anything)
+      self.edit_time = Time.now
+      @description = anything
+    end
+
     def set_active
       self.active = true
     end

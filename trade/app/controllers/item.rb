@@ -109,7 +109,6 @@ class Item < Sinatra::Application
 
     redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
 
-    item.edit_time = Time.now
     item.active = activate
 
     redirect back

@@ -95,6 +95,7 @@ module Store
 
       self.add_item(item)
       self.credits -= item.price
+      item.edit_time = Time.now
 
       return true, "Transaction successful"
     end

@@ -55,7 +55,6 @@ class User < Sinatra::Application
     buy_success, buy_message = @user.buy_item(item)
 
     if buy_success
-      item.edit_time = Time.now
       redirect back
     else
       redirect url("/error/#{buy_message}")
