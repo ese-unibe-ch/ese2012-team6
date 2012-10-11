@@ -129,8 +129,6 @@ module Analytics
   end
 
   class ItemDeleteActivity < Activity
-    attr_accessor :remover_name, :item_id, :item_name
-
     def initialize
       super
       self.type = ActivityType::ITEM_DELETE
@@ -139,7 +137,7 @@ module Analytics
     def self.with_remover_item(remover, item)
       delete_activity = ItemDeleteActivity.new
 
-      delete_activity.remover_name = remover.name
+      delete_activity.actor_name = remover.name
       delete_activity.item_id = item.id
       delete_activity.item_name = item.name
 
