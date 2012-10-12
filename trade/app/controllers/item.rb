@@ -33,6 +33,11 @@ class Item < Sinatra::Application
     redirect "/user/#{@user.name}" if item.nil?
 
     marked_down_description = RDiscount.new(item.description, :smart, :filter_html)
+    ############### UG: to HM: this is how you could get the previous description of an item
+    previous_desc = Analytics::ActivityLogger.get_previous_description(item)
+
+    puts previous_desc
+    ###############
 
     haml :item, :locals => {
         :item => item,
@@ -135,7 +140,7 @@ class Item < Sinatra::Application
     file = params[:file_upload]
 
     if file != nil
-      filename = item.id_image_to_filename(item_id, file[:filename])
+      filename = item.id_image_to_filename(item.id, file[:filename])
       FileUtils::cp(file[:tempfile].path, File.join("public", "images", filename))
     else
       filename = "no_image.gif"

@@ -11,7 +11,7 @@ module Storage
 
     @@instance = Database.new
 
-    private_class_method :new
+    #private_class_method :new
 
     # Get the database instance
     def self.instance
