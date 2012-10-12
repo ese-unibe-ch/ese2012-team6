@@ -1,4 +1,4 @@
-%form{:action => action_url, :method => "POST", :onsubmit => "return validate_login(this);"}
+%form{:action => action_url, :method => "POST", :onsubmit => "return validate_login(this);", :enctype => "multipart/form-data"}
   %h3.no_top_margin
     Name
   %p
@@ -16,6 +16,11 @@
       - unless lines.empty?
         - lines.each do |line|
           =line
+  %h3
+    Change image
+  %div#button_container
+    %input.styled-button{:type => 'file', :name => "file_upload", :accept => "image/*"}
+  %p
   %div#button_container
     -if edit
       %input.styled-button{:type => "submit", :value => "Save Changes"}

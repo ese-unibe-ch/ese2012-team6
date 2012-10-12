@@ -13,6 +13,9 @@ class Main < Sinatra::Application
   get "/" do
     redirect '/login' unless session[:name]
 
+    user = @database.get_user_by_name(session[:name])
+    user.open_item_page_time = Time.now
+
     haml :store, :locals => {
         :users => @database.get_users
     }
@@ -22,6 +25,10 @@ class Main < Sinatra::Application
   get "/error/:error_msg" do
 
     case params[:error_msg]
+      when "not_owner_of_item"
+        error_message = "Item does not belong to you anymore"
+      when "item_changed_details"
+        error_message = "Trying to buy inactive item or the owner changed some details"
       when "item_no_owner"
         error_message = "Item does not belong to anybody"
       when "not_enough_credits"
@@ -44,9 +51,7 @@ class Main < Sinatra::Application
         error_message = "Your password is unsafe. It must be at least 8 characters long and contain
                         at least one upper case letter and at least one number"
       when "invalid_price"
-        error_message = "You entered an invalid price. Please enter a positive numeric integral value"
-      when "wrong_password"
-        error_message = "You entered a wrong password"
+        error_message = "You entered an invalid price. Please enter a positive numeric value"
     end
 
     last_page = back

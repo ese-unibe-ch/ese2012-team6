@@ -6,7 +6,7 @@ require_relative '../storage/database'
 
 module Store
   class User
-    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description
+    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description, :open_item_page_time
 
     def initialize
       self.name = ""
@@ -15,6 +15,7 @@ module Store
       self.pwd_hash = ""
       self.pwd_salt = ""
       self.description = ""
+      self.open_item_page_time = Time.now
     end
 
     def self.named(name)
@@ -114,7 +115,7 @@ module Store
 
       self.add_item(item)
       self.credits -= item.price
-
+	  item.edit_time = Time.now
       Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price(self, item))
 
       return true, "Transaction successful"

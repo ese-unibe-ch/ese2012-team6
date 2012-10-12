@@ -1,4 +1,3 @@
-
 # Handles all requests concerning user display and actions
 class User < Sinatra::Application
 
@@ -54,6 +53,16 @@ class User < Sinatra::Application
 
     item_id = Integer(params[:item_id])
     item = @database.get_item_by_id(item_id)
+    user = @database.get_user_by_name(session[:name])
+
+    changed_item_details = true
+    if user.open_item_page_time >= item.edit_time
+      changed_item_details = false
+    end
+
+    if changed_item_details
+      redirect url("/error/item_changed_details")
+    end
 
     buy_success, buy_message = @user.buy_item(item)
 
