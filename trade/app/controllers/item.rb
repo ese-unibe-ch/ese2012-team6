@@ -77,6 +77,7 @@ class Item < Sinatra::Application
     item.name = item_name
     item.price = item_price
     item.description = item_description
+    item.edit_time = Time.now
    # item.image_path = filename
 
     redirect "/item/#{item_id}"
@@ -110,6 +111,7 @@ class Item < Sinatra::Application
 
     redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
 
+    item.edit_time = Time.now
     item.active = activate
 
     redirect back
