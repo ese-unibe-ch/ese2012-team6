@@ -6,7 +6,7 @@ require_relative '../storage/database'
 
 module Store
   class User
-    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description, :open_item_page_time
+    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description, :open_item_page_time, :image_path
 
     def initialize
       self.name = ""
@@ -16,6 +16,7 @@ module Store
       self.pwd_salt = ""
       self.description = ""
       self.open_item_page_time = Time.now
+	  self.image_path = 'no_image.gif'
     end
 
     def self.named(name)
@@ -137,6 +138,10 @@ module Store
 
     def to_s
       return "#{self.name}, #{self.credits}"
+    end
+
+    def self.id_image_to_filename(id, path)
+      "#{id}_#{path}"
     end
   end
 end

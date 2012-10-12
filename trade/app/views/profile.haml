@@ -2,7 +2,7 @@
   -if is_my_profile
     My Profile
   -else
-    #{viewed_user.name}'s Profile
+    Profile of #{viewed_user.name}
 %div.action_buttons.float_right
   -if is_my_profile
     %div.button_container
@@ -12,11 +12,11 @@
       %form{:action => "/user/#{@user.name}/edit", :method => "GET"}
         %input.styled-button{:type => "submit", :value => "Edit Profile"}
 %h3
-  #{is_my_profile ? "Your " : viewed_user.name + "'s"} credits:
+  #{is_my_profile ? "Your Account" : "Account of " + viewed_user.name}:
 %p
   $#{viewed_user.credits}
 %h3
-  #{is_my_profile ? "Your " : viewed_user.name + "'s"} description:
+  #{is_my_profile ? "Your Description" : "Description of " + viewed_user.name}:
 %p
   -if viewed_user.description == ""
     No description available
@@ -26,6 +26,10 @@
       -lines.each do |line|
         =line
         %br
+
+%div.picture_container.float_right
+  %img{:src => "/images/#{viewed_user.image_path}", :width => "200", :height => "200" }
+
 %h3
   #{is_my_profile ? "You own" : viewed_user.name + " owns"} the following items:
 -if viewed_user.items.empty? and not is_my_profile
