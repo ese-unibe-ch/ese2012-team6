@@ -10,5 +10,8 @@
                                                     :item_desc => item.description,
                                                     :edit => true}
     %br
+    %form{:action =>"/item/#{item.id}/edit/description", :method => "GET"}
+      %input.styled-button{:type => "submit", :value => "Take Last Description"}
+    %br
     %form{:action =>"/item/#{item.id}/edit/undo_description", :method => "POST"}
       %input.styled-button{:type => "submit", :value => "Revert to Last Description"}

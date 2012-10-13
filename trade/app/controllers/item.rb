@@ -70,6 +70,18 @@ class Item < Sinatra::Application
     redirect "/item/#{item_id}"
   end
 
+  #handles undo save description
+  get "/item/:item_id/edit/description" do
+    redirect '/login' unless session[:name]
+
+    item_id = Integer(params[:item_id])
+    item = @database.get_item_by_id(item_id)
+
+    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
+
+    haml :edit_description, :locals => { :item => item}
+  end
+
   # handles item editing, updates model in database
   post "/item/:item_id/edit" do
     redirect '/login' unless session[:name]
