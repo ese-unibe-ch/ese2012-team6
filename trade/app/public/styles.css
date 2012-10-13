@@ -213,7 +213,15 @@ hr.styled-line {
 .action_buttons.float_right {
    float: right;
 }
+
 .button_container {
+    margin-right: 8px;
+    float:left;
+    display:inline;
+}
+
+.button_container2 {
+    padding-left: 160px;
     margin-right: 8px;
     float:left;
     display:inline;

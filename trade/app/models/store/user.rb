@@ -116,7 +116,7 @@ module Store
 
       self.add_item(item)
       self.credits -= item.price
-	  item.edit_time = Time.now
+	    item.edit_time = Time.now
       Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price(self, item))
 
       return true, "Transaction successful"

@@ -9,7 +9,6 @@
                                                     :item_price => item.price,
                                                     :item_desc => item.description,
                                                     :edit => true}
-
 %div.details_container
   %form{:action =>"/item/#{item.id}/edit/description", :method => "GET"}
     %input.styled-button2{:type => "submit", :value => "Take Last Description"}
