@@ -135,7 +135,7 @@ class Item < Sinatra::Application
     file = params[:file_upload]
 
     if file != nil
-      filename = item.id_image_to_filename(item_id, file[:filename])
+      filename = item.id_image_to_filename(item.id, file[:filename])
       FileUtils::cp(file[:tempfile].path, File.join("public", "images", filename))
     else
       filename = "no_image.gif"
