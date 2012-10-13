@@ -59,8 +59,8 @@ module Analytics
     def initialize
       super
       self.type = ActivityType::ITEM_EDIT
-      self.old_values = []
-      self.new_values = []
+      self.old_values = {}
+      self.new_values = {}
     end
 
     def self.with_editor_item_old_new_vals(editor, item, old_vals, new_vals)

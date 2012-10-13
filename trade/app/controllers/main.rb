@@ -19,19 +19,23 @@ class Main < Sinatra::Application
     most_recent_purchases = Analytics::ActivityLogger.get_most_recent_purchases(10)
 
     haml :store, :locals => {
-      :users => @database.get_users,
-      :most_recent_purchases => most_recent_purchases
+        :users => @database.get_users,
+        :most_recent_purchases => most_recent_purchases
     }
   end
 
   # Error handler, shows error message
   get "/error/:error_msg" do
 
+    should_refresh = false
+
     case params[:error_msg]
       when "not_owner_of_item"
         error_message = "Item does not belong to you anymore"
+        should_refresh = true
       when "item_changed_details"
         error_message = "Trying to buy inactive item or the owner changed some details"
+        should_refresh = true
       when "item_no_owner"
         error_message = "Item does not belong to anybody"
       when "not_enough_credits"
@@ -63,7 +67,8 @@ class Main < Sinatra::Application
 
     haml :error, :locals => {
         :error_message => error_message,
-        :last_page => last_page
+        :last_page => last_page,
+        :should_refresh => should_refresh
     }
   end
 end

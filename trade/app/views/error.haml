@@ -4,5 +4,11 @@
   Something went wrong:
 %p
   =error_message
-%a.styled-button{:href => last_page} Go Back
-
+-if should_refresh
+  %a.styled-button{:href => last_page} Go Back
+-else
+  %input{:type => "button", :value => "Go Back", :onclick => "goBack()"}
+  :javascript
+     function goBack() {
+        window.history.back()
+     }

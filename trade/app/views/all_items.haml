@@ -12,16 +12,8 @@
     -for item in @database.get_items
       %tr
         %td
-          %a.tooltip{:href => url("/item/#{item.id}")}
+          %a{:href => url("/item/#{item.id}")}
             =item.name
-            %span.classic
-              -if item.description == ""
-                No description available
-              - lines = ("#{item.description}").split("\n")
-                - unless lines.empty?
-                - lines.each do |line|
-                  %li.without_points
-                    = line
         %td.ralign
           #{item.price}
         %td

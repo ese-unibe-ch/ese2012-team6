@@ -31,8 +31,11 @@
           - unless lines.empty?
             - lines.each do |line|
               =line
-  %div.button_container2
-    %input.styled-button{:type => "submit", :value => "Save Changes"}
+    %tr
+      %td
+      %td
+        %div.button_container
+          %input.styled-button{:type => "submit", :value => "Save Changes"}
 %br
 %p.small
   *) Password must be at least 8 characters long and consist of lowercase letters, uppercase letters and
@@ -59,7 +62,7 @@
     return true;
   }
 
-%h2 Upload User Picture
+%h3 Upload User Picture
 %form(action = "/user/#{@user.name}/images" method = "POST" enctype="multipart/form-data")
   %input(type='file' name="file_upload" accept="image/*")
   %input(type='submit' value='Upload File')

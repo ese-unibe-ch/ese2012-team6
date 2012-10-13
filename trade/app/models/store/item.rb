@@ -44,6 +44,7 @@ module Store
     end
 
     def update_status(new_status)
+
       new_status = (new_status == "true")
       old_status = self.active
 
@@ -62,17 +63,17 @@ module Store
       return (not self.active)
     end
 
-    def update(name, price, desc)
+    def update(new_name, new_price, new_desc)
 
-      fail if not self.editable?
+      fail unless self.editable?
 
-      old_vals = [self.name, self.price, self.description]
-      new_vals = [name, price, desc]
+      old_vals = {:name => self.name, :price => self.price, :description => self.description}
+      new_vals = {:name => new_name, :price => new_price, :description => new_desc}
 
       if old_vals != new_vals
-        self.name = name
-        self.price = price
-        self.description = desc
+        self.name = new_name
+        self.price = new_price
+        self.description = new_desc
         self.edit_time = Time.now
         Analytics::ActivityLogger.log_activity(Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals))
       end

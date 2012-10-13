@@ -4,9 +4,12 @@ GEM
     backports (2.6.4)
     bcrypt-ruby (3.0.1)
     bcrypt-ruby (3.0.1-x86-mingw32)
+    commonjs (0.2.6)
     eventmachine (1.0.0)
     eventmachine (1.0.0-x86-mingw32)
     haml (3.1.7)
+    less (2.2.2)
+      commonjs (~> 0.2.6)
     rack (1.4.1)
     rack-protection (1.2.0)
       rack
@@ -35,6 +38,7 @@ PLATFORMS
 DEPENDENCIES
   bcrypt-ruby
   haml
+  less
   rcov
   rdiscount
   require_relative

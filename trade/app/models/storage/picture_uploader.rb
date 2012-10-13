@@ -13,6 +13,7 @@ module Storage
       return uploader
     end
 
+    # uploads a file and returns path to saved file
     def upload(file, filename)
       if file != nil
         full_path = File.join("public", self.root_path)

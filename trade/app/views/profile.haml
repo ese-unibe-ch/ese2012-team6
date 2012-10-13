@@ -36,13 +36,8 @@
       -for item in viewed_user.items
         %tr
           %td
-            %a.tooltip{:href => url("/item/#{item.id}")}
+            %a{:href => url("/item/#{item.id}")}
               =item.name
-              %span.classic
-                -if item.description == ""
-                  No description available
-                -else
-                  =item.description
           %td
             #{item.price}
           %td

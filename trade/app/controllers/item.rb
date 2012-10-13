@@ -39,7 +39,6 @@ class Item < Sinatra::Application
         :item => item,
         :marked_down_description => marked_down_description.to_html
     }
-
   end
 
   # shows a page for easy item editing
@@ -57,15 +56,18 @@ class Item < Sinatra::Application
   end
 
   #handles undo save description
-  get "/item/:item_id/edit/description" do
+  post "/item/:item_id/edit/undo_description" do
     redirect '/login' unless session[:name]
 
     item_id = Integer(params[:item_id])
     item = @database.get_item_by_id(item_id)
 
     redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
+    previous_description = Analytics::ActivityLogger.get_previous_description(item)
 
-    haml :edit_description, :locals => { :item => item}
+    item.update(item.name, item.price, previous_description)
+
+    redirect "/item/#{item_id}"
   end
 
   # handles item editing, updates model in database
@@ -81,7 +83,7 @@ class Item < Sinatra::Application
     item_description = params[:item_description]
     item = @database.get_item_by_id(item_id)
 
-    # UG: necessary because item.update fails if item owner can not edit item, e.g if the item is active
+    # UG: necessary because this handler can also be called by scripts
     redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
 
     file = params[:file_upload]

@@ -33,7 +33,7 @@ module Analytics
       }
 
       return "" if most_recent_activity.nil?
-      return most_recent_activity.old_values[2] #description
+      return most_recent_activity.old_values[:description]
     end
 
     def self.get_most_recent_purchases(amount)
