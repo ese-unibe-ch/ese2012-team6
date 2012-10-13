@@ -16,7 +16,7 @@ module Store
       self.pwd_salt = ""
       self.description = ""
       self.open_item_page_time = Time.now
-	  self.image_path = 'no_image.gif'
+	    self.image_path = "/images/no_image.gif"
     end
 
     def self.named(name)
@@ -60,8 +60,10 @@ module Store
       self.pwd_hash = BCrypt::Engine.hash_secret(password, self.pwd_salt)
     end
 
-    def propose_item(name, price)
+    def propose_item(name, price, description = "")
       item = Item.named_priced_with_owner(name, price, self)
+      item.description = description
+
       self.items << item
 
       Storage::Database.instance.add_item(item)

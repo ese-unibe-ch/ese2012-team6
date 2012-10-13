@@ -82,13 +82,17 @@ class User < Sinatra::Application
 
   # Handles user's picture upload
   post "/user/:name/images" do
-    file = params[:file_upload]
     return 404 unless @user.name
+
+    file = params[:file_upload]
+    redirect to("/user/#{params[:name]}") unless file
+
     return 413 if file[:tempfile].size > 400*1024
 
     filename = Store::User.id_image_to_filename(@user.name, file[:filename])
-    @user.image_path = filename
-    FileUtils::cp(file[:tempfile].path, File.join("public", "images", filename))
+
+    uploader = Storage::PictureUploader.with_path("/images/users")
+    @user.image_path = uploader.upload(file, filename)
 
     redirect to("/user/#{params[:name]}")
   end

@@ -48,12 +48,6 @@ class App < Sinatra::Base
     heart.set_active
     meg.set_active
     bender.set_active
-
-    @database.add_item(liver)
-    @database.add_item(heart)
-    @database.add_item(meg)
-    @database.add_item(random)
-    @database.add_item(bender)
   end
 end
 

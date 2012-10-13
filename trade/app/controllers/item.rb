@@ -1,5 +1,6 @@
 require 'rdiscount'
 
+require_relative '../models/storage/picture_uploader'
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
 
@@ -77,13 +78,11 @@ class Item < Sinatra::Application
     redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
 
     file = params[:file_upload]
+    if file
+      file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
 
-    if file != nil
-      if item.image_path != "no_image.gif"
-        FileUtils::remove_file("public/images/#{item.image_path}", force = false)
-      end
-      item.image_path = item.id_image_to_filename(item_id, file[:filename])
-      FileUtils::cp(file[:tempfile].path, File.join("public", "images", item.image_path))
+      uploader = Storage::PictureUploader.with_path("/images/items")
+      item.image_path = uploader.upload(file, file_name)
     end
 
     item.update(item_name, item_price, item_description)
@@ -93,8 +92,6 @@ class Item < Sinatra::Application
 
   #returns the selected image. (Only usable with URL request)
   get "/item/:item_id/images/:image_path" do
-    item_id = Integer(params[:item_id])
-    item = @database.get_item_by_id(item_id)
     send_file(File.join("public", "images", params[:image_path]))
   end
 
@@ -134,25 +131,18 @@ class Item < Sinatra::Application
     item_price = Integer(params[:item_price])
     item_description = params[:item_description]
 
-    item = @user.propose_item(item_name, item_price)
-    item.description = item_description
+    item = @user.propose_item(item_name, item_price, item_description)
 
     file = params[:file_upload]
+    if file
+      file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
 
-    if file != nil
-      filename = item.id_image_to_filename(item.id, file[:filename])
-      FileUtils::cp(file[:tempfile].path, File.join("public", "images", filename))
-    else
-      filename = "no_image.gif"
+      uploader = Storage::PictureUploader.with_path("/images/items")
+      item.image_path = uploader.upload(file, file_name)
     end
 
-    item.image_path = filename
-
-    if back == url("/item/new?")
-      redirect "/item/#{item.id}"
-    else
-      redirect back
-    end
+    redirect "/item/#{item.id}" if back == url("/item/new?")
+    redirect back
   end
 
   # handles item deletion

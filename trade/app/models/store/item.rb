@@ -11,7 +11,7 @@ module Store
       self.id = @@last_id
       self.active = false
       self.description = ""
-      self.image_path = "no_image.gif"
+      self.image_path = "/images/no_image.gif"
       self.edit_time = Time.now
     end
 
@@ -27,10 +27,7 @@ module Store
       return (!!(price =~ /^[-+]?[1-9]([0-9]*)?$/) && Integer(price) >= 0)
     end
 
-    def id_image_to_filename(id, path)
-      if path == nil
-        return "no_image.gif"
-      end
+    def self.id_image_to_filename(id, path)
       "#{id}_#{path}"
     end
 

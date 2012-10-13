@@ -28,7 +28,7 @@
         %br
 
 %div.picture_container.float_right
-  %img{:src => "/images/#{viewed_user.image_path}", :width => "200", :height => "200" }
+  %img{:src => "#{viewed_user.image_path}", :width => "200", :height => "200" }
 
 %h3
   #{is_my_profile ? "You own" : viewed_user.name + " owns"} the following items:
