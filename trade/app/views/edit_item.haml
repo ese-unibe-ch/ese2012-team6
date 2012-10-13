@@ -4,4 +4,11 @@
   %div.picture_container
     %img{:src => "#{item.image_path}", :width => "200", :height => "200" }
   %div.details_container
-    =haml :"/partials/item_edit_form", :locals => {:action_url => "/item/#{item.id}/edit",:item_name => item.name,:item_price => item.price,:item_desc => item.description, :edit => true}
+    =haml :"/partials/item_edit_form", :locals => { :action_url => "/item/#{item.id}/edit",
+                                                    :item_name => item.name,
+                                                    :item_price => item.price,
+                                                    :item_desc => item.description,
+                                                    :edit => true}
+%div.details_container
+  %form{:action =>"/item/#{item.id}/edit/description", :method => "GET"}
+    %input.styled-button2{:type => "submit", :value => "Take Last Description"}

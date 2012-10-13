@@ -172,6 +172,16 @@ hr.styled-line {
     margin:0px;
 }
 
+.styled-button2{
+    background-color:#EEE;
+    border:1px solid #999;
+    color:#666;
+    font-family:verdana,helvetica,arial,sans-serif;
+    font-size:13px;
+    font-weight: normal;
+    margin-left: 250px;
+}
+
 .small {
    font-size: 11px;
 }
@@ -203,7 +213,15 @@ hr.styled-line {
 .action_buttons.float_right {
    float: right;
 }
+
 .button_container {
+    margin-right: 8px;
+    float:left;
+    display:inline;
+}
+
+.button_container2 {
+    padding-left: 160px;
     margin-right: 8px;
     float:left;
     display:inline;
