@@ -34,11 +34,6 @@ class Item < Sinatra::Application
     redirect "/user/#{@user.name}" if item.nil?
 
     marked_down_description = RDiscount.new(item.description, :smart, :filter_html)
-    ############### UG: to HM: this is how you could get the previous description of an item
-    previous_desc = Analytics::ActivityLogger.get_previous_description(item)
-
-    puts previous_desc
-    ###############
 
     haml :item, :locals => {
         :item => item,

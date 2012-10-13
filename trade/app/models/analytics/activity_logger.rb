@@ -35,5 +35,13 @@ module Analytics
       return "" if most_recent_activity.nil?
       return most_recent_activity.old_values[2] #description
     end
+
+    def self.get_most_recent_purchases(amount)
+      database = Storage::Database.instance
+      activities = database.get_all_activities
+      buy_activities = activities.select{|act| act.type == ActivityType::ITEM_BUY}
+      sorted = buy_activities.sort! { |a,b| a.timestamp <=> b.timestamp }
+      return sorted[0..amount-1]
+    end
   end
 end

@@ -27,3 +27,16 @@
                 #button_container
                   %form{:action => "/user/buy/#{item.id}", :method => "POST"}
                     %input.styled-button.small.buy-color{:type => "submit", :value => "Buy"}
+%h3
+  Recent purchases
+- if most_recent_purchases.empty?
+  %p No recent purchases
+-else
+  %table.table-minimalistic
+    %tbody
+      -for activity in most_recent_purchases
+        %tr
+          %td
+            =activity.timestamp.to_s
+          %td
+            =activity.what_happened

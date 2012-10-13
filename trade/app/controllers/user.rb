@@ -12,10 +12,12 @@ class User < Sinatra::Application
 
     viewed_user = @database.get_user_by_name(params[:user_name])
     is_my_profile = @user == viewed_user
+    marked_down_description = RDiscount.new(viewed_user.description, :smart, :filter_html)
 
     haml :profile, :locals => {
         :viewed_user => viewed_user,
-        :is_my_profile => is_my_profile
+        :is_my_profile => is_my_profile,
+        :marked_down_description => marked_down_description.to_html
     }
   end
 

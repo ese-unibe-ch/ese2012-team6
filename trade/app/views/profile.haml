@@ -12,20 +12,9 @@
       %form{:action => "/user/#{@user.name}/edit", :method => "GET"}
         %input.styled-button{:type => "submit", :value => "Edit Profile"}
 %h3
-  #{is_my_profile ? "Your Account" : "Account of " + viewed_user.name}:
+  #{is_my_profile ? "Your Credits" : "Credits of " + viewed_user.name}:
 %p
   $#{viewed_user.credits}
-%h3
-  #{is_my_profile ? "Your Description" : "Description of " + viewed_user.name}:
-%p
-  -if viewed_user.description == ""
-    No description available
-  -else
-    -lines = ("#{viewed_user.description}").split("\n")
-    -unless lines.empty?
-      -lines.each do |line|
-        =line
-        %br
 
 %div.picture_container.float_right
   %img{:src => "#{viewed_user.image_path}", :width => "200", :height => "200" }
@@ -94,17 +83,25 @@
                 %input.styled-button.small{:type => "submit", :value => "Quick Add"}
           :javascript
             function validate_quick_add(form) {
-                form.item_name.value = form.item_name.value.trim()
-                if (form.item_name.value == "") {
-                  form.item_name.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
-                  document.getElementById('error_message').innerHTML = "Please enter an item name"
-                  return false
-                }
-                else if (form.item_price.value == "") {
-                  form.item_price.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
-                  document.getElementById('error_message').innerHTML = "Please enter a price for the item"
-                  return false
-                }
-
-                return true;
+              form.item_name.value = form.item_name.value.trim()
+              if (form.item_name.value == "") {
+                form.item_name.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
+                document.getElementById('error_message').innerHTML = "Please enter an item name"
+                return false
               }
+              else if (form.item_price.value == "") {
+                form.item_price.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
+                document.getElementById('error_message').innerHTML = "Please enter a price for the item"
+                return false
+              }
+
+              return true;
+            }
+%h3
+  #{is_my_profile ? "Your Description" : "Description of " + viewed_user.name}:
+-if viewed_user.description == ""
+  %p No description available
+-else
+  %div.markdown_view
+    =marked_down_description
+

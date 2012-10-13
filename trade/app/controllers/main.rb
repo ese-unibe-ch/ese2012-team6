@@ -16,8 +16,11 @@ class Main < Sinatra::Application
     user = @database.get_user_by_name(session[:name])
     user.open_item_page_time = Time.now
 
+    most_recent_purchases = Analytics::ActivityLogger.get_most_recent_purchases(10)
+
     haml :store, :locals => {
-        :users => @database.get_users
+      :users => @database.get_users,
+      :most_recent_purchases => most_recent_purchases
     }
   end
 
@@ -52,6 +55,8 @@ class Main < Sinatra::Application
                         at least one upper case letter and at least one number"
       when "invalid_price"
         error_message = "You entered an invalid price. Please enter a positive numeric value"
+      when "wrong_password"
+        error_message = "You entered a wrong password"
     end
 
     last_page = back
