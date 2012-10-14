@@ -24,7 +24,7 @@
           %td
             %div.action_buttons
               -if user != @user
-                #button_container
+                %div.button_container
                   %form{:action => "/user/buy/#{item.id}", :method => "POST"}
                     %input.styled-button.small.buy-color{:type => "submit", :value => "Buy"}
 %h3
