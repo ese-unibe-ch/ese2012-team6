@@ -66,7 +66,8 @@ module Analytics
     def self.with_editor_item_old_new_vals(editor, item, old_vals, new_vals)
       edit_activity = ItemEditActivity.new
 
-      edit_activity.actor_name = editor.name
+      edit_activity.actor_name = editor.name unless editor.nil?
+
       edit_activity.item_id = item.id
       edit_activity.item_name = item.name
       edit_activity.old_values = old_vals
@@ -115,7 +116,8 @@ module Analytics
     def self.with_editor_item_status(editor, item, new_status)
       status_change_activity = ItemStatusChangeActivity.new
 
-      status_change_activity.actor_name = editor.name
+      status_change_activity.actor_name = editor.name unless editor.nil?
+
       status_change_activity.item_id = item.id
       status_change_activity.item_name = item.name
       status_change_activity.new_status = new_status

@@ -50,4 +50,21 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(true,item.editable?)
   end
 
+  def test_change_status
+    item = Store::Item.named_priced_with_owner("TestItem", 0, nil)
+    assert_equal(false, item.active?)
+
+    item.update_status("true")
+
+    assert_equal(true, item.active?)
+  end
+
+  def test_item_update
+    item = Store::Item.named_priced_with_owner("TestItem", 0, nil)
+    item.update("NewName", 100, "NewDescription")
+
+    assert_equal("NewName", item.name)
+    assert_equal(100, item.price)
+    assert_equal("NewDescription", item.description)
+  end
 end

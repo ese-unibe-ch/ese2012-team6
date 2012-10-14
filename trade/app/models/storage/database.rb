@@ -70,5 +70,9 @@ module Storage
     def get_activity_by_id(id)
       return @activities.detect{|act| act.id == id}
     end
+
+    def clear_activities
+      @activities.clear
+    end
   end
 end
