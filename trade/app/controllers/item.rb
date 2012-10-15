@@ -99,7 +99,10 @@ class Item < Sinatra::Application
     redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
 
     file = params[:file_upload]
+
     if file
+      return 413 if file[:tempfile].size > 400*1024
+
       file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
 
       uploader = Storage::PictureUploader.with_path("/images/items")
@@ -122,17 +125,10 @@ class Item < Sinatra::Application
 
     activate_str = params[:activate]
     item = @database.get_item_by_id(Integer(params[:item_id]))
-    user = @database.get_user_by_name(session[:name])
 
-    changed_owner = false
-    if user.open_item_page_time < item.edit_time && item.owner != user
-      changed_owner = true
-    end
+    changed_owner = (@user.open_item_page_time < item.edit_time && item.owner != @user)
 
-    if changed_owner
-      redirect url("/error/not_owner_of_item")
-    end
-
+    redirect url("/error/not_owner_of_item") if changed_owner
     redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
 
     item.update_status(activate_str)
@@ -155,6 +151,7 @@ class Item < Sinatra::Application
 
     file = params[:file_upload]
     if file
+      return 413 if file[:tempfile].size > 400*1024
       file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
 
       uploader = Storage::PictureUploader.with_path("/images/items")

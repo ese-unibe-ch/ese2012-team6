@@ -13,7 +13,7 @@ class ActivityTest < Test::Unit::TestCase
   def test_buy_activity
     buyer = Store::User.named("Buyer")
     item = buyer.propose_item("TestItem", 100)
-    buy_activity = Analytics::ItemBuyActivity.with_buyer_item_price(buyer, item)
+    buy_activity = Analytics::ItemBuyActivity.with_buyer_item_price_success(buyer, item)
     assert_equal(Analytics::ActivityType::ITEM_BUY, buy_activity.type)
     assert_equal(buyer.name, buy_activity.actor_name)
     assert_equal(item.id, buy_activity.item_id)

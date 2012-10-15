@@ -35,7 +35,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
     act1 = Analytics::ItemDeleteActivity.with_remover_item(user, item)
     act2 = Analytics::ItemAddActivity.with_creator_item(user, item)
     act3 = Analytics::ItemEditActivity.with_editor_item_old_new_vals(user, item, {},{})
-    act4 = Analytics::ItemBuyActivity.with_buyer_item_price(user, item)
+    act4 = Analytics::ItemBuyActivity.with_buyer_item_price_success(user, item)
 
     Storage::Database.instance.add_activity(act1)
     Storage::Database.instance.add_activity(act2)

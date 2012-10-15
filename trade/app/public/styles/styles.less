@@ -18,6 +18,10 @@ h1, h2, h3, h4 {
   color: @text_color;
 }
 
+h2 {
+  .no_top_margin;
+}
+
 a, a.visited {
   text-decoration: none;
   color: @text_color;
@@ -33,7 +37,7 @@ a, a.visited {
 }
 
 #status_bar {
-  background-color: @background_color;
+  background-color: #829dbb;
   position: relative;
   padding: 4px 0;
   width: 100%;
@@ -55,7 +59,6 @@ a, a.visited {
 
 #nav_bar {
   display: inline-block;
-  margin-top: 4px;
   background-color: @background_color;
   width: 100%;
 
@@ -93,10 +96,6 @@ a, a.visited {
   width: 100%;
   display: table;
   word-break: break-all;
-
-  p {
-    margin-left: 1em;
-  }
 }
 
 .table-minimalistic {

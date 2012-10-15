@@ -29,27 +29,33 @@ module Analytics
   end
 
   class ItemBuyActivity < Activity
-    attr_accessor :price
+    attr_accessor :price, :success
 
     def initialize
       super
       self.type = ActivityType::ITEM_BUY
       self.price = -1
+      self.success = false
     end
 
-    def self.with_buyer_item_price(buyer, item)
+    def self.with_buyer_item_price_success(buyer, item, success = true)
       buy_activity = ItemBuyActivity.new
 
       buy_activity.actor_name = buyer.name
       buy_activity.item_id = item.id
       buy_activity.item_name = item.name
       buy_activity.price = item.price
+      buy_activity.success = success
 
       return buy_activity
     end
 
     def what_happened
-      return "User #{self.actor_name} bought item ##{self.item_id} #{self.item_name} for #{self.price}$"
+      if self.success
+        return "User #{self.actor_name} bought item ##{self.item_id} #{self.item_name} for #{self.price}$"
+      else
+        return "User #{self.actor_name} tried to buy item ##{self.item_id} #{self.item_name} for #{self.price}$ but purchase failed"
+      end
     end
   end
 

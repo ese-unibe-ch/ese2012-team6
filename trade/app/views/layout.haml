@@ -7,10 +7,12 @@
       Awesome Trading App
   %body
     %div#page
+      %div#header
+        %img{:src => url("/images/banner_trading.png")}
       %div#status_bar
         -if not @user.nil?
           %span.credit_status
-            Credits: $#{@user.credits}
+            Credits: $#{@user.credits} | Items: #{@user.items.size}
           %span.login_status
             Logged in as
             %a{:href => url("/user/#{@user.name}")}

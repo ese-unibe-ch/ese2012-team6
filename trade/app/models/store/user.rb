@@ -101,12 +101,16 @@ module Store
       seller = item.owner
 
       if seller.nil?
+        Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false)) if log
         return false, "item_no_owner" #Item does not belong to anybody
       elsif self.credits < item.price
+        Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false)) if log
         return false, "not_enough_credits" #Buyer does not have enough credits
       elsif !item.active?
+        Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false)) if log
         return false, "buy_inactive_item" #Trying to buy inactive item
       elsif !seller.items.include?(item)
+        Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false)) if log
         return false, "seller_not_own_item" #Seller does not own item to buy
       end
 
@@ -119,7 +123,7 @@ module Store
       self.add_item(item)
       self.credits -= item.price
 	    item.edit_time = Time.now
-      Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price(self, item)) if log
+      Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item)) if log
 
       return true, "Transaction successful"
     end

@@ -11,22 +11,23 @@
     Description
   %p
     %textarea.textbox8.about_yourself{:name => "item_description"}
-      -#=item_desc
       - lines = ("#{item_desc}").split("\n")
       - unless lines.empty?
         - lines.each do |line|
           =line
   %h3
     Change image
-  %div#button_container
+  %div.button_container
     %input.styled-button{:type => 'file', :name => "file_upload", :accept => "image/*"}
-  %p
-  %div#button_container
+  %br
+  %br
+  %div.button_container
     -if edit
       %input.styled-button{:type => "submit", :value => "Save Changes"}
     -else
       %input{:name => "_method", :type => "hidden", :value => "PUT"}
       %input.styled-button{:type => "submit", :value => "Create Item"}
+  %br
 :javascript
   function validate_login(form) {
     form.item_name.value = form.item_name.value.trim()

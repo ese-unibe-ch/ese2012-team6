@@ -40,6 +40,7 @@ module Analytics
       database = Storage::Database.instance
       activities = database.get_all_activities
       buy_activities = activities.select{|act| act.type == ActivityType::ITEM_BUY}
+      buy_activities = buy_activities.select{|act| act.success == true}
       sorted = buy_activities.sort! { |a,b| a.timestamp <=> b.timestamp }
       return sorted[0..amount-1]
     end

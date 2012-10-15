@@ -89,7 +89,7 @@ class User < Sinatra::Application
     file = params[:file_upload]
     redirect to("/user/#{params[:name]}") unless file
 
-    return 413 if file[:tempfile].size > 400*1024
+    return 413 if file[:tempfile].size > 400*1024 #file too big if bigger than 400kbyte
 
     filename = Store::User.id_image_to_filename(@user.name, file[:filename])
 
