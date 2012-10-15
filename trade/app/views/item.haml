@@ -30,7 +30,7 @@
     This item is currently not being traded
 %div#item_details
   %div.picture_container
-    %img{:src => "/images/no_image.gif", :width => "200", :height => "200" }
+    %img{:src => "#{item.image_path}", :width => "200", :height => "200" }
   %div.details_container
     %h3.no_top_margin
       Name
@@ -46,9 +46,5 @@
       %p
         No description available
     -else
-      %ul.description
-        - lines = ("#{item.description}").split("\n")
-        - unless lines.empty?
-          - lines.each do |line|
-            %li.without_points
-              = line
+      %div.markdown_view
+        =marked_down_description

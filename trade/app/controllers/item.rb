@@ -1,4 +1,6 @@
+require 'rdiscount'
 
+require_relative '../models/storage/picture_uploader'
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
 
@@ -24,13 +26,18 @@ class Item < Sinatra::Application
   get "/item/:item_id" do
     redirect '/login' unless session[:name]
 
+    user = @database.get_user_by_name(session[:name])
+    user.open_item_page_time = Time.now
     item_id = Integer(params[:item_id])
     item = @database.get_item_by_id(item_id)
 
     redirect "/user/#{@user.name}" if item.nil?
 
+    marked_down_description = RDiscount.new(item.description, :smart, :filter_html)
+
     haml :item, :locals => {
-      :item => item
+        :item => item,
+        :marked_down_description => marked_down_description.to_html
     }
   end
 
@@ -48,6 +55,33 @@ class Item < Sinatra::Application
     }
   end
 
+  #handles undo save description
+  post "/item/:item_id/edit/undo_description" do
+    redirect '/login' unless session[:name]
+
+    item_id = Integer(params[:item_id])
+    item = @database.get_item_by_id(item_id)
+
+    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
+    previous_description = Analytics::ActivityLogger.get_previous_description(item)
+
+    item.update(item.name, item.price, previous_description)
+
+    redirect "/item/#{item_id}"
+  end
+
+  #handles undo save description
+  get "/item/:item_id/edit/description" do
+    redirect '/login' unless session[:name]
+
+    item_id = Integer(params[:item_id])
+    item = @database.get_item_by_id(item_id)
+
+    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
+
+    haml :edit_description, :locals => { :item => item}
+  end
+
   # handles item editing, updates model in database
   post "/item/:item_id/edit" do
     redirect '/login' unless session[:name]
@@ -55,18 +89,31 @@ class Item < Sinatra::Application
     item_id = Integer(params[:item_id])
     item_name = params[:item_name]
 
-    #fail "Not a valid number" unless Store::Item.valid_price?(params[:item_price])
     redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
 
     item_price = Integer(params[:item_price])
     item_description = params[:item_description]
     item = @database.get_item_by_id(item_id)
 
-    item.name = item_name
-    item.price = item_price
-    item.description = item_description
+    # UG: necessary because this handler can also be called by scripts
+    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
+
+    file = params[:file_upload]
+    if file
+      file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
+
+      uploader = Storage::PictureUploader.with_path("/images/items")
+      item.image_path = uploader.upload(file, file_name)
+    end
+
+    item.update(item_name, item_price, item_description)
 
     redirect "/item/#{item_id}"
+  end
+
+  #returns the selected image. (Only usable with URL request)
+  get "/item/:item_id/images/:image_path" do
+    send_file(File.join("public", "images", params[:image_path]))
   end
 
   # handles item activation/deactivation request
@@ -74,13 +121,21 @@ class Item < Sinatra::Application
     redirect '/login' unless session[:name]
 
     activate_str = params[:activate]
-    activate = (activate_str == "true")
-
     item = @database.get_item_by_id(Integer(params[:item_id]))
+    user = @database.get_user_by_name(session[:name])
+
+    changed_owner = false
+    if user.open_item_page_time < item.edit_time && item.owner != user
+      changed_owner = true
+    end
+
+    if changed_owner
+      redirect url("/error/not_owner_of_item")
+    end
 
     redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
 
-    item.active = activate
+    item.update_status(activate_str)
 
     redirect back
   end
@@ -91,31 +146,31 @@ class Item < Sinatra::Application
 
     item_name = params[:item_name]
 
-    #fail "Not a valid number" unless Store::Item.valid_price?(params[:item_price])
     redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
 
     item_price = Integer(params[:item_price])
     item_description = params[:item_description]
 
-    item = @user.propose_item(item_name, item_price)
-    item.description = item_description unless item_description.nil? or item_description == ""
+    item = @user.propose_item(item_name, item_price, item_description)
 
-    @database.add_item(item)
+    file = params[:file_upload]
+    if file
+      file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
 
-    if back == url("/item/new?")
-      redirect "/item/#{item.id}"
-    else
-      redirect back
+      uploader = Storage::PictureUploader.with_path("/images/items")
+      item.image_path = uploader.upload(file, file_name)
     end
-end
+
+    redirect "/item/#{item.id}" if back == url("/item/new?")
+    redirect back
+  end
 
   # handles item deletion
   delete "/item/:item_id" do
 
     item_id = Integer(params[:item_id])
     item = @database.get_item_by_id(item_id)
-    @database.delete_item(item)
-    @user.remove_item(item)
+    @user.delete_item(item)
 
     redirect back
   end

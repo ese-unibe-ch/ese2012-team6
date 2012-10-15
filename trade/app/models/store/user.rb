@@ -1,8 +1,12 @@
 require 'bcrypt'
 
+require_relative '../analytics/activity_logger'
+require_relative '../analytics/activity'
+require_relative '../storage/database'
+
 module Store
   class User
-    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description
+    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description, :open_item_page_time, :image_path
 
     def initialize
       self.name = ""
@@ -11,6 +15,8 @@ module Store
       self.pwd_hash = ""
       self.pwd_salt = ""
       self.description = ""
+      self.open_item_page_time = Time.now
+	    self.image_path = "/images/no_image.gif"
     end
 
     def self.named(name)
@@ -54,9 +60,15 @@ module Store
       self.pwd_hash = BCrypt::Engine.hash_secret(password, self.pwd_salt)
     end
 
-    def propose_item(name, price)
+    def propose_item(name, price, description = "")
       item = Item.named_priced_with_owner(name, price, self)
+      item.description = description
+
       self.items << item
+
+      Storage::Database.instance.add_item(item)
+      Analytics::ActivityLogger.log_activity(Analytics::ItemAddActivity.with_creator_item(self, item))
+
       return item
     end
 
@@ -76,6 +88,13 @@ module Store
         item.owner = nil
         self.items.delete(item)
       end
+    end
+
+    def delete_item(item)
+      self.remove_item(item)
+      Storage::Database.instance.delete_item(item)
+
+      Analytics::ActivityLogger.log_activity(Analytics::ItemDeleteActivity.with_remover_item(self, item))
     end
 
     def buy_item(item)
@@ -99,6 +118,8 @@ module Store
 
       self.add_item(item)
       self.credits -= item.price
+	    item.edit_time = Time.now
+      Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price(self, item))
 
       return true, "Transaction successful"
     end
@@ -119,6 +140,10 @@ module Store
 
     def to_s
       return "#{self.name}, #{self.credits}"
+    end
+
+    def self.id_image_to_filename(id, path)
+      "#{id}_#{path}"
     end
   end
 end

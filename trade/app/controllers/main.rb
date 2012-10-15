@@ -13,15 +13,29 @@ class Main < Sinatra::Application
   get "/" do
     redirect '/login' unless session[:name]
 
+    user = @database.get_user_by_name(session[:name])
+    user.open_item_page_time = Time.now
+
+    most_recent_purchases = Analytics::ActivityLogger.get_most_recent_purchases(10)
+
     haml :store, :locals => {
-        :users => @database.get_users
+        :users => @database.get_users,
+        :most_recent_purchases => most_recent_purchases
     }
   end
 
   # Error handler, shows error message
   get "/error/:error_msg" do
 
+    should_refresh = false
+
     case params[:error_msg]
+      when "not_owner_of_item"
+        error_message = "Item does not belong to you anymore"
+        should_refresh = true
+      when "item_changed_details"
+        error_message = "Trying to buy inactive item or the owner changed some details"
+        should_refresh = true
       when "item_no_owner"
         error_message = "Item does not belong to anybody"
       when "not_enough_credits"
@@ -44,7 +58,7 @@ class Main < Sinatra::Application
         error_message = "Your password is unsafe. It must be at least 8 characters long and contain
                         at least one upper case letter and at least one number"
       when "invalid_price"
-        error_message = "You entered an invalid price. Please enter a positive numeric integral value"
+        error_message = "You entered an invalid price. Please enter a positive numeric value"
       when "wrong_password"
         error_message = "You entered a wrong password"
     end
@@ -53,7 +67,8 @@ class Main < Sinatra::Application
 
     haml :error, :locals => {
         :error_message => error_message,
-        :last_page => last_page
+        :last_page => last_page,
+        :should_refresh => should_refresh
     }
   end
 end

@@ -12,6 +12,7 @@ require_relative('controllers/main')
 require_relative('controllers/register')
 require_relative('controllers/item')
 require_relative('controllers/user')
+require_relative('controllers/activity_logger')
 
 class App < Sinatra::Base
 
@@ -20,6 +21,7 @@ class App < Sinatra::Base
   use Register
   use Item
   use User
+  use ActivityLogger
 
   enable :sessions
   set :public_folder, 'app/public'
@@ -46,12 +48,6 @@ class App < Sinatra::Base
     heart.set_active
     meg.set_active
     bender.set_active
-
-    @database.add_item(liver)
-    @database.add_item(heart)
-    @database.add_item(meg)
-    @database.add_item(random)
-    @database.add_item(bender)
   end
 end
 
