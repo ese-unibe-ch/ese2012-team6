@@ -1,6 +1,7 @@
 require 'rdiscount'
 
 require_relative '../models/storage/picture_uploader'
+require_relative '../models/security/string_manager'
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
 
@@ -144,7 +145,8 @@ class Item < Sinatra::Application
   put "/item" do
     redirect back if params[:item_name] == "" or params[:item_price] == ""
 
-    item_name = params[:item_name]
+    item_name_unsafe = params[:item_name]
+    item_name =Security::String_Manager::destroy_script(item_name_unsafe)
 
     redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
 
