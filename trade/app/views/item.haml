@@ -35,16 +35,22 @@
     %h3.no_top_margin
       Name
     %p
-      #{item.name}
+      :escaped
+        #{item.name}
     %h3
       Price
     %p
       #{item.price}
     %h3
-      Description
-    -if item.description == ""
-      %p
-        No description available
-    -else
-      %div.markdown_view
-        =marked_down_description
+      Owner
+    %p
+      :escaped
+        #{item.owner.name}
+%h3
+  Description
+-if item.description == ""
+  %p
+    No description available
+-else
+  %div.markdown_view
+    =marked_down_description

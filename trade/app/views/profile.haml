@@ -2,7 +2,8 @@
   -if is_my_profile
     My Profile
   -else
-    Profile of #{viewed_user.name}
+    :escaped
+      Profile of #{viewed_user.name}
 %div.action_buttons.float_right
   -if is_my_profile
     %div.button_container
@@ -12,7 +13,8 @@
       %form{:action => "/user/#{@user.name}/edit", :method => "GET"}
         %input.styled-button{:type => "submit", :value => "Edit Profile"}
 %h3
-  #{is_my_profile ? "Your Credits" : "Credits of " + viewed_user.name}:
+  :escaped
+    #{is_my_profile ? "Your Credits" : "Credits of " + viewed_user.name}:
 %p
   $#{viewed_user.credits}
 
@@ -20,7 +22,8 @@
   %img{:src => "#{viewed_user.image_path}", :width => "200", :height => "200" }
 
 %h3
-  #{is_my_profile ? "You own" : viewed_user.name + " owns"} the following items:
+  :escaped
+    #{is_my_profile ? "You own" : viewed_user.name + " owns"} the following items:
 -if viewed_user.items.empty? and not is_my_profile
   %p
     No items available
@@ -76,22 +79,6 @@
               %div.button_container
                 %input{:name => "_method", :type => "hidden", :value => "put"}
                 %input.styled-button.small{:type => "submit", :value => "Quick Add"}
-          :javascript
-            function validate_quick_add(form) {
-              form.item_name.value = form.item_name.value.trim()
-              if (form.item_name.value == "") {
-                form.item_name.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
-                document.getElementById('error_message').innerHTML = "Please enter an item name"
-                return false
-              }
-              else if (form.item_price.value == "") {
-                form.item_price.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
-                document.getElementById('error_message').innerHTML = "Please enter a price for the item"
-                return false
-              }
-
-              return true;
-            }
 %h3
   #{is_my_profile ? "Your Description" : "Description of " + viewed_user.name}:
 -if viewed_user.description == ""
@@ -99,4 +86,19 @@
 -else
   %div.markdown_view
     =marked_down_description
+:javascript
+  function validate_quick_add(form) {
+    form.item_name.value = form.item_name.value.trim()
+    if (form.item_name.value == "") {
+      form.item_name.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
+      document.getElementById('error_message').innerHTML = "Please enter an item name"
+      return false
+    }
+    else if (form.item_price.value == "") {
+      form.item_price.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
+      document.getElementById('error_message').innerHTML = "Please enter a price for the item"
+      return false
+    }
 
+    return true;
+  }

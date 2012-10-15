@@ -14,7 +14,8 @@
           %span.login_status
             Logged in as
             %a{:href => url("/user/#{@user.name}")}
-              #{@user.name}
+              :escaped
+                #{@user.name}
             |
             %a{:href => url("/logout")} Logout
         -else

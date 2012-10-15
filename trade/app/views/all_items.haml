@@ -13,12 +13,14 @@
       %tr
         %td
           %a{:href => url("/item/#{item.id}")}
-            =item.name
+            :escaped
+              #{item.name}
         %td.ralign
           #{item.price}
         %td
           %a{:href => url("/user/#{item.owner.name}")}
-            #{item.owner.name}
+            :escaped
+              #{item.owner.name}
         %td
           -if item.active?
             %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}

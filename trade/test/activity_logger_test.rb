@@ -7,7 +7,7 @@ require_relative '../app/models/store/item'
 class ActivityLoggerTest < Test::Unit::TestCase
   def test_log_activity
     user = Store::User.named("Hans")
-    item = user.propose_item("Test", 100)
+    item = user.propose_item("Test", 100, "", false)
 
     act2 = Analytics::ItemDeleteActivity.with_remover_item(user, item)
 

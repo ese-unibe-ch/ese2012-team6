@@ -16,11 +16,15 @@
       -for item in user.get_active_items
         %tr
           %td
-            %a{:href => url("/item/#{item.id}")} #{item.name}
+            %a{:href => url("/item/#{item.id}")}
+              :escaped
+                #{item.name}
           %td
             #{item.price}
           %td
-            %a{:href => url("/user/#{item.owner.name}")} #{item.owner.name}
+            %a{:href => url("/user/#{item.owner.name}")}
+              :escaped
+                #{item.owner.name}
           %td
             %div.action_buttons
               -if user != @user

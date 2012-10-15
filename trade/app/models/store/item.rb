@@ -43,7 +43,7 @@ module Store
       self.active = false
     end
 
-    def update_status(new_status)
+    def update_status(new_status, log = true)
 
       new_status = (new_status == "true")
       old_status = self.active
@@ -51,7 +51,7 @@ module Store
       if old_status != new_status
         self.active = new_status
         self.edit_time = Time.now
-        Analytics::ActivityLogger.log_activity(Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status))
+        Analytics::ActivityLogger.log_activity(Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status)) if log
       end
     end
 
@@ -63,7 +63,7 @@ module Store
       return (not self.active)
     end
 
-    def update(new_name, new_price, new_desc)
+    def update(new_name, new_price, new_desc, log = true)
 
       fail unless self.editable?
 
@@ -75,7 +75,7 @@ module Store
         self.price = new_price
         self.description = new_desc
         self.edit_time = Time.now
-        Analytics::ActivityLogger.log_activity(Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals))
+        Analytics::ActivityLogger.log_activity(Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals)) if log
       end
     end
   end
