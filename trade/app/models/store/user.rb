@@ -90,11 +90,11 @@ module Store
       end
     end
 
-    def delete_item(item)
+    def delete_item(item, log = true)
       self.remove_item(item)
       Storage::Database.instance.delete_item(item)
 
-      Analytics::ActivityLogger.log_activity(Analytics::ItemDeleteActivity.with_remover_item(self, item))
+      Analytics::ActivityLogger.log_activity(Analytics::ItemDeleteActivity.with_remover_item(self, item)) if log
     end
 
     def buy_item(item, log = true)

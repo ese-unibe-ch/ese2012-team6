@@ -7,10 +7,12 @@ require_relative '../app/models/store/item'
 class ActivityLoggerTest < Test::Unit::TestCase
   def test_log_activity
     user = Store::User.named("Hans")
-    item = user.propose_item("Test", 100, "", false)
+    item = user.propose_item("Test", 100, "", false) #don't log item creation
 
+    act1 = Analytics::ItemAddActivity.with_creator_item(user, item)
     act2 = Analytics::ItemDeleteActivity.with_remover_item(user, item)
 
+    Analytics::ActivityLogger.log_activity(act1)
     Analytics::ActivityLogger.log_activity(act2)
 
     logged_activities = Storage::Database.instance.get_all_activities
@@ -28,7 +30,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
 
   def test_get_all_activities
     user = Store::User.named("Hans")
-    item = user.propose_item("Test", 100)
+    item = user.propose_item("Test", 100, "", false) #don't log item creation
 
     act1 = Analytics::ItemDeleteActivity.with_remover_item(user, item)
     act2 = Analytics::ItemAddActivity.with_creator_item(user, item)
@@ -40,13 +42,13 @@ class ActivityLoggerTest < Test::Unit::TestCase
     Storage::Database.instance.add_activity(act3)
     Storage::Database.instance.add_activity(act4)
 
-    assert_equal([act1, act2, act3, act4], Analytics::ActivityLogger.get_all_activities[1..4])
+    assert_equal([act1, act2, act3, act4], Analytics::ActivityLogger.get_all_activities)
     Storage::Database.instance.clear_activities
   end
 
   def test_previous_description
     user = Store::User.named("Hans")
-    item = user.propose_item("Test", 100, "Previous Description")
+    item = user.propose_item("Test", 100, "Previous Description", false)
 
     item.update("Test", 100, "New Description")
 
