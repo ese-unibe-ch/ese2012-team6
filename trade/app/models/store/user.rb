@@ -19,6 +19,10 @@ module Store
 	    self.image_path = "/images/no_image.gif"
     end
 
+    def name=(name)
+      @name = Security::String_Manager::destroy_script(name)
+    end
+
     def self.named(name)
       user = User.new
       user.name = name

@@ -15,6 +15,10 @@ module Store
       self.edit_time = Time.now
     end
 
+    def name=(name)
+      @name = Security::String_Manager::destroy_script(name)
+    end
+
     def self.named_priced_with_owner(name, price, owner)
       item = Item.new
       item.name = name
