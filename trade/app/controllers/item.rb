@@ -1,7 +1,7 @@
 require 'rdiscount'
 
 require_relative '../models/storage/picture_uploader'
-require_relative '../models/security/string_manager'
+require_relative '../models/security/string_checker'
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
 
@@ -144,7 +144,7 @@ class Item < Sinatra::Application
     redirect "/error/wrong_size" if file and file[:tempfile].size > 400*1024
 
     item_name_unsafe = params[:item_name]
-    item_name = Security::String_Manager::destroy_script(item_name_unsafe)
+    item_name = Security::StringChecker.destroy_script(item_name_unsafe)
 
     redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
 

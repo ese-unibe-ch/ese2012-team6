@@ -19,7 +19,7 @@ class Authentication < Sinatra::Application
 
   # POST handler for login request, processes input and logs user in if possible
   post "/login" do
-    name = params[:username].gsub(/\s+/, "") #remove all whitespaces
+    name = Security::StringChecker.destroy_script(params[:username])
     password = params[:password].gsub(/\s+/, "") #remove all whitespaces
 
     redirect '/error/login_no_pwd_user' if name.nil? or password.nil? or name == "" or password == ""

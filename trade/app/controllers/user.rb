@@ -40,8 +40,7 @@ class User < Sinatra::Application
     @user.description = new_desc
 
     if new_pwd != ""
-
-      redirect "/error/pwd_unsafe" unless String_Manager::is_safe_pw?(new_pwd)
+      redirect "/error/pwd_unsafe" unless Security::StringChecker.is_safe_pw?(new_pwd)
 
       @user.change_password(new_pwd)
     end
