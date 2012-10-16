@@ -1,6 +1,6 @@
 %h2 Register
-%p
-  Required fields are marked in bold. Whitespaces will be ignored
+%p#reqistry_information
+  Required fields are marked in bold. Leading whitespaces will be ignored and special characters will be removed due to security
 %form{:action => "/register", :method => "POST", :onsubmit => "return validate_login(this);"}
   %table
     %tr

@@ -20,7 +20,7 @@ module Analytics
       @@last_id += 1
       self.id = @@last_id
       self.type = ActivityType::NONE
-      self.timestamp = Time.now.getutc
+      self.timestamp = Time.now
     end
 
     def what_happened?

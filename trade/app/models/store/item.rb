@@ -1,5 +1,6 @@
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
+require_relative '../security/string_checker'
 
 module Store
   class Item
@@ -13,6 +14,10 @@ module Store
       self.description = ""
       self.image_path = "/images/no_image.gif"
       self.edit_time = Time.now
+    end
+
+    def name=(name)
+      @name = Security::StringChecker.destroy_script(name)
     end
 
     def self.named_priced_with_owner(name, price, owner)

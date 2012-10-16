@@ -5,7 +5,7 @@
     %img{:src => "#{item.image_path}", :width => "200", :height => "200" }
   %div.details_container
     =haml :"/partials/item_edit_form", :locals => { :action_url => "/item/#{item.id}/edit",
-                                                    :item_name => item.name,
+                                                    :item_name => Security::StringChecker.destroy_script(item.name),
                                                     :item_price => item.price,
                                                     :edit => true,
                                                     :item_desc => Analytics::ActivityLogger.get_previous_description(item)}

@@ -2,6 +2,7 @@ require 'test/unit'
 require 'require_relative'
 require_relative '../app/models/store/item'
 require_relative '../app/models/store/user'
+require_relative '../app/models/security/string_checker'
 
 class ItemTest < Test::Unit::TestCase
   def test_item_name

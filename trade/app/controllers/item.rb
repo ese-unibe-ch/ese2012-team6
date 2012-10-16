@@ -139,12 +139,11 @@ class Item < Sinatra::Application
   # handles new item creation, must be PUT request
   put "/item" do
     redirect back if params[:item_name] == "" or params[:item_price] == ""
-    file = params[:file_upload]
 
+    file = params[:file_upload]
     redirect "/error/wrong_size" if file and file[:tempfile].size > 400*1024
 
-    item_name_unsafe = params[:item_name]
-    item_name = Security::StringChecker.destroy_script(item_name_unsafe)
+    item_name = Security::StringChecker.destroy_script(params[:item_name])
 
     redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
 
