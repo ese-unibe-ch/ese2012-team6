@@ -166,8 +166,7 @@ class Item < Sinatra::Application
   delete "/item/:item_id" do
 
     item_id = Integer(params[:item_id])
-    item = @database.get_item_by_id(item_id)
-    @user.delete_item(item)
+    @user.delete_item(item_id)
 
     redirect back
   end

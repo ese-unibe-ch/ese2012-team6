@@ -90,7 +90,8 @@ module Store
       end
     end
 
-    def delete_item(item, log = true)
+    def delete_item(item_id, log = true)
+      item = Storage::Database.instance.get_item_by_id(item_id)
       self.remove_item(item)
       Storage::Database.instance.delete_item(item)
 
