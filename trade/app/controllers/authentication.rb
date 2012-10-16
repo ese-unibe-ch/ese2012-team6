@@ -31,11 +31,13 @@ class Authentication < Sinatra::Application
     redirect '/login' unless @database.get_user_by_name(name).password_matches?(password)
 
     session[:name] = name
+    Analytics::ActivityLogger.log_activity(Analytics::UserLoginActivity.with_username(name))
     redirect '/'
   end
 
   # GET handler for logout request, logs out the user
   get "/logout" do
+    Analytics::ActivityLogger.log_activity(Analytics::UserLogoutActivity.with_username(@user.name))
     session[:name] = nil
     redirect '/login'
   end

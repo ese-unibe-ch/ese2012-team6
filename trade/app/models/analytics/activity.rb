@@ -1,34 +1,62 @@
 module Analytics
   module ActivityType
-    ITEM_BUY = "ItemBuy"
-    ITEM_EDIT = "ItemEdit"
-    ITEM_ADD = "ItemAdd"
-    ITEM_STATUS_CHANGE = "ItemStatusChange"
-    ITEM_DELETE = "ItemDelete"
-    NONE = "None"
+    if not defined? ITEM_BUY
+      ITEM_BUY = "ItemBuy"
+      ITEM_EDIT = "ItemEdit"
+      ITEM_ADD = "ItemAdd"
+      ITEM_STATUS_CHANGE = "ItemStatusChange"
+      ITEM_DELETE = "ItemDelete"
+      USER_LOGIN = "UserLogin"
+      USER_LOGOUT = "UserLogout"
+      NONE = "None"
+    end
   end
 
   class Activity
-    attr_accessor :id, :type, :timestamp, :actor_name, :item_id, :item_name
+    attr_accessor :id, :type, :timestamp
     @@last_id = 0
 
     def initialize
       @@last_id += 1
       self.id = @@last_id
       self.type = ActivityType::NONE
-      self.actor_name = ""
-      self.item_id = -1
-      self.item_name = ""
       self.timestamp = Time.now.getutc
+    end
+
+    def what_happened?
+      return "Nothing"
+    end
+  end
+
+  class ItemActivity < Activity
+    attr_accessor :actor_name, :item_id, :item_name
+
+    def initialize
+      super
+      self.actor_name = ""
+      self.item_name = ""
+      self.item_id = -1
     end
 
     def what_happened
       return "Nothing"
     end
-
   end
 
-  class ItemBuyActivity < Activity
+  class UserActivity < Activity
+    attr_accessor :user_name
+
+    def initialize
+      super
+      self.user_name = ""
+    end
+
+    def what_happened
+      return "Nothing"
+    end
+  end
+
+  class ItemBuyActivity < ItemActivity
     attr_accessor :price, :success
 
     def initialize
@@ -59,7 +87,7 @@ module Analytics
     end
   end
 
-  class ItemEditActivity < Activity
+  class ItemEditActivity < ItemActivity
     attr_accessor :old_values, :new_values
 
     def initialize
@@ -88,7 +116,7 @@ module Analytics
   end
 
 
-  class ItemAddActivity < Activity
+  class ItemAddActivity < ItemActivity
 
     def initialize
       super
@@ -110,7 +138,7 @@ module Analytics
     end
   end
 
-  class ItemStatusChangeActivity < Activity
+  class ItemStatusChangeActivity < ItemActivity
     attr_accessor :new_status
 
     def initialize
@@ -136,7 +164,7 @@ module Analytics
     end
   end
 
-  class ItemDeleteActivity < Activity
+  class ItemDeleteActivity < ItemActivity
     def initialize
       super
       self.type = ActivityType::ITEM_DELETE
@@ -154,6 +182,40 @@ module Analytics
 
     def what_happened
       return "User #{self.actor_name} deleted item ##{self.item_id} #{self.item_name}"
+    end
+  end
+
+  class UserLoginActivity < UserActivity
+    def initialize
+      super
+      self.type = ActivityType::USER_LOGIN
+    end
+
+    def self.with_username(user_name)
+      login_act = UserLoginActivity.new
+      login_act.user_name = user_name
+      return login_act
+    end
+
+    def what_happened
+      return "User #{self.user_name} logged in"
+    end
+  end
+
+  class UserLogoutActivity < UserActivity
+    def initialize
+      super
+      self.type = ActivityType::USER_LOGOUT
+    end
+
+    def self.with_username(user_name)
+      logout_act = UserLogoutActivity.new
+      logout_act.user_name = user_name
+      return logout_act
+    end
+
+    def what_happened
+      return "User #{self.user_name} logged out"
     end
   end
 end

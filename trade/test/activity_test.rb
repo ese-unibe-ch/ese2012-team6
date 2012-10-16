@@ -6,7 +6,7 @@ require_relative '../app/models/store/item'
 
 class ActivityTest < Test::Unit::TestCase
   def test_activity_creation
-    activity = Analytics::Activity.new
+    activity = Analytics::ItemActivity.new
     assert_equal(Analytics::ActivityType::NONE, activity.type)
   end
 
