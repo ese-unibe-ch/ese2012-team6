@@ -101,6 +101,7 @@ class Item < Sinatra::Application
     file = params[:file_upload]
     if file
       file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
+      redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
 
       uploader = Storage::PictureUploader.with_path("/images/items")
       item.image_path = uploader.upload(file, file_name)
@@ -156,6 +157,7 @@ class Item < Sinatra::Application
     file = params[:file_upload]
     if file
       file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
+      redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
 
       uploader = Storage::PictureUploader.with_path("/images/items")
       item.image_path = uploader.upload(file, file_name)
