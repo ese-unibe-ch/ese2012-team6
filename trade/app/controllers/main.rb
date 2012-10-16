@@ -11,8 +11,8 @@ class Main < Sinatra::Application
 
   # Default page handler, shows store page
   get "/" do
-    redirect '/login' unless session[:name]
 
+    redirect '/login' unless session[:name]
     user = @database.get_user_by_name(session[:name])
     user.open_item_page_time = Time.now
 

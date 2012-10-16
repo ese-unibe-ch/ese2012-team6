@@ -19,10 +19,11 @@ class Authentication < Sinatra::Application
 
   # POST handler for login request, processes input and logs user in if possible
   post "/login" do
-    name = params[:username]
+    name =Security::String_Manager::destroy_script(params[:username])
     password = params[:password]
 
     redirect '/error/login_no_pwd_user' if name.nil? or password.nil? or name == "" or password == ""
+
     redirect '/error/user_no_exists' unless @database.user_exists?(name)
 
     user = @database.get_user_by_name(name)
@@ -31,6 +32,7 @@ class Authentication < Sinatra::Application
     redirect '/login' unless @database.get_user_by_name(name).password_matches?(password)
 
     session[:name] = name
+
     redirect '/'
   end
 
