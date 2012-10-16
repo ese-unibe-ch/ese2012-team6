@@ -18,9 +18,8 @@ class Main < Sinatra::Application
 
     most_recent_purchases = Analytics::ActivityLogger.get_most_recent_purchases(10)
 
-    haml :store, :locals => {
-        :users => @database.get_users,
-        :most_recent_purchases => most_recent_purchases
+    haml :store, :locals => { :users => @database.get_users,
+                              :most_recent_purchases => most_recent_purchases
     }
   end
 
@@ -61,14 +60,16 @@ class Main < Sinatra::Application
         error_message = "You entered an invalid price. Please enter a positive numeric value"
       when "wrong_password"
         error_message = "You entered a wrong password"
+      when "wrong_size"
+        error_message = "Please choose a picture with the maximum size of 400kB"
     end
+
 
     last_page = back
 
-    haml :error, :locals => {
-        :error_message => error_message,
-        :last_page => last_page,
-        :should_refresh => should_refresh
+    haml :error, :locals => { :error_message => error_message,
+                              :last_page => last_page,
+                              :should_refresh => should_refresh
     }
   end
 end

@@ -102,9 +102,8 @@ class Item < Sinatra::Application
     file = params[:file_upload]
 
     if file
-      return 413 if file[:tempfile].size > 400*1024
-
       file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
+      redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
 
       uploader = Storage::PictureUploader.with_path("/images/items")
       item.image_path = uploader.upload(file, file_name)
@@ -140,9 +139,12 @@ class Item < Sinatra::Application
   # handles new item creation, must be PUT request
   put "/item" do
     redirect back if params[:item_name] == "" or params[:item_price] == ""
+    file = params[:file_upload]
+
+    redirect "/error/wrong_size" if file and file[:tempfile].size > 400*1024
 
     item_name_unsafe = params[:item_name]
-    item_name =Security::String_Manager::destroy_script(item_name_unsafe)
+    item_name = Security::String_Manager::destroy_script(item_name_unsafe)
 
     redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
 
@@ -151,9 +153,7 @@ class Item < Sinatra::Application
 
     item = @user.propose_item(item_name, item_price, item_description)
 
-    file = params[:file_upload]
     if file
-      return 413 if file[:tempfile].size > 400*1024
       file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
 
       uploader = Storage::PictureUploader.with_path("/images/items")

@@ -22,8 +22,6 @@ class Register < Sinatra::Application
     user_repeated_pwd = params[:rep_password].gsub(/\s+/, "")
     user_description = params[:description].strip #remove leading and trailing whitespaces
 
-
-
     redirect 'error/no_user_name' if user_name == ""
     redirect 'error/user_already_exists' if @database.user_exists?(user_name)
     redirect 'error/pwd_unsafe' unless String_Manager::is_safe_pw?(user_pwd)
