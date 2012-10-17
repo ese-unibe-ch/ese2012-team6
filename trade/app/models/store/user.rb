@@ -25,11 +25,15 @@ module Store
     end
 
     def save
+      fail if @@users.has_key?(self.name)
       @@users[self.name] = self
+      fail unless @@users.has_key?(self.name)
     end
 
     def delete
+      fail unless @@users.has_key?(self.name)
       @@users.delete(self.name)
+      fail if @@users.has_key?(self.name)
     end
 
     def self.by_name(name)

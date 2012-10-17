@@ -20,12 +20,16 @@ module Store
 
     # save item to system
     def save
+      fail if @@items.has_key?(self.id)
       @@items[self.id] = self
+      fail unless @@items.has_key?(self.id)
     end
 
     # delete item from system
     def delete
+      fail unless @@items.has_key?(self.id)
       @@items.delete(self.id)
+      fail if @@items.has_key?(self.id)
     end
 
     # retrieve item object by id from system
