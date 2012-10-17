@@ -11,7 +11,7 @@
       %th Active
       %th
   %tbody
-    -for item in @database.get_items
+    -for item in Store::Item.all
       %tr
         %td
           %a{:href => url("/item/#{item.id}")}

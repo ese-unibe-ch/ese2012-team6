@@ -2,10 +2,11 @@ require 'bcrypt'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
-require_relative '../storage/database'
 
 module Store
   class User
+    @@users = {}
+
     attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description, :open_item_page_time, :image_path
 
     def initialize
@@ -21,6 +22,30 @@ module Store
 
     def name=(name)
       @name = Security::StringChecker.destroy_script(name)
+    end
+
+    def save
+      fail if @@users.has_key?(self.name)
+      @@users[self.name] = self
+      fail unless @@users.has_key?(self.name)
+    end
+
+    def delete
+      fail unless @@users.has_key?(self.name)
+      @@users.delete(self.name)
+      fail if @@users.has_key?(self.name)
+    end
+
+    def self.by_name(name)
+      return @@users[name]
+    end
+
+    def self.all
+      return @@users.values.dup
+    end
+
+    def self.exists?(name)
+      return @@users.has_key?(name)
     end
 
     def self.named(name)
@@ -68,10 +93,10 @@ module Store
       item = Item.named_priced_with_owner(name, price, self)
       item.description = description
 
-      self.items << item
+      item.save
+      self.attach_item(item)
 
-      Storage::Database.instance.add_item(item)
-      Analytics::ActivityLogger.log_activity(Analytics::ItemAddActivity.with_creator_item(self, item)) if log
+      Analytics::ItemAddActivity.with_creator_item(self, item).log if log
 
       return item
     end
@@ -82,12 +107,12 @@ module Store
       return active_items
     end
 
-    def add_item(item)
+    def attach_item(item)
       self.items << item
       item.owner = self
     end
 
-    def remove_item(item)
+    def release_item(item)
       if self.items.include?(item)
         item.owner = nil
         self.items.delete(item)
@@ -95,40 +120,42 @@ module Store
     end
 
     def delete_item(item_id, log = true)
-      item = Storage::Database.instance.get_item_by_id(item_id)
-      self.remove_item(item)
-      Storage::Database.instance.delete_item(item)
+      item = Store::Item.by_id(item_id)
 
-      Analytics::ActivityLogger.log_activity(Analytics::ItemDeleteActivity.with_remover_item(self, item)) if log
+      self.release_item(item)
+      item.delete
+
+      Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
     end
 
     def buy_item(item, log = true)
       seller = item.owner
 
       if seller.nil?
-        Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false)) if log
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "item_no_owner" #Item does not belong to anybody
       elsif self.credits < item.price
-        Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false)) if log
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "not_enough_credits" #Buyer does not have enough credits
       elsif !item.active?
-        Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false)) if log
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "buy_inactive_item" #Trying to buy inactive item
       elsif !seller.items.include?(item)
-        Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false)) if log
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "seller_not_own_item" #Seller does not own item to buy
       end
 
-      seller.remove_item(item)
+      seller.release_item(item)
       seller.credits += item.price
 
-      item.owner = self
-      item.set_inactive
+      item.deactivate
 
-      self.add_item(item)
+      self.attach_item(item)
       self.credits -= item.price
-	    item.edit_time = Time.now
-      Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item)) if log
+
+	    item.notify_change
+
+      Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item).log if log
 
       return true, "Transaction successful"
     end
@@ -153,6 +180,14 @@ module Store
 
     def self.id_image_to_filename(id, path)
       "#{id}_#{path}"
+    end
+
+    def login
+      Analytics::UserLoginActivity.with_username(name).log
+    end
+
+    def logout
+      Analytics::UserLogoutActivity.with_username(name).log
     end
   end
 end
