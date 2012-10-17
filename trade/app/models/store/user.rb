@@ -90,7 +90,7 @@ module Store
       item.description = description
 
       item.save
-      self.add_item(item)
+      self.attach_item(item)
 
       Analytics::ItemAddActivity.with_creator_item(self, item).log if log
 
@@ -103,7 +103,7 @@ module Store
       return active_items
     end
 
-    def add_item(item)
+    def attach_item(item)
       self.items << item
       item.owner = self
     end
@@ -144,12 +144,12 @@ module Store
       seller.release_item(item)
       seller.credits += item.price
 
-      item.owner = self
       item.deactivate
 
-      self.add_item(item)
+      self.attach_item(item)
       self.credits -= item.price
-	    item.edit_time = Time.now
+
+	    item.notify_change
 
       Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item).log if log
 
@@ -176,6 +176,14 @@ module Store
 
     def self.id_image_to_filename(id, path)
       "#{id}_#{path}"
+    end
+
+    def login
+      Analytics::UserLoginActivity.with_username(name).log
+    end
+
+    def logout
+      Analytics::UserLogoutActivity.with_username(name).log
     end
   end
 end

@@ -2,7 +2,6 @@ require 'haml'
 require_relative('../models/store/item')
 require_relative('../models/store/user')
 
-
 # Handles all requests concerning user registration
 class Register < Sinatra::Application
 

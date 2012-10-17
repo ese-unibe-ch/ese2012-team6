@@ -18,18 +18,22 @@ module Store
       self.edit_time = Time.now
     end
 
+    # save item to system
     def save
       @@items[self.id] = self
     end
 
+    # delete item from system
     def delete
       @@items.delete(self.id)
     end
 
+    # retrieve item object by id from system
     def self.by_id(id)
       return @@items[id]
     end
 
+    # get all stored items
     def self.all
       return @@items.values.dup
     end
@@ -73,7 +77,8 @@ module Store
 
       if old_status != new_status
         self.active = new_status
-        self.edit_time = Time.now
+
+        self.notify_change
         Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log
       end
     end
@@ -97,10 +102,14 @@ module Store
         self.name = new_name
         self.price = new_price
         self.description = new_desc
-        self.edit_time = Time.now
 
+        self.notify_change
         Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals).log if log
       end
+    end
+
+    def notify_change
+      self.edit_time = Time.now
     end
   end
 end

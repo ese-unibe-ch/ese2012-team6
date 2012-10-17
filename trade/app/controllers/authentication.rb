@@ -28,7 +28,7 @@ class Authentication < Sinatra::Application
     redirect '/error/wrong_password' unless user.password_matches?(password)
 
     session[:name] = name
-    Analytics::ActivityLogger.log(Analytics::UserLoginActivity.with_username(name))
+    user.login
 
     redirect '/'
   end
@@ -36,9 +36,12 @@ class Authentication < Sinatra::Application
   # GET handler for logout request, logs out the user
   # UG: TODO: Should be POST
   get "/logout" do
-    Analytics::UserLogoutActivity.with_username(@user.name).log
-    session[:name] = nil
+    redirect '/' unless @user
+
+    @user.logout
     @user = nil
+    session[:name] = nil
+
     redirect '/login'
   end
 end

@@ -56,11 +56,7 @@ class User < Sinatra::Application
     item_id = Integer(params[:item_id])
     item = Store::Item.by_id(item_id)
 
-    changed_item_details = true
-    if @user.open_item_page_time >= item.edit_time
-      changed_item_details = false
-    end
-
+    changed_item_details =  @user.open_item_page_time < item.edit_time
     redirect url("/error/item_changed_details") if changed_item_details
 
     buy_success, buy_message = @user.buy_item(item)

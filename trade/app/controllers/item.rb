@@ -166,6 +166,7 @@ class Item < Sinatra::Application
   # handles item deletion
   delete "/item/:item_id" do
     redirect '/login' unless @user
+    # UG: Check whether user can really delete item
 
     item_id = Integer(params[:item_id])
     @user.delete_item(item_id)
