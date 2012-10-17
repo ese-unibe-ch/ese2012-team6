@@ -5,7 +5,9 @@ require_relative '../security/string_checker'
 module Store
   class Item
     attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path
+
     @@last_id = 0
+    @@items = {}
 
     def initialize
       @@last_id += 1
@@ -14,6 +16,22 @@ module Store
       self.description = ""
       self.image_path = "/images/no_image.gif"
       self.edit_time = Time.now
+    end
+
+    def save
+      @@items[self.id] = self
+    end
+
+    def delete
+      @@items.delete(self.id)
+    end
+
+    def self.by_id(id)
+      return @@items[id]
+    end
+
+    def self.all
+      return @@items.values.dup
     end
 
     def name=(name)
@@ -40,11 +58,11 @@ module Store
       return "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
     end
 
-    def set_active
+    def activate
       self.active = true
     end
 
-    def set_inactive
+    def deactivate
       self.active = false
     end
 
@@ -56,7 +74,7 @@ module Store
       if old_status != new_status
         self.active = new_status
         self.edit_time = Time.now
-        Analytics::ActivityLogger.log_activity(Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status)) if log
+        Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log
       end
     end
 
@@ -80,7 +98,8 @@ module Store
         self.price = new_price
         self.description = new_desc
         self.edit_time = Time.now
-        Analytics::ActivityLogger.log_activity(Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals)) if log
+
+        Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals).log if log
       end
     end
   end

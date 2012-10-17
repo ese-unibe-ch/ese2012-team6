@@ -36,6 +36,18 @@
         %th Active
         %th
     %tbody
+      -if is_my_profile
+        %tr
+          %form{:action => "/item", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
+            %td
+              %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
+            %td
+              %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
+            %td
+            %td
+              %div.button_container
+                %input{:name => "_method", :type => "hidden", :value => "put"}
+                %input.styled-button.small{:type => "submit", :value => "Quick Add"}
       -for item in viewed_user.items
         %tr
           %td
@@ -67,18 +79,6 @@
                   %form{:action => "/item/#{item.id}", :method => "POST"}
                     %input{:name => "_method", :type => "hidden", :value => "delete"}
                     %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
-      -if is_my_profile
-        %tr
-          %form{:action => "/item", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
-            %td
-              %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
-            %td
-              %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
-            %td
-            %td
-              %div.button_container
-                %input{:name => "_method", :type => "hidden", :value => "put"}
-                %input.styled-button.small{:type => "submit", :value => "Quick Add"}
 %h3
   #{is_my_profile ? "Your Description" : "Description of " + viewed_user.name}:
 -if viewed_user.description == ""
