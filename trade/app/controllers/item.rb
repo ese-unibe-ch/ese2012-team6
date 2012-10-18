@@ -65,7 +65,7 @@ class Item < Sinatra::Application
     item = @database.get_item_by_id(item_id)
     comment_description = params[:item_comment]
 
-    comment = Store::Comment.new_comment(comment_description, session[:name], Time.now.localtime)
+    comment = Store::Comment.new_comment(comment_description, session[:name], Time.now.asctime)
 
     item.update_comments(comment)
 
