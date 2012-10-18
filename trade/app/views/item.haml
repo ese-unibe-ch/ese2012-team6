@@ -64,7 +64,11 @@
     -for comment in item.comments
       %tr
         %td
-          %h4 #{comment.owner} wrote at: #{comment.time_stamp}
+          %h4
+            %a{:href => url("/user/#{item.owner.name}")}
+              :escaped
+                #{comment.owner}
+            wrote at: #{comment.time_stamp}
           %div.markdown_view
             = RDiscount.new(comment.description, :smart, :filter_html).to_html
     %tr
