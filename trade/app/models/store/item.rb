@@ -4,7 +4,7 @@ require_relative '../security/string_checker'
 
 module Store
   class Item
-    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path
+    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments
     @@last_id = 0
 
     def initialize
@@ -14,6 +14,7 @@ module Store
       self.description = ""
       self.image_path = "/images/no_image.gif"
       self.edit_time = Time.now
+      self.comments = []
     end
 
     def name=(name)
@@ -46,6 +47,10 @@ module Store
 
     def set_inactive
       self.active = false
+    end
+
+    def update_comments(comment)
+      comments << comment
     end
 
     def update_status(new_status, log = true)
