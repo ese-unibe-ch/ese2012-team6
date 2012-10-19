@@ -12,7 +12,7 @@ class Register < Sinatra::Application
 
   # Handles registration inputs and creates new user in database
   post "/register" do
-    user_name = Security::StringChecker.destroy_script(params[:username]) #remove all whitespaces and special characters
+    user_name = params[:username] #remove all whitespaces and special characters
     user_pwd = params[:password].gsub(/\s+/, "")
     user_repeated_pwd = params[:rep_password].gsub(/\s+/, "")
     user_description = params[:description].strip #remove leading and trailing whitespaces
