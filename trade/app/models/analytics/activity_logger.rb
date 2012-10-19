@@ -1,25 +1,26 @@
 module Analytics
+  # Responsible for storing activities and performing calculations on said activities
   class ActivityLogger
-    def self.log_activity(activity)
-      database = Storage::Database.instance
-      database.add_activity(activity)
+    @@activities = {}
+
+    # log an activity
+    def self.log(activity)
+      @@activities[activity.id] = activity
     end
 
+    # get all stored activities in descending order by timestamp
     def self.get_all_activities
-      database = Storage::Database.instance
-      activities = database.get_all_activities
-      return activities
+      return @@activities.values.sort! {|a,b| b.timestamp <=> a.timestamp}
     end
 
+    # retrieve activity by id
     def self.by_id(id)
-      database = Storage::Database.instance
-      activity = database.get_activity_by_id(id)
-      return activity
+      return @@activities[id]
     end
 
+    # get the previous description of an item
     def self.get_previous_description(item)
-      database = Storage::Database.instance
-      activities = database.get_all_activities
+      activities = @@activities.values
       edit_activities = activities.select{|act| act.type == ActivityType::ITEM_EDIT && act.item_id == item.id}
 
       most_recent_activity = nil
@@ -36,12 +37,12 @@ module Analytics
       return most_recent_activity.old_values[:description]
     end
 
+    # get a list of most recent buy activities
     def self.get_most_recent_purchases(amount)
-      database = Storage::Database.instance
-      activities = database.get_all_activities
+      activities = @@activities.values
       buy_activities = activities.select{|act| act.type == ActivityType::ITEM_BUY}
       buy_activities = buy_activities.select{|act| act.success == true}
-      sorted = buy_activities.sort! { |a,b| a.timestamp <=> b.timestamp }
+      sorted = buy_activities.sort! { |a,b| b.timestamp <=> a.timestamp }
       return sorted[0..amount-1]
     end
   end

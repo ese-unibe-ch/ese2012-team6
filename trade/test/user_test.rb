@@ -44,8 +44,8 @@ class UserTest < Test::Unit::TestCase
     user.propose_item("TestItem3", 3)
     item4 = user.propose_item("TestItem4", 4)
 
-    item2.set_active
-    item4.set_active
+    item2.activate
+    item4.activate
 
     active_items = [item2, item4]
     active_items_user = user.get_active_items
@@ -59,7 +59,7 @@ class UserTest < Test::Unit::TestCase
     seller = Store::User.named("Seller")
 
     item = seller.propose_item("piece of crap", 100)
-    item.set_active
+    item.activate
 
     transaction_result, transaction_message = buyer.buy_item(item)
     assert(transaction_result == true, "Transaction failed when it should have succeeded\nReason: #{transaction_message}")
@@ -100,7 +100,7 @@ class UserTest < Test::Unit::TestCase
     seller = Store::User.named("Seller")
 
     item = seller.propose_item("big piece of crap", 9001) #item price is over 9000!
-    item.set_active
+    item.activate
 
     assert(item.active?)
 

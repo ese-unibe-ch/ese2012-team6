@@ -26,6 +26,10 @@ module Analytics
     def what_happened?
       return "Nothing"
     end
+
+    def log
+      ActivityLogger.log(self)
+    end
   end
 
   class ItemActivity < Activity

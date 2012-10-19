@@ -1,7 +1,7 @@
 
 module Store
   class Organization < User
-    attr_accessor :name, :credits, :items,  :description, :open_item_page_time, :image_path, :organization_members
+    attr_accessor :name, :credits, :items,  :description, :open_item_page_time, :image_path, :organization_members, :organization_admin
 
     def initialize
       self.name = ""
@@ -11,6 +11,7 @@ module Store
       self.open_item_page_time = Time.now
       self.image_path = "/images/no_image.gif"
       self.organization_members =[]
+      self.organization_admin =[]
     end
 
 
@@ -28,8 +29,16 @@ module Store
     end
 
     def remove_member(member)
-      organization_members.remove_instance_variable(member)
+      organization_members.pop(member)
     end
+
+    def add_admin(member)
+    organization_admin.push(member)
+
+    end
+
+
+
 
   end
 end
