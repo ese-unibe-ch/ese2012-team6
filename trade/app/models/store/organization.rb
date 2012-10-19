@@ -2,7 +2,7 @@ require_relative '../store/system_user'
 module Store
   class Organization < System_User
     attr_accessor :name, :credits, :items,  :description, :open_item_page_time, :image_path, :organization_members, :organization_admin
-
+    @@organizations = {}
     def initialize
       self.name = ""
       self.credits = 0
@@ -37,6 +37,29 @@ module Store
       true
     end
 
+    def save
+      fail if  @@organizations .has_key?(self.name)
+      @@organizations[self.name] = self
+      fail unless  @@organizations .has_key?(self.name)
+    end
+
+    def delete
+      fail unless  @@organizations .has_key?(self.name)
+      @@organizations .delete(self.name)
+      fail if  @@organizations .has_key?(self.name)
+    end
+
+    def self.by_name(name)
+      return  @@organizations[name]
+    end
+
+    def self.all
+      return  @@organizations .values.dup
+    end
+
+    def self.exists?(name)
+      return  @@organizations .has_key?(name)
+    end
 
 
 

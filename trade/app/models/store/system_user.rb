@@ -6,9 +6,10 @@ require_relative '../analytics/activity'
 
 module Store
   class System_User
-    @@users = {}
+
 
     attr_accessor :name, :credits, :items, :description, :open_item_page_time, :image_path
+    @@users={}
 
     def initialize
       self.name = ""
@@ -21,6 +22,7 @@ module Store
       self.image_path = "/images/no_image.gif"
     end
 
+    #overrides name setter to avoid scripts.
     def name=(name)
       @name = Security::StringChecker.destroy_script(name)
     end

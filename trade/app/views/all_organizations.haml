@@ -9,8 +9,7 @@
       %th Credits
       %th No. of items
   %tbody
-    -for organization in Store::User.all
-    -if  organization.is_organization? do{
+    -for organization in Store::Organization.all
       %tr
         %td
           %a{:href => url("/organization/#{organization.name}")}
@@ -19,5 +18,4 @@
         %td.ralign
           #{organization.credits}
         %td.ralign
-          #{organization.items.size}}
-
+          #{organization.items.size}

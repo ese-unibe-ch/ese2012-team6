@@ -8,7 +8,7 @@ module Store
   class User < System_User
     @@users = {}
 
-    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description, :open_item_page_time, :image_path
+    attr_accessor  :pwd_hash, :pwd_salt
 
     def initialize
       self.name = ""
