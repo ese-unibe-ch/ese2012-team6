@@ -74,7 +74,7 @@
                 #{comment.owner.name}
             wrote at: #{comment.time_stamp}
           %div.markdown_view
-            = RDiscount.new(comment.description, :smart, :filter_html).to_html
+            = RDiscount.new(comment.format_description, :smart, :filter_html).to_html
     %tr
       %td
         %form{:action => "/item/#{item.id}/add_comment", :method => "POST", :onsubmit => "return validate_login(this);"}
