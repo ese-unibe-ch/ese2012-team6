@@ -51,7 +51,8 @@ class Item < Sinatra::Application
     redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
 
     haml :edit_item, :locals => {
-        :item => item
+        :item => item,
+        :show_previous_description => params[:sld] # UG: tell the view whether to display the previous stored description
     }
   end
 
