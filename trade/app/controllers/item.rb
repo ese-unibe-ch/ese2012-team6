@@ -2,6 +2,7 @@ require 'rdiscount'
 
 require_relative '../models/storage/picture_uploader'
 require_relative '../models/security/string_checker'
+require_relative '../models/store/comment'
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
 
@@ -36,7 +37,7 @@ class Item < Sinatra::Application
 
     haml :item, :locals => {
         :item => item,
-        :marked_down_description => marked_down_description.to_html
+        :marked_down_description => marked_down_description.to_html,
     }
   end
 
@@ -53,6 +54,36 @@ class Item < Sinatra::Application
         :item => item
     }
   end
+
+  #stores a new comment
+  post "/item/:item_id/add_comment" do
+    redirect '/login' unless session[:name]
+
+    item_id = Integer(params[:item_id])
+    item = Store::Item.by_id(item_id)
+    comment_description = params[:item_comment]
+
+    comment = Store::Comment.new_comment(comment_description, @user, Time.now.asctime)
+
+    item.update_comments(comment)
+
+    redirect "/item/#{item_id}"
+
+  end
+
+  #deletes a comment
+  post "/item/:item_id/delete_comment/:comment_id" do
+    redirect '/login' unless session[:name]
+
+    item_id = Integer(params[:item_id])
+    item = Store::Item.by_id(item_id)
+    comment_id = Integer(params[:comment_id])
+    comment = Store::Comment.by_id(comment_id)
+    item.delete_comment(comment)
+
+    redirect "/item/#{item_id}"
+  end
+
 
   #handles undo save description
   post "/item/:item_id/edit/undo_description" do

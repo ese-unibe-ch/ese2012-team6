@@ -6,8 +6,6 @@ require_relative '../analytics/activity'
 
 module Store
   class System_User
-
-
     attr_accessor :name, :credits, :items, :description, :open_item_page_time, :image_path
     @@users={}
 

@@ -6,6 +6,10 @@ require_relative('../models/store/organization')
 # Handles all requests concerning user registration
 class Organization < Sinatra::Application
 
+  before do
+    @user = Store::User.by_name(session[:name])
+  end
+
   # Shows registration form
   get '/organizations' do
     haml :all_organizations

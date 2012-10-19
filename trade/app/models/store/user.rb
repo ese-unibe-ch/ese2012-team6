@@ -21,7 +21,6 @@ module Store
 	    self.image_path = "/images/no_image.gif"
     end
 
-
     def self.named(name)
       user = User.new
       user.name = name
@@ -41,6 +40,7 @@ module Store
 
       return user
     end
+
 
     def password_matches?(password)
       return self.pwd_hash == BCrypt::Engine.hash_secret(password, self.pwd_salt)

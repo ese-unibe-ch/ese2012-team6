@@ -4,8 +4,7 @@ require_relative '../security/string_checker'
 
 module Store
   class Item
-    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path
-
+    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments
     @@last_id = 0
     @@items = {}
 
@@ -16,6 +15,7 @@ module Store
       self.description = ""
       self.image_path = "/images/no_image.gif"
       self.edit_time = Time.now
+      self.comments = []
     end
 
     # save item to system
@@ -30,6 +30,14 @@ module Store
       fail unless @@items.has_key?(self.id)
       @@items.delete(self.id)
       fail if @@items.has_key?(self.id)
+    end
+
+    def update_comments(comment)
+      comments << comment
+    end
+
+    def delete_comment(comment)
+      comments.delete(comment)
     end
 
     # retrieve item object by id from system

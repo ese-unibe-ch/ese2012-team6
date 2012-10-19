@@ -54,3 +54,45 @@
 -else
   %div.markdown_view
     =marked_down_description
+%br
+%table.table-comments
+  %thead
+    %tr
+      %th
+        %h3 Comments
+  %tbody
+    -for comment in item.comments
+      %tr
+        %td
+          -if comment.owner == @user
+            %form{:action => "/item/#{item.id}/delete_comment/#{comment.id}", :method => "POST"}
+              %div.button_container.float_right
+                %input.styled-button.delete-color{:type => "submit", :value => "Delete"}
+          %h4
+            %a{:href => url("/user/#{item.owner.name}")}
+              :escaped
+                #{comment.owner.name}
+            wrote at: #{comment.time_stamp}
+          %div.markdown_view
+            = RDiscount.new(comment.description, :smart, :filter_html).to_html
+    %tr
+      %td
+        %form{:action => "/item/#{item.id}/add_comment", :method => "POST", :onsubmit => "return validate_login(this);"}
+          %textarea.textbox8.comment{:name => "item_comment"}
+          %tr
+            %td
+              %div.button_container
+                %input.styled-button{:type => "submit", :value => "Comment"}
+
+
+:javascript
+  function validate_login(form) {
+    form.item_comment.value = form.item_comment.value.trim()
+    if (form.item_comment.value == "") {
+      form.item_comment.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
+      document.getElementById('error_message').innerHTML = "Please enter something!"
+      return false
+    }
+    return true;
+  }
+
