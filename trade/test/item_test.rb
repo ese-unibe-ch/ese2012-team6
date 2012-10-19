@@ -45,9 +45,9 @@ class ItemTest < Test::Unit::TestCase
 
   def test_is_editable?
     item = Store::Item.named_priced_with_owner("test",20,nil)
-    item.set_active
+    item.activate
     assert_equal(false,item.editable?)
-    item.set_inactive
+    item.deactivate
     assert_equal(true,item.editable?)
   end
 
@@ -67,5 +67,32 @@ class ItemTest < Test::Unit::TestCase
     assert_equal("NewName", item.name)
     assert_equal(100, item.price)
     assert_equal("NewDescription", item.description)
+  end
+
+  def test_item_save
+    item = Store::Item.named_priced_with_owner("TestItem", 0, nil)
+    item.save
+    assert_equal(item, Store::Item.by_id(item.id))
+  end
+
+  def test_item_delete
+    item = Store::Item.named_priced_with_owner("TestItem", 0, nil)
+    item.save
+    assert_equal(item, Store::Item.by_id(item.id))
+
+    item.delete
+    assert_equal(nil, Store::Item.by_id(item.id))
+  end
+
+  def test_get_all_items
+    item1 = Store::Item.named_priced_with_owner("TestItem1", 0, nil)
+    item2 = Store::Item.named_priced_with_owner("TestItem2", 0, nil)
+    item3 = Store::Item.named_priced_with_owner("TestItem3", 0, nil)
+
+    item1.save
+    item2.save
+    item3.save
+
+    assert_equal([item1, item2, item3], Store::Item.all)
   end
 end

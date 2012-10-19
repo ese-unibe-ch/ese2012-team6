@@ -1,7 +1,8 @@
+./idea/
 .idea/misc.xml
 .idea/workspace.xml
 .idea/ese2011-web-ui.iml
-./idea
+.idea/dictionaries/
 *.orig
 *.jpg
 *.png

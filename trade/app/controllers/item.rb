@@ -7,13 +7,12 @@ require_relative '../models/store/comment'
 class Item < Sinatra::Application
 
   before do
-    @database = Storage::Database.instance
-    @user = @database.get_user_by_name(session[:name])
+    @user = Store::User.by_name(session[:name])
   end
 
   # shows all items in the system
   get "/items" do
-    redirect '/login' unless session[:name]
+    redirect '/login' unless @user
 
     haml :all_items
   end
@@ -26,12 +25,11 @@ class Item < Sinatra::Application
 
   # shows an item details page
   get "/item/:item_id" do
-    redirect '/login' unless session[:name]
+    redirect '/login' unless @user
 
-    user = @database.get_user_by_name(session[:name])
-    user.open_item_page_time = Time.now
+    @user.open_item_page_time = Time.now
     item_id = Integer(params[:item_id])
-    item = @database.get_item_by_id(item_id)
+    item = Store::Item.by_id(item_id)
 
     redirect "/user/#{@user.name}" if item.nil?
 
@@ -45,10 +43,10 @@ class Item < Sinatra::Application
 
   # shows a page for easy item editing
   get "/item/:item_id/edit" do
-    redirect '/login' unless session[:name]
+    redirect '/login' unless @user
 
     item_id = Integer(params[:item_id])
-    item = @database.get_item_by_id(item_id)
+    item = Store::Item.by_id(item_id)
 
     redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
 
@@ -62,10 +60,10 @@ class Item < Sinatra::Application
     redirect '/login' unless session[:name]
 
     item_id = Integer(params[:item_id])
-    item = @database.get_item_by_id(item_id)
+    item = Store::Item.by_id(item_id)
     comment_description = params[:item_comment]
 
-    comment = Store::Comment.new_comment(comment_description, session[:name], Time.now.asctime)
+    comment = Store::Comment.new_comment(comment_description, @user, Time.now.asctime)
 
     item.update_comments(comment)
 
@@ -73,14 +71,28 @@ class Item < Sinatra::Application
 
   end
 
-  #handles undo save description
-  post "/item/:item_id/edit/undo_description" do
+  #deletes a comment
+  post "/item/:item_id/delete_comment/:comment_id" do
     redirect '/login' unless session[:name]
 
     item_id = Integer(params[:item_id])
-    item = @database.get_item_by_id(item_id)
+    item = Store::Item.by_id(item_id)
+    comment_id = Integer(params[:comment_id])
+    comment = Store::Comment.by_id(comment_id)
+    item.delete_comment(comment)
 
-    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
+    redirect "/item/#{item_id}"
+  end
+
+
+  #handles undo save description
+  post "/item/:item_id/edit/undo_description" do
+    redirect '/login' unless @user
+
+    item_id = Integer(params[:item_id])
+    item = Store::Item.by_id(item_id)
+
+    redirect "/item/#{item_id}" unless @user.can_edit?(item)
     previous_description = Analytics::ActivityLogger.get_previous_description(item)
 
     item.update(item.name, item.price, previous_description)
@@ -90,10 +102,10 @@ class Item < Sinatra::Application
 
   #handles undo save description
   get "/item/:item_id/edit/description" do
-    redirect '/login' unless session[:name]
+    redirect '/login' unless @user
 
     item_id = Integer(params[:item_id])
-    item = @database.get_item_by_id(item_id)
+    item = Store::Item.by_id(item_id)
 
     redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
 
@@ -102,7 +114,7 @@ class Item < Sinatra::Application
 
   # handles item editing, updates model in database
   post "/item/:item_id/edit" do
-    redirect '/login' unless session[:name]
+    redirect '/login' unless @user
 
     item_id = Integer(params[:item_id])
     item_name = params[:item_name]
@@ -111,10 +123,11 @@ class Item < Sinatra::Application
 
     item_price = Integer(params[:item_price])
     item_description = params[:item_description]
-    item = @database.get_item_by_id(item_id)
+
+    item = Store::Item.by_id(item_id)
 
     # UG: necessary because this handler can also be called by scripts
-    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
+    redirect "/item/#{item_id}" unless @user.can_edit?(item)
 
     file = params[:file_upload]
 
@@ -138,10 +151,10 @@ class Item < Sinatra::Application
 
   # handles item activation/deactivation request
   post "/item/:item_id/act_deact/:activate" do
-    redirect '/login' unless session[:name]
+    redirect '/login' unless @user
 
     activate_str = params[:activate]
-    item = @database.get_item_by_id(Integer(params[:item_id]))
+    item = Store::Item.by_id(Integer(params[:item_id]))
 
     changed_owner = (@user.open_item_page_time < item.edit_time && item.owner != @user)
 
@@ -155,6 +168,7 @@ class Item < Sinatra::Application
 
   # handles new item creation, must be PUT request
   put "/item" do
+    redirect '/login' unless @user
     redirect back if params[:item_name] == "" or params[:item_price] == ""
 
     file = params[:file_upload]
@@ -182,6 +196,8 @@ class Item < Sinatra::Application
 
   # handles item deletion
   delete "/item/:item_id" do
+    redirect '/login' unless @user
+    # UG: Check whether user can really delete item
 
     item_id = Integer(params[:item_id])
     @user.delete_item(item_id)

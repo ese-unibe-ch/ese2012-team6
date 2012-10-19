@@ -6,6 +6,7 @@ module Store
   class Item
     attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments
     @@last_id = 0
+    @@items = {}
 
     def initialize
       @@last_id += 1
@@ -15,6 +16,38 @@ module Store
       self.image_path = "/images/no_image.gif"
       self.edit_time = Time.now
       self.comments = []
+    end
+
+    # save item to system
+    def save
+      fail if @@items.has_key?(self.id)
+      @@items[self.id] = self
+      fail unless @@items.has_key?(self.id)
+    end
+
+    # delete item from system
+    def delete
+      fail unless @@items.has_key?(self.id)
+      @@items.delete(self.id)
+      fail if @@items.has_key?(self.id)
+    end
+
+    def update_comments(comment)
+      comments << comment
+    end
+
+    def delete_comment(comment)
+      comments.delete(comment)
+    end
+
+    # retrieve item object by id from system
+    def self.by_id(id)
+      return @@items[id]
+    end
+
+    # get all stored items
+    def self.all
+      return @@items.values.dup
     end
 
     def name=(name)
@@ -41,16 +74,12 @@ module Store
       return "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
     end
 
-    def set_active
+    def activate
       self.active = true
     end
 
-    def set_inactive
+    def deactivate
       self.active = false
-    end
-
-    def update_comments(comment)
-      comments << comment
     end
 
     def update_status(new_status, log = true)
@@ -60,8 +89,9 @@ module Store
 
       if old_status != new_status
         self.active = new_status
-        self.edit_time = Time.now
-        Analytics::ActivityLogger.log_activity(Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status)) if log
+
+        self.notify_change
+        Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log
       end
     end
 
@@ -84,9 +114,14 @@ module Store
         self.name = new_name
         self.price = new_price
         self.description = new_desc
-        self.edit_time = Time.now
-        Analytics::ActivityLogger.log_activity(Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals)) if log
+
+        self.notify_change
+        Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals).log if log
       end
+    end
+
+    def notify_change
+      self.edit_time = Time.now
     end
   end
 end

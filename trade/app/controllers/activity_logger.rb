@@ -4,8 +4,7 @@ require_relative '../models/analytics/activity_logger'
 class ActivityLogger < Sinatra::Application
 
   before do
-    @database = Storage::Database.instance
-    @user = @database.get_user_by_name(session[:name])
+    @user = Store::User.by_name(session[:name])
   end
 
   get '/activities' do
@@ -16,7 +15,6 @@ class ActivityLogger < Sinatra::Application
     haml :all_activities, :locals => {
         :activities => activities
     }
-
   end
 
   get "/activity/:act_id" do
@@ -25,8 +23,8 @@ class ActivityLogger < Sinatra::Application
     activity_id = params[:act_id]
     activity = Analytics::ActivityLogger.by_id(Integer(activity_id))
 
-    actor = @database.get_user_by_name(activity.actor_name)
-    item = @database.get_item_by_id(activity.item_id)
+    actor = Store::User.by_name(activity.actor_name)
+    item = Store::Item.by_id(activity.item_id)
 
     actor_still_in_system = !actor.nil?
     item_still_in_system = !item.nil?

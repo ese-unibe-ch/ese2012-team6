@@ -6,13 +6,12 @@ require_relative('../models/store/user')
 class Authentication < Sinatra::Application
 
   before do
-    @database = Storage::Database.instance
-    @user = @database.get_user_by_name(session[:name])
+    @user = Store::User.by_name(session[:name])
   end
 
   # GET handler for login request, shows login form
   get "/login" do
-    redirect '/' if session[:name]
+    redirect '/' if @user
 
     haml :login
   end
@@ -23,22 +22,26 @@ class Authentication < Sinatra::Application
     password = params[:password].gsub(/\s+/, "") #remove all whitespaces
 
     redirect '/error/login_no_pwd_user' if name.nil? or password.nil? or name == "" or password == ""
-    redirect '/error/user_no_exists' unless @database.user_exists?(name)
+    redirect '/error/user_no_exists' unless Store::User.exists?(name)
 
-    user = @database.get_user_by_name(name)
+    user = Store::User.by_name(name)
     redirect '/error/wrong_password' unless user.password_matches?(password)
 
-    redirect '/login' unless @database.get_user_by_name(name).password_matches?(password)
-
     session[:name] = name
-    Analytics::ActivityLogger.log_activity(Analytics::UserLoginActivity.with_username(name))
+    user.login
+
     redirect '/'
   end
 
   # GET handler for logout request, logs out the user
+  # UG: TODO: Should be POST
   get "/logout" do
-    Analytics::ActivityLogger.log_activity(Analytics::UserLogoutActivity.with_username(@user.name))
+    redirect '/' unless @user
+
+    @user.logout
+    @user = nil
     session[:name] = nil
+
     redirect '/login'
   end
 end
