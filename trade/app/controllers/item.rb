@@ -159,7 +159,7 @@ class Item < Sinatra::Application
       item.image_path = uploader.upload(file, file_name)
     end
 
-    redirect "/item/#{item.id}" if back == url("/item/new?")
+    redirect "/item/#{item.id}" if back == url("/item/new")
     redirect back
   end
 
