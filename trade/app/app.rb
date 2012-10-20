@@ -7,13 +7,13 @@ require_relative('models/store/item')
 require_relative('models/store/user')
 require_relative('models/store/organization')
 
-require_relative('controllers/authentication')
-require_relative('controllers/main')
-require_relative('controllers/register')
-require_relative('controllers/item')
-require_relative('controllers/user')
-require_relative('controllers/activity_logger')
-require_relative('controllers/organization')
+require_relative('controllers/authentication_ctrl')
+require_relative('controllers/main_ctrl')
+require_relative('controllers/register_ctrl')
+require_relative('controllers/item_ctrl')
+require_relative('controllers/user_ctrl')
+require_relative('controllers/activity_logger_ctrl')
+require_relative('controllers/organization_ctrl')
 
 class App < Sinatra::Base
 

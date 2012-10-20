@@ -1,8 +1,9 @@
 require_relative '../store/system_user'
 module Store
   class Organization < System_User
-    attr_accessor :name, :credits, :items,  :description, :open_item_page_time, :image_path, :organization_members, :organization_admin
+    attr_accessor :organization_members, :organization_admin
     @@organizations = {}
+
     def initialize
       self.name = ""
       self.credits = 0
@@ -22,6 +23,7 @@ module Store
     def self.named(name)
       organization = Organization.new
       organization.name = name
+      return organization
     end
 
     def remove_member(member)
@@ -29,8 +31,7 @@ module Store
     end
 
     def add_admin(member)
-    organization_admin.push(member)
-
+      organization_admin.push(member)
     end
 
     def is_organization?
