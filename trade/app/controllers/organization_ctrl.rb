@@ -12,6 +12,8 @@ class Organization < Sinatra::Application
 
   # Shows registration form
   get '/organizations' do
+    redirect '/login' unless @user
+
     haml :all_organizations
   end
 
