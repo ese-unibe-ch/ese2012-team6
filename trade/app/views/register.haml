@@ -1,7 +1,7 @@
 %h2 Register
 %p#reqistry_information
   Required fields are marked in bold. Leading whitespaces will be ignored and special characters will be removed due to security
-%form{:action => "/register", :method => "POST", :onsubmit => "return validate_login(this);"}
+%form{:action => "/register", :method => "POST", :onsubmit => "return validate_registration(this);"}
   %table
     %tr
       %td
@@ -34,27 +34,4 @@
   *) Password must be at least 8 characters long and consist of lowercase letters, uppercase letters and
   numbers
 %a.back{:href => url("/")} Back to login
-:javascript
-  function validate_login(form) {
-    if (form.username.value == "") {
-      form.username.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
-      document.getElementById('error_message').innerHTML = "Please enter a username"
-      return false
-    }
-    else if (form.password.value == "") {
-      form.password.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
-      document.getElementById('error_message').innerHTML = "Please enter a password"
-      return false
-    }
-    else if (form.rep_password.value == "") {
-      form.rep_password.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
-      document.getElementById('error_message').innerHTML = "Please repeat your password"
-      return false
-    }
-    else if (form.rep_password.value != form.password.value) {
-       document.getElementById('error_message').innerHTML = "Your passwords do not match"
-       return false
-    }
 
-    return true;
-  }

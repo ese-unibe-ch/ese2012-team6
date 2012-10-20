@@ -80,22 +80,9 @@
             = RDiscount.new(comment.format_description, :smart, :filter_html).to_html
     %tr
       %td
-        %form{:action => "/item/#{item.id}/add_comment", :method => "POST", :onsubmit => "return validate_login(this);"}
+        %form{:action => "/item/#{item.id}/add_comment", :method => "POST", :onsubmit => "return validate_comment(this);"}
           %textarea.textbox8.comment{:name => "item_comment"}
           %tr
             %td
               %div.button_container
                 %input.styled-button{:type => "submit", :value => "Comment"}
-
-
-:javascript
-  function validate_login(form) {
-    form.item_comment.value = form.item_comment.value.trim()
-    if (form.item_comment.value == "") {
-      form.item_comment.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
-      document.getElementById('error_message').innerHTML = "Please enter something!"
-      return false
-    }
-    return true;
-  }
-
