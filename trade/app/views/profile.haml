@@ -1,13 +1,14 @@
-%h2
-  -if is_my_profile
-    My Profile
-  -else
-    :escaped
-      Profile of #{viewed_user.name}
-%div.action_buttons.float_right
-  -if is_my_profile
-    %a.styled-button{:href => "/item/new"} Create new Item
-    %a.styled-button{:href => "/user/#{@user.name}/edit"} Edit Profile
+%div#actionbar
+  %h2.float_left
+    -if is_my_profile
+      My Profile
+    -else
+      :escaped
+        Profile of #{viewed_user.name}
+  %div.action_buttons.float_right
+    -if is_my_profile
+      %a.styled-button{:href => "/item/new"} Create new Item
+      %a.styled-button{:href => "/user/#{@user.name}/edit"} Edit Profile
 %h3
   :escaped
     #{is_my_profile ? "Your Credits" : "Credits of " + viewed_user.name}:
@@ -60,7 +61,7 @@
               -if @user.can_activate?(item) or @user.name == "admin"
                 -if item.active?
                   %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
-                    %input.styled-button.small{:type => "submit", :value => "Deactivate"}
+                    %input.styled-button.small.float_left{:type => "submit", :value => "Deactivate"}
                 -else
                   %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
                     %input.styled-button.small{:type => "submit", :value => "Activate"}

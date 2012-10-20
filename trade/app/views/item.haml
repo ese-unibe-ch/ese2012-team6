@@ -2,27 +2,21 @@
   Item Details
 %div.action_buttons.float_right
   -if @user.can_activate?(item) or @user.name == "admin"
-    %div.button_container
-      -if item.active?
-        %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
-          %input.styled-button{:type => "submit", :value => "Deactivate", :text => "deacBtn"}
-      -else
-        %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
-          %input.styled-button{:type => "submit", :value => "Activate", :text => "deacBtn"}
+    -if item.active?
+      %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
+        %input.styled-button{:type => "submit", :value => "Deactivate", :text => "deacBtn"}
+    -else
+      %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
+        %input.styled-button{:type => "submit", :value => "Activate", :text => "deacBtn"}
   -if @user.can_edit?(item) or @user.name == "admin"
-    %div.button_container
-      %form{:action => "/item/#{item.id}/edit", :method => "GET"}
-        %input.styled-button{:type => "submit", :value => "Edit", :text => "editBtn"}
+    %a.styled-button{:href => "/item/#{item.id}/edit"} Edit
   -if @user.can_delete?(item)
-    %div.button_container
-      %form{:action => "/item/#{item.id}", :method => "POST"}
-        %input{:name => "_method", :type => "hidden", :value => "delete"}
-        %input.styled-button.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
+    %form{:action => "/item/#{item.id}", :method => "POST"}
+      %input{:name => "_method", :type => "hidden", :value => "delete"}
+      %input.styled-button.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
   -if @user.can_buy?(item)
-    %div.button_container
-      #button_container
-        %form{:action => "/user/buy/#{item.id}", :method => "POST"}
-          %input.styled-button.buy-color{:type => "submit", :value => "Buy"}
+    %form{:action => "/user/buy/#{item.id}", :method => "POST"}
+      %input.styled-button.buy-color{:type => "submit", :value => "Buy"}
 %h4
   -if item.active?
     This item is currently being traded
@@ -59,22 +53,21 @@
   %thead
     %tr
       %th
-        %h3 Comments
+        %h3#comments Comments
   %tbody
     -for comment in item.comments
       %tr
         %td
           %div.comment_picture_container
-            %img{:src => "#{comment.owner.image_path}", :width => "50", :height => "50"}
+            %img{:src => "#{comment.owner.image_path}", :width => "50"}
           -if comment.owner == @user
             %form{:action => "/item/#{item.id}/delete_comment/#{comment.id}", :method => "POST"}
-              %div.button_container.float_right
-                %input.styled-button.delete-color{:type => "submit", :value => "Delete"}
-              %h4
-                %a{:href => url("/user/#{item.owner.name}")}
-                  :escaped
-                    #{comment.owner.name}
-                wrote at: #{comment.time_stamp}
+              %input.styled-button.float_right.delete-color{:type => "submit", :value => "Delete"}
+          %h4
+            %a{:href => url("/user/#{item.owner.name}")}
+              :escaped
+                #{comment.owner.name}
+            wrote at: #{comment.time_stamp}
           %br
           %div.markdown_view
             = RDiscount.new(comment.format_description, :smart, :filter_html).to_html
@@ -84,5 +77,4 @@
           %textarea.textbox8.comment{:name => "item_comment"}
           %tr
             %td
-              %div.button_container
-                %input.styled-button{:type => "submit", :value => "Comment"}
+              %input.styled-button.float_right{:type => "submit", :value => "Comment"}
