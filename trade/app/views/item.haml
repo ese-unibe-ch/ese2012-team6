@@ -64,15 +64,18 @@
     -for comment in item.comments
       %tr
         %td
+          %div.comment_picture_container
+            %img{:src => "#{comment.owner.image_path}", :width => "50", :height => "50"}
           -if comment.owner == @user
             %form{:action => "/item/#{item.id}/delete_comment/#{comment.id}", :method => "POST"}
               %div.button_container.float_right
                 %input.styled-button.delete-color{:type => "submit", :value => "Delete"}
-          %h4
-            %a{:href => url("/user/#{item.owner.name}")}
-              :escaped
-                #{comment.owner.name}
-            wrote at: #{comment.time_stamp}
+              %h4
+                %a{:href => url("/user/#{item.owner.name}")}
+                  :escaped
+                    #{comment.owner.name}
+                wrote at: #{comment.time_stamp}
+          %br
           %div.markdown_view
             = RDiscount.new(comment.format_description, :smart, :filter_html).to_html
     %tr
