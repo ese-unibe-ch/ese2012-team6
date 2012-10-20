@@ -26,11 +26,11 @@ module Store
      end
 
     def format_description
-      formatted_desc = description.gsub(':)', '![alternative text](public/images/smile.gif)').gsub(':D', '![alternative text](public/images/laugh.gif)').
-          gsub(':(', '![alternative text](public/images/disappointed.gif)').gsub(':O', '![alternative text](public/images/shocked.gif)').
-          gsub(":'(", '![alternative text](public/images/sad.gif)').gsub(':/', '![alternative text](public/images/double_minded.gif)').
-          gsub('8)', '![alternative text](public/images/cool.gif)').gsub(':crazy:', '![alternative text](public/images/crazy.gif)').
-          gsub(':yeah:', '![alternative text](public/images/yeah.gif)')
+      formatted_desc = description.gsub(':)', '![alternative text](/images/smileys/smile.gif)').gsub(':D', '![alternative text](/images/smileys/laugh.gif)').
+          gsub(':(', '![alternative text](/images/smileys/disappointed.gif)').gsub(':O', '![alternative text](/images/smileys/shocked.gif)').
+          gsub(":'(", '![alternative text](/images/smileys/sad.gif)').gsub(':/', '![alternative text](/images/smileys/double_minded.gif)').
+          gsub('8)', '![alternative text](/images/smileys/cool.gif)').gsub(':crazy:', '![alternative text](/images/smileys/crazy.gif)').
+          gsub(':yeah:', '![alternative text](/images/smileys/yeah.gif)')
       return formatted_desc
 
     end
