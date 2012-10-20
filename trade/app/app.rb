@@ -43,12 +43,12 @@ class App < Sinatra::Base
     random = umbrella_corp.propose_item("Random", 50)
     (bender = umbrella_corp.propose_item("Bender", 110)).activate
 
-=begin
+
     #add default organization
-    organization_Mordor_inc = Store::Organization.named("Mordor Inc.")
+   (organization_Mordor_inc = Store::Organization.named("Mordor Inc.")).save
     organization_Mordor_inc.add_member(user_ese)
     organization_Mordor_inc.add_admin(user_ese)
-=end
+
   end
 end
 

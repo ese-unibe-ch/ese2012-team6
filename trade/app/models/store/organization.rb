@@ -18,6 +18,7 @@ module Store
     # @param [User] member
     def add_member(member)
       organization_members.push(member)
+
     end
 
     def self.named(name)

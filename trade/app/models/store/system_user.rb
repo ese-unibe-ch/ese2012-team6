@@ -10,14 +10,7 @@ module Store
     @@users={}
 
     def initialize
-      self.name = ""
-      self.credits = 100
-      self.items = []
-      self.pwd_hash = ""
-      self.pwd_salt = ""
-      self.description = ""
-      self.open_item_page_time = Time.now
-      self.image_path = "/images/no_image.gif"
+      raise "Abstract"
     end
 
     #overrides name setter to avoid scripts.
