@@ -28,7 +28,7 @@ module Store
     end
 
     def remove_member(member)
-      organization_members.pop(member)
+      organization_members.pop (member)
     end
 
     def add_admin(member)
