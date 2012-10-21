@@ -9,9 +9,14 @@ class User < Sinatra::Application
   post "/user/work_on_behalf_of/" do
     org_id = params[:on_behalf_of]
     org = Store::Organization.by_name(org_id)
-    @user.work_on_behalf_of(org)
+    if org == nil
+      org=@user
+    end
 
-    redirect back
+   @user.work_on_behalf_of(org)
+
+
+   redirect back
   end
 
   # Handles user display page, shows profile of user
