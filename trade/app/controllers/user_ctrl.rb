@@ -5,6 +5,15 @@ class User < Sinatra::Application
     @user = Store::User.by_name(session[:name])
   end
 
+  # handle on behalf of selector change
+  post "/user/work_on_behalf_of/" do
+    org_id = params[:on_behalf_of]
+    org = Store::Organization.by_name(org_id)
+    @user.work_on_behalf_of(org)
+
+    redirect back
+  end
+
   # Handles user display page, shows profile of user
   get "/user/:user_name" do
     redirect '/login' unless @user

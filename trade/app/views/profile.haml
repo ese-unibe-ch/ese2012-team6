@@ -1,17 +1,14 @@
-%h2
-  -if is_my_profile
-    My Profile
-  -else
-    :escaped
-      Profile of #{viewed_user.name}
-%div.action_buttons.float_right
-  -if is_my_profile
-    %div.button_container
-      %form{:action => "/item/new", :method => "GET"}
-        %input.styled-button{:type => "submit", :value => "Create new item"}
-    %div.button_container
-      %form{:action => "/user/#{@user.name}/edit", :method => "GET"}
-        %input.styled-button{:type => "submit", :value => "Edit Profile"}
+%div#actionbar
+  %h2.float_left
+    -if is_my_profile
+      My Profile
+    -else
+      :escaped
+        Profile of #{viewed_user.name}
+  %div.action_buttons.float_right
+    -if is_my_profile
+      %a.styled-button{:href => "/item/new"} Create new Item
+      %a.styled-button{:href => "/user/#{@user.name}/edit"} Edit Profile
 %h3
   :escaped
     #{is_my_profile ? "Your Credits" : "Credits of " + viewed_user.name}:
@@ -45,9 +42,8 @@
               %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
             %td
             %td
-              %div.button_container
-                %input{:name => "_method", :type => "hidden", :value => "put"}
-                %input.styled-button.small{:type => "submit", :value => "Quick Add"}
+              %input{:name => "_method", :type => "hidden", :value => "put"}
+              %input.styled-button.small{:type => "submit", :value => "Quick Add"}
       -for item in viewed_user.items
         %tr
           %td
@@ -63,22 +59,23 @@
           %td
             %div.action_buttons
               -if @user.can_activate?(item) or @user.name == "admin"
-                %div.button_container
-                  -if item.active?
-                    %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
-                      %input.styled-button.small{:type => "submit", :value => "Deactivate"}
-                  -else
-                    %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
-                      %input.styled-button.small{:type => "submit", :value => "Activate"}
+                -if item.active?
+                  %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
+                    %input.styled-button.small.float_left{:type => "submit", :value => "Deactivate"}
+                -else
+                  %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
+                    %input.styled-button.small{:type => "submit", :value => "Activate"}
               -if @user.can_edit?(item) or @user.name == "admin"
-                %div.button_container
-                  %form{:action => "/item/#{item.id}/edit", :method => "GET"}
-                    %input.styled-button.small{:type => "submit", :value => "Edit"}
+                %a.styled-button.small{:href => "/item/#{item.id}/edit"} Edit
               -if @user.can_delete?(item)
-                %div.button_container
-                  %form{:action => "/item/#{item.id}", :method => "POST"}
-                    %input{:name => "_method", :type => "hidden", :value => "delete"}
-                    %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
+                %form{:action => "/item/#{item.id}", :method => "POST"}
+                  %input{:name => "_method", :type => "hidden", :value => "delete"}
+                  %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
+%h3
+  Member of Organizations
+%p
+  -for org in @user.get_organizations
+    #{org.name + ", "}
 %h3
   #{is_my_profile ? "Your Description" : "Description of " + viewed_user.name}:
 -if viewed_user.description == ""
@@ -86,19 +83,3 @@
 -else
   %div.markdown_view
     =marked_down_description
-:javascript
-  function validate_quick_add(form) {
-    form.item_name.value = form.item_name.value.trim()
-    if (form.item_name.value == "") {
-      form.item_name.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
-      document.getElementById('error_message').innerHTML = "Please enter an item name"
-      return false
-    }
-    else if (form.item_price.value == "") {
-      form.item_price.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
-      document.getElementById('error_message').innerHTML = "Please enter a price for the item"
-      return false
-    }
-
-    return true;
-  }

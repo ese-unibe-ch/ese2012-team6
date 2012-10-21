@@ -89,6 +89,26 @@ a, a.visited {
   li:hover {
     background-color: rgb(206, 224, 241);
   }
+
+  div#context_switch {
+    float:right;
+    display:inline;
+
+    p {
+      font-size: 11px;
+      margin: 0;
+      padding: 0;
+    }
+  }
+}
+
+#actionbar {
+  display: table-row;
+  width: 50%;
+
+  h1, h2, h3, h4 {
+    margin: 0;
+  }
 }
 
 #content {
@@ -128,7 +148,6 @@ a, a.visited {
   a:hover {
     text-decoration: underline;
   }
-
 }
 
 .table-minimalistic {
@@ -164,7 +183,6 @@ a, a.visited {
 }
 
 .styled-button {
-
   background-color:#EEE;
   border-radius:0;
   -webkit-border-radius:0;
@@ -175,12 +193,22 @@ a, a.visited {
   font-size:13px;
   font-weight: normal;
   padding:2px 6px;
-  margin:0px;
+//margin:0 4px;
+  margin: 0 0 0 4px;
+  display:inline;
 
   &:hover {
     box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.35);
     cursor: default;
   }
+}
+.float_left {
+  display:inline;
+  float: left;
+}
+.float_right {
+  display:inline;
+  float: right;
 }
 
 .small {
@@ -201,22 +229,14 @@ a, a.visited {
 }
 
 .action_buttons {
-  min-width: 80px;
-  display: inline-block;
-
-  &.float_right {
-    float: right;
+  /*important so that buttons are inline*/
+  form {
+    float:left
   }
-}
 
-.button_container {
-  margin-right: 8px;
-  float:left;
-  display:inline;
-
-  &.float_right {
-    float: right;
-    border: 0;
+  a {
+    float: left;
+    display: inline;
   }
 }
 

@@ -7,6 +7,7 @@
     %tr
       %th Name
       %th Credits
+      %th # Members
       %th No. of items
   %tbody
     -for organization in Store::Organization.all
@@ -17,5 +18,7 @@
               #{organization.name}
         %td.ralign
           #{organization.credits}
+        %td.ralign
+          #{organization.organization_members.size}
         %td.ralign
           #{organization.items.size}

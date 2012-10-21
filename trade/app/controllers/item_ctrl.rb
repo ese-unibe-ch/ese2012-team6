@@ -68,7 +68,7 @@ class Item < Sinatra::Application
 
     item.update_comments(comment)
 
-    redirect "/item/#{item_id}"
+    redirect "/item/#{item_id}#comments"
 
   end
 
@@ -82,35 +82,7 @@ class Item < Sinatra::Application
     comment = Store::Comment.by_id(comment_id)
     item.delete_comment(comment)
 
-    redirect "/item/#{item_id}"
-  end
-
-
-  #handles undo save description
-  post "/item/:item_id/edit/undo_description" do
-    redirect '/login' unless @user
-
-    item_id = Integer(params[:item_id])
-    item = Store::Item.by_id(item_id)
-
-    redirect "/item/#{item_id}" unless @user.can_edit?(item)
-    previous_description = Analytics::ActivityLogger.get_previous_description(item)
-
-    item.update(item.name, item.price, previous_description)
-
-    redirect "/item/#{item_id}"
-  end
-
-  #handles undo save description
-  get "/item/:item_id/edit/description" do
-    redirect '/login' unless @user
-
-    item_id = Integer(params[:item_id])
-    item = Store::Item.by_id(item_id)
-
-    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
-
-    haml :edit_description, :locals => { :item => item}
+    redirect "/item/#{item_id}#comments"
   end
 
   # handles item editing, updates model in database
@@ -191,7 +163,7 @@ class Item < Sinatra::Application
       item.image_path = uploader.upload(file, file_name)
     end
 
-    redirect "/item/#{item.id}" if back == url("/item/new?")
+    redirect "/item/#{item.id}" if back == url("/item/new")
     redirect back
   end
 

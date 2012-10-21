@@ -17,6 +17,7 @@ module Store
 
     # @param [User] member
     def add_member(member)
+      member.enter_organization(self)
       organization_members.push(member)
 
     end
@@ -28,7 +29,10 @@ module Store
     end
 
     def remove_member(member)
-      organization_members.pop (member)
+ 
+      organization_members.pop(member)
+      member.leave_organization(self)
+
     end
 
     def add_admin(member)

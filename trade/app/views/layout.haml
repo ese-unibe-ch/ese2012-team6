@@ -3,6 +3,7 @@
   %head
     %link{:rel=> "stylesheet/less", :type => "text/css", :href => url("styles/styles.less")}
     %script{:type => "text/javascript", :src => url("scripts/less-1.3.0.min.js")}
+    %script{:type => "text/javascript", :src => url("scripts/form_validation.js")}
     %title
       Awesome Trading App
   %body
@@ -41,6 +42,22 @@
               %a{:href => url("/activities")} Activities
             %li
               %a{:href => url("/organizations")} Organizations
+          %div#context_switch
+            %p
+              Work on behalf of:
+            %form{:action => "/user/work_on_behalf_of/", :method => "POST"}
+              %select.float_right{:onchange => "this.form.submit();", :name => "on_behalf_of"}
+                - if @user.on_behalf_of == @user
+                  %option{:value => @user.name, :selected => "true"} Myself
+                - else
+                  %option{:value => @user.name} Myself
+                - for org in @user.get_organizations
+                  - if @user.on_behalf_of == org
+                    %option{:value => org.name, :selected => "true"}
+                      =org.name
+                  - else
+                    %option{:value => org.name}
+                      =org.name
       %div#content
         =yield
         %p#error_message
