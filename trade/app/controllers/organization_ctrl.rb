@@ -17,4 +17,21 @@ class Organization < Sinatra::Application
     haml :all_organizations
   end
 
+  get "/organization/:organization_name" do
+    redirect '/login' unless @user
+
+    viewed_organization = Store::Organization.by_name(params[:organization_name])
+    is_my_organization = viewed_organization.organization_members.detect(@user)
+    i_am_admin = viewed_organization.organization_admin.detect(@user)
+    marked_down_description = RDiscount.new(viewed_organization.description, :smart, :filter_html)
+
+    haml :organization, :locals => {
+        :viewed_organization => viewed_organization,
+        :is_my_organization => is_my_organization,
+        :i_am_admin => i_am_admin,
+        :marked_down_description => marked_down_description.to_html
+    }
+
+  end
+
 end
