@@ -2,6 +2,7 @@ require 'rdiscount'
 
 require_relative '../models/storage/picture_uploader'
 require_relative '../models/security/string_checker'
+require_relative '../models/store/comment'
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
 
@@ -36,7 +37,7 @@ class Item < Sinatra::Application
 
     haml :item, :locals => {
         :item => item,
-        :marked_down_description => marked_down_description.to_html
+        :marked_down_description => marked_down_description.to_html,
     }
   end
 
@@ -50,35 +51,38 @@ class Item < Sinatra::Application
     redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
 
     haml :edit_item, :locals => {
-        :item => item
+        :item => item,
+        :show_previous_description => params[:sld] # UG: tell the view whether to display the previous stored description
     }
   end
 
-  #handles undo save description
-  post "/item/:item_id/edit/undo_description" do
-    redirect '/login' unless @user
+  #stores a new comment
+  post "/item/:item_id/add_comment" do
+    redirect '/login' unless session[:name]
 
     item_id = Integer(params[:item_id])
     item = Store::Item.by_id(item_id)
+    comment_description = params[:item_comment]
 
-    redirect "/item/#{item_id}" unless @user.can_edit?(item)
-    previous_description = Analytics::ActivityLogger.get_previous_description(item)
+    comment = Store::Comment.new_comment(comment_description, @user, Time.now.asctime)
 
-    item.update(item.name, item.price, previous_description)
+    item.update_comments(comment)
 
-    redirect "/item/#{item_id}"
+    redirect "/item/#{item_id}#comments"
+
   end
 
-  #handles undo save description
-  get "/item/:item_id/edit/description" do
-    redirect '/login' unless @user
+  #deletes a comment
+  post "/item/:item_id/delete_comment/:comment_id" do
+    redirect '/login' unless session[:name]
 
     item_id = Integer(params[:item_id])
     item = Store::Item.by_id(item_id)
+    comment_id = Integer(params[:comment_id])
+    comment = Store::Comment.by_id(comment_id)
+    item.delete_comment(comment)
 
-    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
-
-    haml :edit_description, :locals => { :item => item}
+    redirect "/item/#{item_id}#comments"
   end
 
   # handles item editing, updates model in database

@@ -28,20 +28,3 @@
       %input{:name => "_method", :type => "hidden", :value => "PUT"}
       %input.styled-button{:type => "submit", :value => "Create Item"}
   %br
-:javascript
-  function validate_item_edit(form) {
-    form.item_name.value = form.item_name.value.trim()
-    if (form.item_name.value == "") {
-      form.item_name.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
-      document.getElementById('error_message').innerHTML = "Please enter an item name"
-      return false
-    }
-    else if (form.item_price.value == "") {
-      form.item_price.style.backgroundColor = "rgba(245, 106, 82, 0.41)"
-      document.getElementById('error_message').innerHTML = "Please enter a price for the item"
-      return false
-    }
-
-    return true;
-  }
-

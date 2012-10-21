@@ -32,11 +32,9 @@
               :escaped
                 #{item.owner.name}
           %td
-            %div.action_buttons
-              -if user != @user
-                %div.button_container
-                  %form{:action => "/user/buy/#{item.id}", :method => "POST"}
-                    %input.styled-button.small.buy-color{:type => "submit", :value => "Buy"}
+            -if user != @user
+              %form{:action => "/user/buy/#{item.id}", :method => "POST"}
+                %input.styled-button.small.buy-color{:type => "submit", :value => "Buy"}
 %h3
   Recent purchases
 - if most_recent_purchases.empty?

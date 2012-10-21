@@ -2,38 +2,39 @@ require 'test/unit'
 require 'require_relative'
 require_relative '../app/models/store/item'
 require_relative '../app/models/store/user'
+require_relative '../app/models/store/organization'
 require_relative '../app/models/security/string_checker'
 
 class UserTest < Test::Unit::TestCase
-  def test_check_user_name
-    name = "HansliCaramell"
-    user = Store::User.named(name)
+  def test_check_organization_name
+    name = "Umbrella Corp."
+    organization = Store::Organization.named(name)
 
-    assert(!user.name.nil? ,"No User Name")
-    assert_equal(name,user.name, "Wrong User name")
+    assert(!organization.name.nil? ,"No User Name")
+    assert_equal(name,organization.name, "Wrong User name")
   end
 
   def test_default_credits_amount
-    default_amount = 100
-    user = Store::User.new
+    default_amount = 0
+    organization = Store::Organization.new
 
-    assert(user.credits == default_amount)
+    assert(organization.credits == default_amount)
   end
 
   def test_custom_credits_amount
     amount = 123
-    user = Store::User.new
-    user.credits = amount
+    organization = Store::Organization.new
+    organization.credits = amount
 
-    assert(user.credits == amount)
+    assert(organization.credits == amount)
   end
 
   def test_user_proposes_item
-    user = Store::User.named("User")
-    item = user.propose_item("TestItem", 100)
+    organization = Store::Organization.named("Umbrella Corp.")
+    item = organization.propose_item("TestItem", 100)
 
     assert(item.active == false, "Newly created items must be inactive!")
-    assert(item.owner == user, "Item with no assigned owner created!")
+    assert(item.owner == organization, "Item with no assigned owner created!")
   end
 
   def test_user_active_items_list

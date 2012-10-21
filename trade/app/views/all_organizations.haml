@@ -1,0 +1,24 @@
+%h2
+  Organizations
+%h3
+  The following organizations are registered by the system
+%table.table-minimalistic
+  %thead
+    %tr
+      %th Name
+      %th Credits
+      %th # Members
+      %th No. of items
+  %tbody
+    -for organization in Store::Organization.all
+      %tr
+        %td
+          %a{:href => url("/organization/#{organization.name}")}
+            :escaped
+              #{organization.name}
+        %td.ralign
+          #{organization.credits}
+        %td.ralign
+          #{organization.organization_members.size}
+        %td.ralign
+          #{organization.items.size}
