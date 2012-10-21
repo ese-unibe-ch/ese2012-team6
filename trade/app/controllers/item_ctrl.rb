@@ -154,7 +154,7 @@ class Item < Sinatra::Application
     item_price = Integer(params[:item_price])
     item_description = params[:item_description] ? params[:item_description] : ""
 
-    item = @user.propose_item(item_name, item_price, item_description)
+    item = @user.on_behalf_of.propose_item(item_name, item_price, item_description)
 
     if file
       file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
