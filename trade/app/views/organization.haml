@@ -29,7 +29,7 @@
         %th Active
         %th
     %tbody
-      -if is_my_organization
+      -if viewed_organization.organization_members.include?(@user)
         %tr
           %form{:action => "/item", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
             %td
@@ -79,3 +79,37 @@
 -else
   %div.markdown_view
     =marked_down_description
+
+
+-if viewed_organization.organization_admin.include?(@user)
+  %h3
+    Invite Users
+-if viewed_organization.organization_admin.include?(@user)
+  %table.table-minimalistic
+    %thead
+      %tr
+        %th Name
+        %th
+    %tbody
+      -for user in Store::User.all
+        %tr
+          %td
+            %a{:href => url("/user/#{user.name}")}
+              =user.name
+          %td
+            %div.action_buttons
+              -if !viewed_organization.organization_members.include?(user)
+                %form{:action => "/organization/#{viewed_organization.name}/add/#{user.name}/", :method => "POST" }
+                  %input.styled-button.small{:type => "submit", :value => "Invite"}
+              -if viewed_organization.organization_members.include?(user) and !viewed_organization.organization_admin.include?(user)
+                %form{:action => "/organization/#{viewed_organization.name}/remove/#{user.name}/", :method => "POST"}
+                  %input.styled-button.small.float_left{:type => "submit", :value => "Remove"}
+              -if !viewed_organization.organization_admin.include?(user) and viewed_organization.organization_members.include?(user)
+                %form{:action => "/organization/#{viewed_organization.name}/add/#{user.name}/", :method => "POST"}
+                  %input.styled-button.small.float_left{:type => "submit", :value => "Add as Admin"}
+              -if viewed_organization.organization_admin.length>1 and viewed_organization.organization_admin.include?(user)
+                %form{:action => "/organization/#{viewed_organization.name}/remove/#{user.name}/", :method => "POST"}
+                  %input.styled-button.small.float_left{:type => "submit", :value => "Remove as Admin"}
+
+
+

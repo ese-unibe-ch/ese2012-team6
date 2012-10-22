@@ -48,7 +48,7 @@
 -else
   %div.markdown_view
     =marked_down_description
-%br
+  %br(clear="all")
 %table.table-comments
   %thead
     %tr
@@ -59,7 +59,7 @@
       %tr
         %td
           %div.comment_picture_container
-            %img{:src => "#{comment.owner.image_path}", :width => "50"}
+            %img{:src => "#{comment.owner.image_path}", :width => "50", :height => "50"}
           -if comment.owner == @user
             %form{:action => "/item/#{item.id}/delete_comment/#{comment.id}", :method => "POST"}
               %input.styled-button.float_right.delete-color{:type => "submit", :value => "Delete"}
@@ -72,9 +72,24 @@
           %div.markdown_view
             = RDiscount.new(comment.format_description, :smart, :filter_html).to_html
     %tr
-      %td
+      %td.textarea
+        %div.smiley-view
+          %img{:src => "/images/smileys/smile.gif" , :onclick => "addSmiley(':)', 'comment_input')", :alt => "Smile" ,:border=>"0"}
+          %img{:src => "/images/smileys/laugh.gif" , :onclick => "addSmiley(':D', 'comment_input')", :alt => "Smile" ,:border=>"0"}
+          %img{:src => "/images/smileys/cool.gif" , :onclick => "addSmiley('8)', 'comment_input')", :alt => "Smile" ,:border=>"0"}
+          %img{:src => "/images/smileys/double_minded.gif" , :onclick => "addSmiley(':/', 'comment_input')", :alt => "Smile" ,:border=>"0"}
+          %img{:src => "/images/smileys/disappointed.gif" , :onclick => "addSmiley(':(', 'comment_input')", :alt => "Smile" ,:border=>"0"}
+          %img{:src => "/images/smileys/sad.gif" , :onclick => "addSmiley(':,(', 'comment_input')", :alt => "Smile" ,:border=>"0"}
+          %img{:src => "/images/smileys/shocked.gif" , :onclick => "addSmiley(':O', 'comment_input')", :alt => "Smile" ,:border=>"0"}
+          %img{:src => "/images/smileys/crazy.gif" , :onclick => "addSmiley(':crazy:', 'comment_input')", :alt => "Smile" ,:border=>"0"}
+          %img{:src => "/images/smileys/yeah.gif" , :onclick => "addSmiley(':yeah:', 'comment_input')", :alt => "Smile" ,:border=>"0"}
         %form{:action => "/item/#{item.id}/add_comment", :method => "POST", :onsubmit => "return validate_comment(this);"}
-          %textarea.textbox8.comment{:name => "item_comment"}
+          %textarea.textbox8.comment{:name => "item_comment", :id => "comment_input"}
           %tr
             %td
               %input.styled-button.float_right{:type => "submit", :value => "Comment"}
+:javascript
+  function addSmiley(txt, id) {
+  var div = document.getElementById(id);
+  div.value += '' +txt+ ' ';
+  }

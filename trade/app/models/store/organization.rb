@@ -30,13 +30,17 @@ module Store
 
     def remove_member(member)
  
-      organization_members.pop(member)
+      organization_members.delete(member)
       member.leave_organization(self)
 
     end
 
     def add_admin(member)
       organization_admin.push(member)
+    end
+
+    def remove_admin(member)
+      organization_admin.delete(member)
     end
 
     def is_organization?

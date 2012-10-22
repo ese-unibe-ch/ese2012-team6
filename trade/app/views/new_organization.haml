@@ -1,0 +1,38 @@
+%form{:action => "/organization", :method => "POST", :onsubmit => "return validate_profile_edit(this);"}
+  %h3.no_top_margin
+    Type name of Organization
+  %p
+    %input.textbox8{:type => "text", :name => "org_name", :style => "width: 60px", :value => org_name}
+  %h3
+    Description
+  %p
+    %textarea.textbox8.about_yourself{:name => "org_desc"}
+      - lines = ("#{org_desc}").split("\n")
+      - unless lines.empty?
+        - lines.each do |line|
+          =line
+  %h3
+    Add members to Organization
+    %table.table-minimalistic
+      %thead
+        %tr
+          %th Name
+          %th Add
+      %tbody
+        -i=0
+        -for user in Store::User.all
+          -i = i+ 1
+          -if user != viewer
+            %tr
+              %td
+                %a{:href => url("/user/#{user.name}")}
+                  :escaped
+                    #{user.name}
+              %td.ralign
+                %input{:type => "checkbox", :name => "member[]", :value => user.name}
+  %br
+  %br
+  %input{:name => "_method", :type => "hidden", :value => "PUT"}
+  %input.styled-button{:type => "submit", :value => "Create Organization"}
+  %br
+
