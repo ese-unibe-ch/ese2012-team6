@@ -17,6 +17,39 @@ class Organization < Sinatra::Application
     haml :all_organizations
   end
 
+  # Shows site to create new organization
+  get '/organization/new' do
+    redirect '/login' unless @user
+
+    haml :new_organization, :locals => { :org_name => "",
+                                         :org_desc => "",
+                                         :viewer => @user
+                                       }
+  end
+
+  # Handles creating organization
+  post '/organization/new' do
+    redirect '/login' unless @user
+
+    org_name = Security::StringChecker.destroy_script(params[:org_name])
+    org_desc = params[:org_desc]
+
+    organization = Store::Organization.named(org_name)
+    organization.save
+    organization.add_member(@user)
+    organization.add_admin(@user)
+
+    # diese methode muss noch geändert werden
+    # user macht probleme in user.rb wegen enter_organization
+    # muss noch methode finden, welche mehrere users hinzufügt
+    for user in params[:member]
+      organization.add_member(user.name)
+    end
+
+    redirect "/organizations"
+  end
+
+  # Shows selected organization
   get "/organization/:organization_name" do
     redirect '/login' unless @user
 
