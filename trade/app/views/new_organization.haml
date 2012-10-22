@@ -19,7 +19,9 @@
           %th Name
           %th Add
       %tbody
+        -i=0
         -for user in Store::User.all
+          -i = i+ 1
           -if user != viewer
             %tr
               %td
@@ -28,7 +30,7 @@
                     #{user.name}
               %td.ralign
                 %form{:action => "input_checkbox"}
-                  %input{:type => "checkbox", :name => "member", :value => user}
+                  %input{:type => "checkbox", :name => "member[#{i}]", :value => user.name}
   %br
   %br
   %div.button_container
