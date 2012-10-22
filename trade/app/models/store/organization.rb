@@ -29,7 +29,6 @@ module Store
     end
 
     def remove_member(member)
- 
       organization_members.pop(member)
       member.leave_organization(self)
 
@@ -67,7 +66,9 @@ module Store
       return  @@organizations .has_key?(name)
     end
 
-
+    def self.id_image_to_filename(id, path)
+      "#{id}_#{path}"
+    end
 
   end
 end

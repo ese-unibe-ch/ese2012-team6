@@ -4,7 +4,7 @@
        #{viewed_organization.name}
 -if i_am_admin
   %div.action_buttons.float_right
-    %a.styled-button{:href => "/organization_change/#{viewed_organization}"} Make Changes
+    %a.styled-button{:href => "/organization_change/#{viewed_organization.name}"} Make Changes
 %h3
   :escaped
     #{"Credits of " + viewed_organization.name}
