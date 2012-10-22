@@ -16,7 +16,7 @@
       %input.styled-button.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
   -if @user.can_buy?(item)
     %form{:action => "/user/buy/#{item.id}", :method => "POST"}
-      %input.styled-button.buy-color{:type => "submit", :value => "Buy"}
+      %input.styled-button.buy-color{:type => "submit", :value => @user.on_behalf_of == @user ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
 %h4
   -if item.active?
     This item is currently being traded

@@ -29,10 +29,8 @@ module Store
     end
 
     def remove_member(member)
- 
       organization_members.pop(member)
       member.leave_organization(self)
-
     end
 
     def add_admin(member)
@@ -67,8 +65,10 @@ module Store
       return  @@organizations .has_key?(name)
     end
 
-
-
+    def send_money(amount)
+      fail unless amount >= 0
+      self.credits += amount
+    end
   end
 end
 

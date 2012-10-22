@@ -74,7 +74,9 @@ module Store
 
     def delete_item(item_id, log = true)
       item = Store::Item.by_id(item_id)
+      fail unless self.can_delete?(item)
 
+      # UG: maybe change to self.on_behalf_of.release_item(item)
       self.release_item(item)
       item.delete
 
@@ -138,6 +140,5 @@ module Store
     def is_organization?
       false
     end
-
   end
 end

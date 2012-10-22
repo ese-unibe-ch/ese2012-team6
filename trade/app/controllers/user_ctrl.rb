@@ -73,7 +73,7 @@ class User < Sinatra::Application
     changed_item_details =  @user.open_item_page_time < item.edit_time
     redirect url("/error/item_changed_details") if changed_item_details
 
-    buy_success, buy_message = @user.buy_item(item)
+    buy_success, buy_message = @user.on_behalf_of.buy_item(item)
 
     if buy_success
       redirect back

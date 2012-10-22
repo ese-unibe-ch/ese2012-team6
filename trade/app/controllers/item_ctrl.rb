@@ -173,7 +173,7 @@ class Item < Sinatra::Application
     # UG: Check whether user can really delete item
 
     item_id = Integer(params[:item_id])
-    @user.delete_item(item_id)
+    @user.on_behalf_of.delete_item(item_id)
 
     redirect back
   end
