@@ -80,10 +80,36 @@
   %div.markdown_view
     =marked_down_description
 
+
 -if i_am_admin
   %h3
-    Invite Users to the Organization
+    Invite Users
+-if i_am_admin
+  %table.table-minimalistic
+    %thead
+      %tr
+        %th Name
+        %th
+    %tbody
+      -for user in Store::User.all
+        %tr
+          %td
+            %a{:href => url("/user/#{user.name}")}
+              =user.name
+          %td
+            %div.action_buttons
+              -if !viewed_organization.organization_members.include?(user)
+                %form{:action => "/organization/#{viewed_organization.name}/#{user.name}/add", :method => "POST", }
+                  %input.styled-button.small{:type => "submit", :value => "Invite"}
+              -if viewed_organization.organization_members.include?(user)
+                %form{:action => "/organization/#{viewed_organization.name}/#{user.name}/remove", :method => "POST"}
+                  %input.styled-button.small.float_left{:type => "submit", :value => "Remove"}
+              -if !viewed_organization.organization_admin.include?(user) and viewed_organization.organization_members.include?(user)
+                %form{:action => "/organization/#{viewed_organization.name}/#{user.name}/add", :method => "POST"}
+                  %input.styled-button.small.float_left{:type => "submit", :value => "Add as Admin"}
+              -if viewed_organization.organization_admin.size>1 and viewed_organization.organization.admin.include?(user)
+                %form{:action => "/organization/#{viewed_organization.name}/#{user.name}/remove", :method => "POST"}
+                  %input.styled-button.small.float_left{:type => "submit", :value => "Remove as Admin"}
 
-  %h3
-    Remove Users from Organization
+
 

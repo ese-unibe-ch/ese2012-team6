@@ -34,4 +34,33 @@ class Organization < Sinatra::Application
 
   end
 
+  post "/organization/:organization_name/:username/add" do
+    redirect '/login' unless @user
+
+    organization = Store::Organization.by_name(param[:organization_name])
+    user         = Store::User.by_name(param[:username])
+
+    if organization.organization_admin.include?(user)
+      organization.add_admin(user)
+    else
+      organization.add_member(user)
+    end
+
+  end
+
+  post "/organization/:organization_name/:username/remove" do
+    redirect '/login' unless @user
+
+    organization = Store::Organization.by_name(param[:organization_name])
+    user         = Store::User.by_name(param[:username])
+
+    if organization.organization_admin.include?(user)
+      organization.remove_admin(user)
+    else
+      organization.remove_member(user)
+    end
+
+  end
+
+
 end
