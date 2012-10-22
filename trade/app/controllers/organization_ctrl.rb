@@ -28,7 +28,7 @@ class Organization < Sinatra::Application
   end
 
   # Handles creating organization
-  post '/organization/new' do
+  put '/organization' do
     redirect '/login' unless @user
 
     org_name = Security::StringChecker.destroy_script(params[:org_name])
