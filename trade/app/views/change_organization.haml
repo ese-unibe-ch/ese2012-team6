@@ -1,0 +1,115 @@
+%div#actionbar
+  %h2.float_left
+    :escaped
+       #{viewed_organization.name}
+  %div.action_buttons.float_right
+    %a.styled-button{:href => "/item/new"} Create new Item
+%h3
+  :escaped
+    #{"Credits of " + viewed_organization.name}
+%p
+  $#{viewed_organization.credits}
+%h3
+  Members of Organization
+%p
+%ul
+  -for member in viewed_organization.organization_members
+    %li
+      #{member.name}
+%div.picture_container.float_right
+  %img{:src => "#{viewed_organization.image_path}", :width => "200"}
+
+%h3 Change Organization Picture
+%form(action = "/user/#{@user.name}/images" method = "POST" enctype="multipart/form-data")
+  %input(type='file' name="file_upload" accept="image/*")
+  %input(type='submit' value='Upload File' class = 'styled-button')
+
+%h3
+  :escaped
+    #{viewed_organization.name + " owns"} the following items:
+-if viewed_organization.items.empty? and not is_my_organization
+  %p
+    No items available
+-else
+  %table.table-minimalistic
+    %thead
+      %tr
+        %th Name
+        %th Price
+        %th Active
+        %th
+    %tbody
+      -if is_my_organization
+        %tr
+          %form{:action => "/item", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
+            %td
+              %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
+            %td
+              %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
+            %td
+            %td
+              %input{:name => "_method", :type => "hidden", :value => "put"}
+              %input.styled-button.small{:type => "submit", :value => "Quick Add"}
+      -for item in viewed_organization.items
+        %tr
+          %td
+            %a{:href => url("/item/#{item.id}")}
+              =item.name
+          %td
+            #{item.price}
+          %td
+            -if item.active?
+              %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
+            -else
+              %input{:type => "checkbox", :disabled => "disabled"}
+          %td
+            %div.action_buttons
+              -if viewed_organization.can_activate?(item) or @user.name == "admin"
+                -if item.active?
+                  %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
+                    %input.styled-button.small.float_left{:type => "submit", :value => "Deactivate"}
+                -else
+                  %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
+                    %input.styled-button.small{:type => "submit", :value => "Activate"}
+              -if viewed_organization.can_edit?(item) or @user.name == "admin"
+                %a.styled-button.small{:href => "/item/#{item.id}/edit"} Edit
+              -if viewed_organization.can_delete?(item)
+                %form{:action => "/item/#{item.id}", :method => "POST"}
+                  %input{:name => "_method", :type => "hidden", :value => "delete"}
+                  %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
+
+%h3
+  #{"Description of " + viewed_organization.name}:
+-if viewed_organization.description == ""
+  %p No description available
+-else
+  %div.markdown_view
+    =marked_down_description
+
+-if i_am_admin
+  %h3
+    Invite Users to the Organization
+    %table.table-minimalistic
+      %thead
+        %tr
+          %th Name
+          %th Add
+      %tbody
+        -i=0
+        -for user in Store::User.all
+          -viewed_organization.organization_members.each do |member|
+          -if member != user
+            -i= i+1
+              %tr
+                %td
+                  %a{:href => url("/user/#{user.name}")}
+                    :escaped
+                      #{user.name}
+                %td.ralign
+                  %input{:type => "checkbox", :name => "member[]", :value => user.name}
+  %br
+  %br
+  %input{:name => "_method", :type => "hidden", :value => "PUT"}
+  %input.styled-button{:type => "submit", :value => "Save Changes"}
+%h3
+  Remove Users from Organization
