@@ -60,6 +60,10 @@ class Main < Sinatra::Application
         error_message = "You entered a wrong password"
       when "wrong_size"
         error_message = "Please choose a picture with the maximum size of 400kB"
+      when "credit_transfer_failed"
+        error_message = "You do not have enough credits to transfer"
+      when "wrong_transfer_amount"
+        error_message = "You must transfer a positive integral amount of credits"
     end
 
     last_page = back

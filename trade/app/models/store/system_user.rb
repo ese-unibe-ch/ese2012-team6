@@ -74,10 +74,10 @@ module Store
 
     def delete_item(item_id, log = true)
       item = Store::Item.by_id(item_id)
+      fail if item.nil?
       fail unless self.can_delete?(item)
 
-      # UG: maybe change to self.on_behalf_of.release_item(item)
-      self.release_item(item)
+      item.owner.release_item(item)
       item.delete
 
       Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
@@ -116,7 +116,7 @@ module Store
     end
 
     def can_edit?(item)
-      return (item.owner.eql?(self) and item.editable?)
+      return item.editable_by?(self)
     end
 
     alias :can_delete? :can_edit?
@@ -126,7 +126,7 @@ module Store
     end
 
     def can_activate?(item)
-      return item.owner.eql?(self)
+      return item.activatable_by?(self)
     end
 
     def to_s

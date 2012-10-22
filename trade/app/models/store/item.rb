@@ -18,6 +18,10 @@ module Store
       self.comments = []
     end
 
+    def self.clear_all
+      @@items.clear
+    end
+
     # save item to system
     def save
       fail if @@items.has_key?(self.id)
@@ -101,6 +105,18 @@ module Store
 
     def editable?
       return (not self.active)
+    end
+
+    def editable_by?(user)
+      fail if user.nil?
+      return (self.editable? && ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.is_admin?(user))))
+    end
+
+    alias :deletable_by? :editable_by?
+
+    def activatable_by?(user)
+      fail if user.nil?
+      return ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.is_admin?(user)))
     end
 
     def update(new_name, new_price, new_desc, log = true)

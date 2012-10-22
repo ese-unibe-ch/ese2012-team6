@@ -19,7 +19,6 @@ module Store
     def add_member(member)
       member.enter_organization(self)
       organization_members.push(member)
-
     end
 
     def self.named(name)
@@ -29,12 +28,18 @@ module Store
     end
 
     def remove_member(member)
-      organization_members.pop(member)
+ 
+      organization_members.delete(member)
       member.leave_organization(self)
+
     end
 
     def add_admin(member)
       organization_admin.push(member)
+    end
+
+    def remove_admin(member)
+      organization_admin.delete(member)
     end
 
     def is_organization?
@@ -68,6 +73,16 @@ module Store
     def send_money(amount)
       fail unless amount >= 0
       self.credits += amount
+    end
+
+    def has_member?(user)
+      fail if user.nil?
+      return self.organization_members.include?(user)
+    end
+
+    def is_admin?(user)
+      fail if user.nil?
+      return self.organization_admin.include?(user)
     end
   end
 end

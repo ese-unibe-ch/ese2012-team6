@@ -129,7 +129,7 @@ class Item < Sinatra::Application
     activate_str = params[:activate]
     item = Store::Item.by_id(Integer(params[:item_id]))
 
-    changed_owner = (@user.open_item_page_time < item.edit_time && item.owner != @user)
+    changed_owner = @user.open_item_page_time < item.edit_time && !@user.can_activate?(item)
 
     redirect url("/error/not_owner_of_item") if changed_owner
     redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)

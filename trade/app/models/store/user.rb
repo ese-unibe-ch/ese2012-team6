@@ -43,7 +43,6 @@ module Store
       return user
     end
 
-
     def password_matches?(password)
       return self.pwd_hash == BCrypt::Engine.hash_secret(password, self.pwd_salt)
     end
@@ -71,6 +70,18 @@ module Store
 
     def logout
       Analytics::UserLogoutActivity.with_username(name).log
+    end
+
+    def send_money_to(organization, amount)
+      fail if organization.nil?
+      return false unless self.credits >= amount
+
+      self.credits -= amount
+      organization.send_money(amount)
+
+      fail if self.credits < 0
+
+      return true
     end
 
     # tell user to work on behalf of an organization

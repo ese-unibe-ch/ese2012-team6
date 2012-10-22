@@ -4,6 +4,16 @@
        #{viewed_organization.name}
   %div.action_buttons.float_right
     -if is_my_organization
+      %div.money-sender
+        %form{:action => "/user/send_money/#{viewed_organization.name}", :method => "POST", :onsubmit => "return validate_gift_transfer(this);"}
+          %table
+            %tr
+              %td.ralign
+                %label Amount
+              %td
+                %input.textbox8{:type => "text", :name => "gift_amount", :style => "width: 2em"}
+              %td
+                %input.styled-button.float_left{:type => "submit", :value => "Transfer"}
       %a.styled-button{:href => "/item/new"} Create new Item
 %h3
   :escaped
@@ -29,7 +39,7 @@
         %th Active
         %th
     %tbody
-      -if is_my_organization
+      -if viewed_organization.organization_members.include?(@user)
         %tr
           %form{:action => "/item", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
             %td
@@ -54,36 +64,68 @@
               %input{:type => "checkbox", :disabled => "disabled"}
           %td
             %div.action_buttons
-              -if viewed_organization.can_activate?(item) or @user.name == "admin"
+              -if @user.can_activate?(item)
                 -if item.active?
                   %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
                     %input.styled-button.small.float_left{:type => "submit", :value => "Deactivate"}
                 -else
                   %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
                     %input.styled-button.small{:type => "submit", :value => "Activate"}
-              -if viewed_organization.can_edit?(item) or @user.name == "admin"
+              -if @user.can_edit?(item)
                 %a.styled-button.small{:href => "/item/#{item.id}/edit"} Edit
-              -if viewed_organization.can_delete?(item)
+              -if @user.can_delete?(item)
                 %form{:action => "/item/#{item.id}", :method => "POST"}
                   %input{:name => "_method", :type => "hidden", :value => "delete"}
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
 %h3
-  Members of Organizations
+  Admin(s)
+%p
+  -for admin in viewed_organization.organization_admin
+    :escaped
+      #{admin.name + ", "}
+%h3
+  Member(s)
 %p
   -for member in viewed_organization.organization_members
-    #{member.name + ", "}
+    :escaped
+      #{member.name + ", "}
 %h3
-  #{"Description of " + viewed_organization.name}:
+  Description
 -if viewed_organization.description == ""
   %p No description available
 -else
   %div.markdown_view
     =marked_down_description
 
--if i_am_admin
+-if viewed_organization.organization_admin.include?(@user)
   %h3
-    Invite Users to the Organization
+    Invite Users
+-if viewed_organization.organization_admin.include?(@user)
+  %table.table-minimalistic
+    %thead
+      %tr
+        %th Name
+        %th
+    %tbody
+      -for user in Store::User.all
+        %tr
+          %td
+            %a{:href => url("/user/#{user.name}")}
+              =user.name
+          %td
+            %div.action_buttons
+              -if !viewed_organization.organization_members.include?(user)
+                %form{:action => "/organization/#{viewed_organization.name}/add/#{user.name}/", :method => "POST" }
+                  %input.styled-button.small{:type => "submit", :value => "Invite"}
+              -if viewed_organization.organization_members.include?(user) and !viewed_organization.organization_admin.include?(user)
+                %form{:action => "/organization/#{viewed_organization.name}/remove/#{user.name}/", :method => "POST"}
+                  %input.styled-button.small.float_left{:type => "submit", :value => "Remove"}
+              -if !viewed_organization.organization_admin.include?(user) and viewed_organization.organization_members.include?(user)
+                %form{:action => "/organization/#{viewed_organization.name}/add/#{user.name}/", :method => "POST"}
+                  %input.styled-button.small.float_left{:type => "submit", :value => "Add as Admin"}
+              -if viewed_organization.organization_admin.length>1 and viewed_organization.organization_admin.include?(user)
+                %form{:action => "/organization/#{viewed_organization.name}/remove/#{user.name}/", :method => "POST"}
+                  %input.styled-button.small.float_left{:type => "submit", :value => "Remove as Admin"}
 
-  %h3
-    Remove Users from Organization
+
 

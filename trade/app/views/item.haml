@@ -72,7 +72,7 @@
           %div.markdown_view
             = RDiscount.new(comment.format_description, :smart, :filter_html).to_html
     %tr
-      %td
+      %td.textarea
         %div.smiley-view
           %img{:src => "/images/smileys/smile.gif" , :onclick => "addSmiley(':)', 'comment_input')", :alt => "Smile" ,:border=>"0"}
           %img{:src => "/images/smileys/laugh.gif" , :onclick => "addSmiley(':D', 'comment_input')", :alt => "Smile" ,:border=>"0"}
