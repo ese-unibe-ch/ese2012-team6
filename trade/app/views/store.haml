@@ -30,7 +30,7 @@
           %td
             -if user != @user
               %form{:action => "/user/buy/#{item.id}", :method => "POST"}
-                %input.styled-button.small.buy-color{:type => "submit", :value => "Buy"}
+                %input.styled-button.small.buy-color{:type => "submit", :value => @user.on_behalf_of == @user ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
 %h3
   Recent purchases
 - if most_recent_purchases.empty?

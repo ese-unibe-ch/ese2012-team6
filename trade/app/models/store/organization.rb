@@ -1,7 +1,7 @@
 require_relative '../store/system_user'
 module Store
   class Organization < System_User
-    attr_accessor :organization_members, :organization_admin
+    attr_accessor :members, :admins
     @@organizations = {}
 
     def initialize
@@ -11,15 +11,14 @@ module Store
       self.description = ""
       self.open_item_page_time = Time.now
       self.image_path = "/images/no_image.gif"
-      self.organization_members =[]
-      self.organization_admin =[]
+      self.members =[]
+      self.admins =[]
     end
 
     # @param [User] member
     def add_member(member)
       member.enter_organization(self)
-      organization_members.push(member)
-
+      members.push(member)
     end
 
     def self.named(name)
@@ -30,17 +29,17 @@ module Store
 
     def remove_member(member)
  
-      organization_members.delete(member)
+      members.delete(member)
       member.leave_organization(self)
 
     end
 
     def add_admin(member)
-      organization_admin.push(member)
+      admins.push(member)
     end
 
     def remove_admin(member)
-      organization_admin.delete(member)
+      admins.delete(member)
     end
 
     def is_organization?
@@ -71,8 +70,22 @@ module Store
       return  @@organizations .has_key?(name)
     end
 
+    def send_money(amount)
+      fail unless amount >= 0
+      self.credits += amount
+    end
 
+    # determine whether a user is a member of this organization
+    def has_member?(user)
+      fail if user.nil?
+      return self.members.include?(user)
+    end
 
+    # determine whether a user is an admin of this organization
+    def has_admin?(user)
+      fail if user.nil?
+      return self.admins.include?(user)
+    end
   end
 end
 

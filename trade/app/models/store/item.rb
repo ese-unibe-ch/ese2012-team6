@@ -18,6 +18,10 @@ module Store
       self.comments = []
     end
 
+    def self.clear_all
+      @@items.clear
+    end
+
     # save item to system
     def save
       fail if @@items.has_key?(self.id)
@@ -54,6 +58,7 @@ module Store
       @name = Security::StringChecker.destroy_script(name)
     end
 
+    # create a new item object with a name, price and owner
     def self.named_priced_with_owner(name, price, owner)
       item = Item.new
       item.name = name
@@ -62,10 +67,12 @@ module Store
       return item
     end
 
+    # determines whether a string is a valid price for an item
     def self.valid_price?(price)
       return (!!(price =~ /^[-+]?[1-9]([0-9]*)?$/) && Integer(price) >= 0)
     end
 
+    # extends the id of an item to a filename
     def self.id_image_to_filename(id, path)
       "#{id}_#{path}"
     end
@@ -74,14 +81,17 @@ module Store
       return "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
     end
 
+    # activate the item (you don't say...)
     def activate
       self.active = true
     end
 
+    # deactivate the item (thanks captain obvious)
     def deactivate
       self.active = false
     end
 
+    # update the item's status
     def update_status(new_status, log = true)
 
       new_status = (new_status == "true")
@@ -95,14 +105,32 @@ module Store
       end
     end
 
+    # returns whether the item is active or not
     def active?
       return self.active
     end
 
+    # returns whether the item is generally editable
     def editable?
       return (not self.active)
     end
 
+    # returns whether the item is editable by a certain user object
+    def editable_by?(user)
+      fail if user.nil?
+      return (self.editable? && ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user))))
+    end
+
+    # returns whether the item is deletable by a certain user object
+    alias :deletable_by? :editable_by?
+
+    # returns whether the item is activatable by a certain user object
+    def activatable_by?(user)
+      fail if user.nil?
+      return ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user)))
+    end
+
+    # update the item's properties
     def update(new_name, new_price, new_desc, log = true)
 
       fail unless self.editable?
@@ -120,6 +148,7 @@ module Store
       end
     end
 
+    # tell the item its properties have been changed
     def notify_change
       self.edit_time = Time.now
     end
