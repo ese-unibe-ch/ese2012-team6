@@ -39,7 +39,9 @@ class Organization < Sinatra::Application
     organization.add_member(@user)
     organization.add_admin(@user)
 
-    for username in params[:member]
+    members = params[:member]
+
+    for username in members
       organization.add_member(Store::User.by_name(username))
     end
 

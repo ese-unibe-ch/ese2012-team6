@@ -29,8 +29,7 @@
                   :escaped
                     #{user.name}
               %td.ralign
-                %form{:action => "input_checkbox"}
-                  %input{:type => "checkbox", :name => "member[#{i}]", :value => user.name}
+                %input{:type => "checkbox", :name => "member[]", :value => user.name}
   %br
   %br
   %div.button_container
