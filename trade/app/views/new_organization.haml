@@ -1,4 +1,4 @@
-%form{:action => "/organization/new", :method => "POST", :onsubmit => "return validate_profile_edit(this);"}
+%form{:action => "/organization", :method => "POST", :onsubmit => "return validate_profile_edit(this);"}
   %h3.no_top_margin
     Type name of Organization
   %p
@@ -19,7 +19,9 @@
           %th Name
           %th Add
       %tbody
+        -i=0
         -for user in Store::User.all
+          -i = i+ 1
           -if user != viewer
             %tr
               %td
@@ -27,11 +29,10 @@
                   :escaped
                     #{user.name}
               %td.ralign
-                %form{:action => "input_checkbox"}
-                  %input{:type => "checkbox", :name => "member", :value => user}
+                %input{:type => "checkbox", :name => "member[]", :value => user.name}
   %br
   %br
-  %div.button_container
-    %input.styled-button{:type => "submit", :value => "Create Organization"}
+  %input{:name => "_method", :type => "hidden", :value => "PUT"}
+  %input.styled-button{:type => "submit", :value => "Create Organization"}
   %br
 
