@@ -28,7 +28,7 @@ class Organization < Sinatra::Application
   end
 
   # Handles creating organization
-  post '/organization/new' do
+  put '/organization' do
     redirect '/login' unless @user
 
     org_name = Security::StringChecker.destroy_script(params[:org_name])
@@ -39,11 +39,10 @@ class Organization < Sinatra::Application
     organization.add_member(@user)
     organization.add_admin(@user)
 
-    # diese methode muss noch geändert werden
-    # user macht probleme in user.rb wegen enter_organization
-    # muss noch methode finden, welche mehrere users hinzufügt
-    for user in params[:member]
-      organization.add_member(user.name)
+    members = params[:member]
+
+    for username in members
+      organization.add_member(Store::User.by_name(username))
     end
 
     redirect "/organizations"
@@ -54,15 +53,14 @@ class Organization < Sinatra::Application
     redirect '/login' unless @user
 
     viewed_organization = Store::Organization.by_name(params[:organization_name])
-    is_my_organization = viewed_organization.organization_members.detect(@user)
-    i_am_admin = viewed_organization.organization_admin.detect(@user)
+    is_my_organization = viewed_organization.organization_members.detect(@user) != nil
+    i_am_admin = viewed_organization.organization_admin.detect(@user) != nil
     marked_down_description = RDiscount.new(viewed_organization.description, :smart, :filter_html)
 
-    haml :organization, :locals => {
-        :viewed_organization => viewed_organization,
-        :is_my_organization => is_my_organization,
-        :i_am_admin => i_am_admin,
-        :marked_down_description => marked_down_description.to_html
+    haml :organization, :locals => {:viewed_organization => viewed_organization,
+                                    :is_my_organization => is_my_organization,
+                                    :i_am_admin => i_am_admin,
+                                    :marked_down_description => marked_down_description.to_html
     }
 
   end
