@@ -73,8 +73,30 @@
             = RDiscount.new(comment.format_description, :smart, :filter_html).to_html
     %tr
       %td
+        %div.smiley-view
+          %a{:href => "#", :onclick => "addSmiley(':)', 'comment_input')"}
+            %img{:src => "/images/smileys/smile.gif" , :alt => "Smile" ,:border=>"0"}
+          %a{:href => "#", :onclick => "addSmiley(':D', 'comment_input')"}
+            %img{:src => "/images/smileys/laugh.gif" , :alt => "Smile" ,:border=>"0"}
+          %a{:href => "#", :onclick => "addSmiley('8)', 'comment_input')"}
+            %img{:src => "/images/smileys/cool.gif" , :alt => "Smile" ,:border=>"0"}
+          %a{:href => "#", :onclick => "addSmiley(':(', 'comment_input')"}
+            %img{:src => "/images/smileys/disappointed.gif" , :alt => "Smile" ,:border=>"0"}
+          %a{:href => "#", :onclick => "addSmiley(':'()'', 'comment_input')"}
+            %img{:src => "/images/smileys/sad.gif" , :alt => "Smile" ,:border=>"0"}
+          %a{:href => "#", :onclick => "addSmiley(':O', 'comment_input')"}
+            %img{:src => "/images/smileys/shocked.gif" , :alt => "Smile" ,:border=>"0"}
+          %a{:href => "#", :onclick => "addSmiley(':crazy:', 'comment_input')"}
+            %img{:src => "/images/smileys/crazy.gif" , :alt => "Smile" ,:border=>"0"}
+          %a{:href => "#", :onclick => "addSmiley(':yeah:', 'comment_input')"}
+            %img{:src => "/images/smileys/yeah.gif" , :alt => "Smile" ,:border=>"0"}
         %form{:action => "/item/#{item.id}/add_comment", :method => "POST", :onsubmit => "return validate_comment(this);"}
-          %textarea.textbox8.comment{:name => "item_comment"}
+          %textarea.textbox8.comment{:name => "item_comment", :id => "comment_input"}
           %tr
             %td
               %input.styled-button.float_right{:type => "submit", :value => "Comment"}
+:javascript
+  function addSmiley(txt, id) {
+  var div = document.getElementById(id);
+  div.value += '' +txt+ ' ';
+  }
