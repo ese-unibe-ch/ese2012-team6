@@ -56,11 +56,13 @@ class Organization < Sinatra::Application
     is_my_organization = viewed_organization.organization_members.detect(@user) != nil
     i_am_admin = viewed_organization.organization_admin.detect(@user) != nil
     marked_down_description = RDiscount.new(viewed_organization.description, :smart, :filter_html)
+    #not_member = viewed_organization.organization_members
 
     haml :organization, :locals => {:viewed_organization => viewed_organization,
                                     :is_my_organization => is_my_organization,
                                     :i_am_admin => i_am_admin,
-                                    :marked_down_description => marked_down_description.to_html
+                                    :marked_down_description => marked_down_description.to_html,
+                                    #:not_member => not_member
     }
 
   end

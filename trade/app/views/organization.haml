@@ -70,8 +70,10 @@
 %h3
   Members of Organizations
 %p
-  -for member in viewed_organization.organization_members
-    #{member.name + ", "}
+%ul
+  -for member in !viewed_organization.organization_members
+    %li
+      #{member.name}
 %h3
   #{"Description of " + viewed_organization.name}:
 -if viewed_organization.description == ""
@@ -83,7 +85,23 @@
 -if i_am_admin
   %h3
     Invite Users to the Organization
-
+    %table.table-minimalistic
+      %thead
+        %tr
+          %th Name
+          %th Add
+      %tbody
+        -i=0
+        -for user in Store::User.all
+          -i = i+ 1
+          -for member in !viewed_organization.organization_members
+            %tr
+              %td
+                %a{:href => url("/user/#{user.name}")}
+                  :escaped
+                    #{user.name}
+              %td.ralign
+                %input{:type => "checkbox", :name => "member[]", :value => user.name}
   %h3
     Remove Users from Organization
 
