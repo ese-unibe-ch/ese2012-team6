@@ -43,13 +43,13 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  bcrypt-ruby
-  haml
-  less
-  rcov
-  rdiscount
-  require_relative
-  shotgun
-  sinatra
-  sinatra-contrib
-  thin
+  bcrypt-ruby (~> 3.0.1)
+  haml (~> 3.1.7)
+  less (~> 2.2.2)
+  rcov (~> 1.0.0)
+  rdiscount (~> 1.6.8)
+  require_relative (~> 1.0.3)
+  shotgun (~> 0.9)
+  sinatra (~> 1.3.3)
+  sinatra-contrib (~> 1.3.1)
+  thin (~> 1.5.0)
