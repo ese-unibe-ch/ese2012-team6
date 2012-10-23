@@ -8,13 +8,11 @@ class User < Sinatra::Application
   # handle on behalf of selector change
   post "/user/work_on_behalf_of/" do
     org_id = params[:on_behalf_of]
+
     org = Store::Organization.by_name(org_id)
-    if org == nil
-      org=@user
-    end
+    org = @user if org.nil?
 
    @user.work_on_behalf_of(org)
-
 
    redirect back
   end

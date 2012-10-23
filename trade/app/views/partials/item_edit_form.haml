@@ -7,6 +7,22 @@
     Price
   %p
     %input.textbox8{:type => "text", :name => "item_price", :style => "width: 60px", :value => item_price}
+  -if not edit
+    %h3
+      Owner
+    %p
+      %select{:name => "owner"}
+        - if @user.on_behalf_of == @user
+          %option{:value => @user.name, :selected => "true"} Myself
+        - else
+          %option{:value => @user.name} Myself
+        - for org in @user.get_organizations
+          - if @user.on_behalf_of == org
+            %option{:value => org.name, :selected => "true"}
+              =org.name
+          - else
+            %option{:value => org.name}
+              =org.name
   %h3
     Description
   %p
