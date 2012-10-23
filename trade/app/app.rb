@@ -47,6 +47,7 @@ class App < Sinatra::Base
     #add default organization
    (organization_Mordor_inc = Store::Organization.named("Mordor Inc.")).save
     organization_Mordor_inc.add_member(user_ese)
+    organization_Mordor_inc.add_member(peter_griffin)
     organization_Mordor_inc.add_admin(user_ese)
 
   end

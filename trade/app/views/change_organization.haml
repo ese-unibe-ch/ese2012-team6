@@ -26,7 +26,7 @@
     %input(type='submit' value='Upload File' class = 'styled-button')
     %br
     %br
-%form{:action => "/organization_change/#{viewed_organization}", :method => "POST", :onsubmit => "return validate_profile_edit(this);"}
+%form{:action => "/organization_change/#{viewed_organization.name}", :method => "POST", :onsubmit => "return validate_profile_edit(this);"}
   %h3
     :escaped
       Items of #{viewed_organization.name}
@@ -62,11 +62,13 @@
     %br
   %h3
     #{"Description of " + viewed_organization.name}
-  -if viewed_organization.description == ""
-    %p No description available
-  -else
-    %div.markdown_view
-      =marked_down_description
+  %p
+    %textarea.textbox8.about_yourself{:name => "org_desc"}
+      - lines = ("#{marked_down_description}").split("\n")
+      - unless lines.empty?
+        - lines.each do |line|
+          =line
+  %br
   %br
   %h3
     Invite Users to the Organization

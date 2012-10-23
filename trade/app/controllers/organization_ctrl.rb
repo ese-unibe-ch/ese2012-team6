@@ -31,6 +31,10 @@ class Organization < Sinatra::Application
   put '/organization' do
     redirect '/login' unless @user
 
+    if params[:org_name]==""
+      redirect 'error/no_name'
+    end
+
     org_name = Security::StringChecker.destroy_script(params[:org_name])
     org_desc = params[:org_desc]
 
@@ -38,11 +42,13 @@ class Organization < Sinatra::Application
     organization.save
     organization.add_member(@user)
     organization.add_admin(@user)
-
+    organization.description = org_desc
     members = params[:member]
 
-    for username in members
-      organization.add_member(Store::User.by_name(username))
+    if members != nil
+      for username in members
+        organization.add_member(Store::User.by_name(username))
+      end
     end
 
     redirect "/organizations"
@@ -69,8 +75,17 @@ class Organization < Sinatra::Application
     redirect '/login' unless @user
 
     viewed_organization = Store::Organization.by_name(params[:organization_name])
-    is_my_organization = viewed_organization.organization_members.detect(@user) != nil
-    i_am_admin = viewed_organization.organization_admin.detect(@user) != nil
+
+    if viewed_organization.organization_members.detect(@user)
+      is_my_organization = true
+    else is_my_organization = false
+    end
+
+    if viewed_organization.organization_admin.detect(@user)
+      i_am_admin = true
+    else i_am_admin = false
+    end
+
     marked_down_description = RDiscount.new(viewed_organization.description, :smart, :filter_html)
 
     haml :change_organization, :locals => {:viewed_organization => viewed_organization,
@@ -87,19 +102,26 @@ class Organization < Sinatra::Application
     redirect '/login' unless @user
 
     viewer = params[:org_name]
+    org_desc = params[:org_desc]
     organization = Store::Organization.by_name(viewer)
+    organization.description = org_desc
+
     member_put = params[:member]
     member_rem = params[:rem]
 
-    for username in member_put
-      organization.add_member(Store::User.by_name(username))
+    if member_put != nil
+      for username in member_put
+        organization.add_member(Store::User.by_name(username))
+      end
     end
 
-    for username in member_rem
-      organization.remove_member(Store::User.by_name(username))
+    if member_rem != nil
+      for username in member_rem
+        organization.remove_member(Store::User.by_name(username))
+      end
     end
 
-    redirect "/organization_change/:organization_name"
+    redirect "/organization/#{viewer}"
   end
 
   # Handles organization's picture upload

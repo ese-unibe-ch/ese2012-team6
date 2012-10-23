@@ -29,7 +29,7 @@ module Store
     end
 
     def remove_member(member)
-      organization_members.pop(member)
+      organization_members.delete(member)
       member.leave_organization(self)
 
     end

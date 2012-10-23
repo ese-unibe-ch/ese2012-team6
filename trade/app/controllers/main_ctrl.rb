@@ -60,6 +60,8 @@ class Main < Sinatra::Application
         error_message = "You entered a wrong password"
       when "wrong_size"
         error_message = "Please choose a picture with the maximum size of 400kB"
+      when "no_name"
+        error_message = "Type a name for your Organization"
     end
 
     last_page = back
