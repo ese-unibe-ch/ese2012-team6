@@ -35,7 +35,7 @@
     %tbody
       -if is_my_profile
         %tr
-          %form{:action => "/item", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
+          %form{:action => "/item/quick_add", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
             %td
               %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
             %td

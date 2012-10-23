@@ -48,6 +48,7 @@ class App < Sinatra::Base
    (organization_Mordor_inc = Store::Organization.named("Mordor Inc.")).save
     organization_Mordor_inc.add_member(user_ese)
     organization_Mordor_inc.add_admin(user_ese)
+    organization_Mordor_inc.send_money(200)
 
   end
 end

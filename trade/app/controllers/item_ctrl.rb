@@ -129,7 +129,7 @@ class Item < Sinatra::Application
     activate_str = params[:activate]
     item = Store::Item.by_id(Integer(params[:item_id]))
 
-    changed_owner = (@user.open_item_page_time < item.edit_time && item.owner != @user)
+    changed_owner = @user.open_item_page_time < item.edit_time && !@user.can_activate?(item)
 
     redirect url("/error/not_owner_of_item") if changed_owner
     redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
@@ -154,7 +154,10 @@ class Item < Sinatra::Application
     item_price = Integer(params[:item_price])
     item_description = params[:item_description] ? params[:item_description] : ""
 
-    item = @user.on_behalf_of.propose_item(item_name, item_price, item_description)
+    item_owner = Store::Organization.by_name(params[:owner])
+    item_owner = @user if item_owner.nil?
+
+    item = item_owner.propose_item(item_name, item_price, item_description)
 
     if file
       file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
@@ -167,13 +170,28 @@ class Item < Sinatra::Application
     redirect back
   end
 
+  put "/item/quick_add" do
+    redirect '/login' unless @user
+    redirect back if params[:item_name] == "" or params[:item_price] == ""
+
+    item_name = Security::StringChecker.destroy_script(params[:item_name])
+
+    redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
+    item_price = Integer(params[:item_price])
+
+    @user.on_behalf_of.propose_item(item_name, item_price)
+
+    redirect "/item/#{item.id}" if back == url("/item/new")
+    redirect back
+  end
+
   # handles item deletion
   delete "/item/:item_id" do
     redirect '/login' unless @user
     # UG: Check whether user can really delete item
 
     item_id = Integer(params[:item_id])
-    @user.delete_item(item_id)
+    @user.on_behalf_of.delete_item(item_id)
 
     redirect back
   end

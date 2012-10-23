@@ -53,8 +53,8 @@ class Organization < Sinatra::Application
     redirect '/login' unless @user
 
     viewed_organization = Store::Organization.by_name(params[:organization_name])
-    is_my_organization = viewed_organization.organization_members.detect(@user) != nil
-    i_am_admin = viewed_organization.organization_admin.detect(@user) != nil
+    is_my_organization = viewed_organization.has_member?(@user)
+    i_am_admin = viewed_organization.has_admin?(@user)
     marked_down_description = RDiscount.new(viewed_organization.description, :smart, :filter_html)
 
     haml :organization, :locals => {:viewed_organization => viewed_organization,
@@ -71,7 +71,7 @@ class Organization < Sinatra::Application
     organization = Store::Organization.by_name(params[:organization_name])
     user         = Store::User.by_name(params[:username])
 
-    if !organization.organization_admin.include?(user) and organization.organization_members.include?(user)
+    if !organization.has_admin?(user) and organization.has_member?(user)
       organization.add_admin(user)
     else
       organization.add_member(user)
@@ -85,7 +85,7 @@ class Organization < Sinatra::Application
     organization = Store::Organization.by_name(params[:organization_name])
     user         = Store::User.by_name(params[:username])
 
-    if organization.organization_admin.include?(user)
+    if organization.has_admin?(user)
       organization.remove_admin(user)
     else
       organization.remove_member(user)
