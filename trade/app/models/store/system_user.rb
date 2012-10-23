@@ -121,8 +121,9 @@ module Store
 
     alias :can_delete? :can_edit?
 
+    #if ((item.owner != @user.on_behalf_of) && item.active?)
     def can_buy?(item)
-      return (not item.owner.eql?(self) and item.active?)
+      return ((item.owner != self.on_behalf_of) && item.active?)
     end
 
     def can_activate?(item)
