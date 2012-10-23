@@ -107,5 +107,9 @@ module Store
     def get_organizations
       return self.organizations
     end
+
+    def working_as_self?
+      return self.on_behalf_of.eql?(self)
+    end
   end
 end

@@ -154,7 +154,10 @@ class Item < Sinatra::Application
     item_price = Integer(params[:item_price])
     item_description = params[:item_description] ? params[:item_description] : ""
 
-    item = @user.on_behalf_of.propose_item(item_name, item_price, item_description)
+    item_owner = Store::Organization.by_name(params[:owner])
+    item_owner = @user if item_owner.nil?
+
+    item = item_owner.propose_item(item_name, item_price, item_description)
 
     if file
       file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
@@ -162,6 +165,21 @@ class Item < Sinatra::Application
       uploader = Storage::PictureUploader.with_path("/images/items")
       item.image_path = uploader.upload(file, file_name)
     end
+
+    redirect "/item/#{item.id}" if back == url("/item/new")
+    redirect back
+  end
+
+  put "/item/quick_add" do
+    redirect '/login' unless @user
+    redirect back if params[:item_name] == "" or params[:item_price] == ""
+
+    item_name = Security::StringChecker.destroy_script(params[:item_name])
+
+    redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
+    item_price = Integer(params[:item_price])
+
+    @user.on_behalf_of.propose_item(item_name, item_price)
 
     redirect "/item/#{item.id}" if back == url("/item/new")
     redirect back
