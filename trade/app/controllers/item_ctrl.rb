@@ -170,6 +170,21 @@ class Item < Sinatra::Application
     redirect back
   end
 
+  put "/item/quick_add" do
+    redirect '/login' unless @user
+    redirect back if params[:item_name] == "" or params[:item_price] == ""
+
+    item_name = Security::StringChecker.destroy_script(params[:item_name])
+
+    redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
+    item_price = Integer(params[:item_price])
+
+    @user.on_behalf_of.propose_item(item_name, item_price)
+
+    redirect "/item/#{item.id}" if back == url("/item/new")
+    redirect back
+  end
+
   # handles item deletion
   delete "/item/:item_id" do
     redirect '/login' unless @user
