@@ -62,8 +62,10 @@ class Main < Sinatra::Application
         error_message = "Please choose a picture with the maximum size of 400kB"
       when "no_name"
         error_message = "Type a name for your Organization"
-      when "credit_transfer_failed"
+      when "user_credit_transfer_failed"
         error_message = "You do not have enough credits to transfer"
+      when "organization_credit_transfer_failed"
+        error_message = "Organization does not have enough credits to transfer"
       when "wrong_transfer_amount"
         error_message = "You must transfer a positive integral amount of credits"
     end

@@ -117,7 +117,7 @@ class User < Sinatra::Application
 
     success = @user.send_money_to(org, amount)
 
-    redirect "/error/credit_transfer_failed" unless success
+    redirect "/error/user_credit_transfer_failed" unless success
 
     redirect back
   end

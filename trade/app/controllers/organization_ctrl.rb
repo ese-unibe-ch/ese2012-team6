@@ -170,4 +170,22 @@ class Organization < Sinatra::Application
 
     redirect back
   end
+
+  post '/organization/:org_name/send_money' do
+    redirect '/login' unless @user
+    org_name = params[:org_name]
+    org = Store::Organization.by_name(org_name)
+
+    fail unless org.has_member?(@user)
+    redirect "/error/wrong_transfer_amount" unless (!!(params[:gift_amount] =~ /^[-+]?[1-9]([0-9]*)?$/) && Integer(params[:gift_amount]) >= 0)
+
+    amount = Integer(params[:gift_amount])
+
+    success = org.send_money_to(@user, amount)
+
+    redirect "/error/organization_credit_transfer_failed" unless success
+
+    redirect back
+
+  end
 end
