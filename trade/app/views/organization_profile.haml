@@ -25,7 +25,7 @@
                   %input.styled-button.float_left{:type => "submit", :value => "Transfer"}
       %a.styled-button{:href => "/item/new"} Create new Item
     -if i_am_admin
-      %a.styled-button{:href => "/#{viewed_organization.name}/edit"} Make Changes
+      %a.styled-button{:href => "/organization/#{viewed_organization.name}/edit"} Make Changes
 %h3
   :escaped
     #{"Credits of " + viewed_organization.name}:
@@ -89,7 +89,7 @@
                   %input{:name => "_method", :type => "hidden", :value => "delete"}
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
 %h3
-  Members of Organizations
+  Members
 %ul
   -for member in viewed_organization.members
     %li
@@ -106,7 +106,7 @@
 %br(clear="all")
 -if i_am_admin
   %h3
-    Invite Users
+    Manage Users
   %table.table-minimalistic
     %thead
       %tr

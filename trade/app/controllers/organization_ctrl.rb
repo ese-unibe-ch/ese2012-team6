@@ -68,10 +68,12 @@ class Organization < Sinatra::Application
   end
 
   # Shows selected organization
-  get '/:organization_name/edit' do
+  get '/organization/:organization_name/edit' do
     redirect '/login' unless @user
 
     viewed_organization = Store::Organization.by_name(params[:organization_name])
+
+    redirect "/organization/#{viewed_organization.name}" unless @user.is_admin_of?(viewed_organization)
 
     is_my_organization = viewed_organization.has_member?(@user)
     i_am_admin = @user.is_admin_of?(viewed_organization)
@@ -116,7 +118,7 @@ class Organization < Sinatra::Application
   end
 
   # Handles changing organization
-  post '/:org_name/edit' do
+  post '/organization/:org_name/edit' do
     redirect '/login' unless @user
 
     viewed_organization = params[:org_name]
@@ -143,7 +145,7 @@ class Organization < Sinatra::Application
   end
 
   # Handles organization's picture upload
-  post '/organization/:name' do
+  post '/organization/:name/pic_upload' do
     redirect '/login' unless @user
 
     viewed_organization = Store::Organization.by_name(params[:name])

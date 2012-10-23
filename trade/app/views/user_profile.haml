@@ -73,9 +73,15 @@
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
 %h3
   Member of Organizations
-%p
-  -for org in @user.get_organizations
-    #{org.name + ", "}
+-if viewed_user.get_organizations.empty?
+  %p
+    None
+-else
+  %ul
+    -for org in viewed_user.get_organizations
+      %li
+        :escaped
+          #{org.name}
 %h3
   #{is_my_profile ? "Your Description" : "Description of " + viewed_user.name}:
 -if viewed_user.description == ""
