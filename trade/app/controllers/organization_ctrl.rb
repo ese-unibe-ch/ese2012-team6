@@ -86,15 +86,14 @@ class Organization < Sinatra::Application
     else i_am_admin = false
     end
 
-    marked_down_description = RDiscount.new(viewed_organization.description, :smart, :filter_html)
+    marked_down_description = viewed_organization.description
 
     haml :change_organization, :locals => {:viewed_organization => viewed_organization,
                                            :is_my_organization => is_my_organization,
                                            :i_am_admin => i_am_admin,
-                                           :marked_down_description => marked_down_description.to_html,
+                                           :marked_down_description => marked_down_description,
                                            :viewer => @user
                                           }
-
   end
 
   # Handles changing organization
@@ -127,7 +126,8 @@ class Organization < Sinatra::Application
   # Handles organization's picture upload
   post '/organization/:name' do
     redirect '/login' unless @user
-    viewer = params[:name]
+
+    viewer = Store::Organization.by_name(params[:name])
     file = params[:file_upload]
     redirect to("/organization/#{viewer}") unless file
 
@@ -137,6 +137,6 @@ class Organization < Sinatra::Application
     uploader = Storage::PictureUploader.with_path("/images/organizations")
     viewer.image_path = uploader.upload(file, filename)
 
-    redirect '/organization_change'
+    redirect back
   end
 end

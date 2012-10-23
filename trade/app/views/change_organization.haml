@@ -16,14 +16,14 @@
   -for member in viewed_organization.organization_members
     %li
       #{member.name}
-%form{:action => "/organization/#{viewed_organization.name}", :method => "POST", :onsubmit => "return validate_profile_edit(this);"}
   %div.picture_container.float_right
     %img{:src => "#{viewed_organization.image_path}", :width => "200"}
-  %h3
-    Change Organization Picture
+%h3
+  Change Organization Picture
   %form(action= "/organization/#{viewed_organization.name}" method= "POST" enctype= "multipart/form-data")
-    %input(type='file' name="file_upload" accept="image/*")
-    %input(type='submit' value='Upload File' class = 'styled-button')
+    %div.button_container
+      %input(type='file' name="file_upload" accept="image/*")
+      %input(type='submit' value='Upload File' class = 'styled-button')
     %br
     %br
 %form{:action => "/organization_change/#{viewed_organization.name}", :method => "POST", :onsubmit => "return validate_profile_edit(this);"}
