@@ -76,12 +76,12 @@ class Organization < Sinatra::Application
 
     viewed_organization = Store::Organization.by_name(params[:organization_name])
 
-    if viewed_organization.organization_members.detect(@user)
+    if viewed_organization.has_member?(@user)
       is_my_organization = true
     else is_my_organization = false
     end
 
-    if viewed_organization.organization_admin.detect(@user)
+    if viewed_organization.has_admin?(@user)
       i_am_admin = true
     else i_am_admin = false
     end

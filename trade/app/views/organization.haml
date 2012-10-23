@@ -82,7 +82,7 @@
 %h3
   Members of Organizations
 %ul
-  -for member in viewed_organization.organization_members
+  -for member in viewed_organization.members
     %li
       #{member.name}
 %h3
@@ -92,7 +92,7 @@
 -else
   %div.markdown_view
     =marked_down_description
-
+%br(clear="all")
 -if viewed_organization.has_admin?(@user)
   %h3
     Invite Users

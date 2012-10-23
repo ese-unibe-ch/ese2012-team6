@@ -13,7 +13,7 @@
   Members of Organization
 %p
 %ul
-  -for member in viewed_organization.organization_members
+  -for member in viewed_organization.members
     %li
       #{member.name}
   %div.picture_container.float_right
@@ -40,7 +40,6 @@
           %th Name
           %th Price
           %th Active
-          %th
       %tbody
         -if is_my_organization
           %tr
@@ -80,7 +79,7 @@
       %tbody
         -i=0
         -for user in Store::User.all
-          -if viewed_organization.organization_members.detect{ |member| member == user}
+          -if viewed_organization.members.detect{ |member| member == user}
             -i=i
           -else i=i+1
             %tr
@@ -101,7 +100,7 @@
       %tbody
         -i=0
         -for user in Store::User.all
-          -if viewed_organization.organization_members.detect{ |member| member == user}
+          -if viewed_organization.members.detect{ |member| member == user}
             -if user != viewer
             -i=i+1
               %tr
