@@ -75,6 +75,11 @@ module Store
       Analytics::UserLogoutActivity.with_username(name).log
     end
 
+    def send_money(amount)
+      fail unless amount >= 0
+      self.credits += amount
+    end
+
     # sends a certain amount of money from the user to a certain organization
     def send_money_to(organization, amount)
       fail if organization.nil?

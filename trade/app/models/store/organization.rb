@@ -75,6 +75,20 @@ module Store
       self.credits += amount
     end
 
+    # sends a certain amount of money from the organization to an admin
+    def send_money_to(admin, amount)
+      fail if admin.nil?
+      return false unless self.credits >= amount
+      return false unless self.has_admin?(admin)
+
+      self.credits -= amount
+      admin.send_money(amount)
+
+      fail if self.credits < 0
+
+      return true
+    end
+
     # determine whether a user is a member of this organization
     def has_member?(user)
       fail if user.nil?
