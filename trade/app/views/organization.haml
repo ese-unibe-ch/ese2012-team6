@@ -15,6 +15,8 @@
               %td
                 %input.styled-button.float_left{:type => "submit", :value => "Transfer"}
       %a.styled-button{:href => "/item/new"} Create new Item
+    -if i_am_admin
+      %a.styled-button{:href => "/organization_change/#{viewed_organization.name}"} Make Changes
 %h3
   :escaped
     #{"Credits of " + viewed_organization.name}:
@@ -78,19 +80,13 @@
                   %input{:name => "_method", :type => "hidden", :value => "delete"}
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
 %h3
-  Admin(s)
-%p
-  -for admin in viewed_organization.admins
-    :escaped
-      #{admin.name + ", "}
+  Members of Organizations
+%ul
+  -for member in viewed_organization.organization_members
+    %li
+      #{member.name}
 %h3
-  Member(s)
-%p
-  -for member in viewed_organization.members
-    :escaped
-      #{member.name + ", "}
-%h3
-  Description
+  #{"Description of " + viewed_organization.name}
 -if viewed_organization.description == ""
   %p No description available
 -else

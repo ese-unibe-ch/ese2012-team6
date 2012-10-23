@@ -17,7 +17,7 @@
     -for organization in Store::Organization.all
       %tr
         %td
-          %a{:href => url("/organization/#{organization.name}")}
+          %a{:href => "/organization/#{organization.name}"}
             :escaped
               #{organization.name}
         %td.ralign

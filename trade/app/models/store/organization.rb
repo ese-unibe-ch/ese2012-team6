@@ -80,6 +80,10 @@ module Store
       fail if user.nil?
       return self.members.include?(user)
     end
+    
+    def self.id_image_to_filename(id, path)
+      "#{id}_#{path}"
+    end
 
     # determine whether a user is an admin of this organization
     def has_admin?(user)
