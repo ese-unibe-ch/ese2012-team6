@@ -95,7 +95,7 @@ module Store
 
     # tell user to work on behalf of an organization
     def work_on_behalf_of(organization)
-      self.on_behalf_of = organization
+      self.on_behalf_of = organization.nil? ? self : organization
     end
 
     # become a member of an organization
@@ -113,8 +113,19 @@ module Store
       return self.organizations
     end
 
+    # return whether user is working on behalf of himself or not
     def working_as_self?
       return self.on_behalf_of.eql?(self)
+    end
+
+    # returns whether user is a member of an organization
+    def is_member_of?(organization)
+      return organization.has_member?(self)
+    end
+
+    # returns whether user is an admin of an organization
+    def is_admin_of?(organization)
+      return organization.has_admin?(self)
     end
   end
 end

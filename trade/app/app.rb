@@ -50,7 +50,6 @@ class App < Sinatra::Base
     organization_Mordor_inc.add_member(peter_griffin)
     organization_Mordor_inc.add_admin(user_ese)
     organization_Mordor_inc.send_money(200)
-
   end
 end
 
