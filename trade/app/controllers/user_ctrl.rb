@@ -11,10 +11,13 @@ class User < Sinatra::Application
 
     org = Store::Organization.by_name(org_id)
     org = @user if org.nil?
+    old_on_behalf = @user.on_behalf_of
+    @user.work_on_behalf_of(org)
 
-   @user.work_on_behalf_of(org)
-
-   redirect back
+    redirect "/organization/#{@user.on_behalf_of.name}" if (back == url("/user/#{@user.name}") && !@user.working_as_self?)
+    redirect "/organization/#{@user.on_behalf_of.name}" if (back == url("/organization/#{old_on_behalf.name}").gsub(" ", "%20") && !@user.working_as_self?)
+    redirect "/user/#{@user.name}" if (back == url("/organization/#{old_on_behalf.name}").gsub(" ", "%20") && @user.working_as_self?)
+    redirect back
   end
 
   # Handles user display page, shows profile of user
