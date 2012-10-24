@@ -9,12 +9,14 @@ class User < Sinatra::Application
   post "/user/work_on_behalf_of/" do
     org_id = params[:on_behalf_of]
 
+    old_on_behalf_of = @user.on_behalf_of
     org = Store::Organization.by_name(org_id)
-    org = @user if org.nil?
+    @user.work_on_behalf_of(org)
 
-   @user.work_on_behalf_of(org)
-
-   redirect back
+    #redirect "/organization/#{@user.on_behalf_of.name}" if (back == url("/user/#{@user.name}") && !@user.working_as_self?)
+    #redirect "/organization/#{@user.on_behalf_of.name}" if (back == url("/organization/#{old_on_behalf_of.name}").gsub(" ", "%20") && !@user.working_as_self?)
+    #redirect "/user/#{@user.name}" if (back == url("/organization/#{old_on_behalf_of.name}").gsub(" ", "%20") && @user.working_as_self?)
+    redirect back
   end
 
   # Handles user display page, shows profile of user
@@ -25,7 +27,7 @@ class User < Sinatra::Application
     is_my_profile = (@user == viewed_user)
     marked_down_description = RDiscount.new(viewed_user.description, :smart, :filter_html)
 
-    haml :profile, :locals => {
+    haml :user_profile, :locals => {
         :viewed_user => viewed_user,
         :is_my_profile => is_my_profile,
         :marked_down_description => marked_down_description.to_html
@@ -49,14 +51,10 @@ class User < Sinatra::Application
 
     redirect 'error/pwd_rep_no_match' if new_pwd != new_pwd_rep
     redirect "/error/wrong_password" unless @user.password_matches?(old_pwd)
+    redirect "/error/pwd_unsafe" unless Security::StringChecker.is_safe_pw?(new_pwd)
 
     @user.description = new_desc
-
-    if new_pwd != ""
-      redirect "/error/pwd_unsafe" unless Security::StringChecker.is_safe_pw?(new_pwd)
-
-      @user.change_password(new_pwd)
-    end
+    @user.change_password(new_pwd)
 
     redirect "/user/#{@user.name}"
   end
@@ -73,11 +71,8 @@ class User < Sinatra::Application
 
     buy_success, buy_message = @user.on_behalf_of.buy_item(item)
 
-    if buy_success
-      redirect back
-    else
-      redirect url("/error/#{buy_message}")
-    end
+    redirect url("/error/#{buy_message}") unless buy_success
+    redirect back
   end
 
   # Shows a list of all users

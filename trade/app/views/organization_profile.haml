@@ -25,7 +25,7 @@
                   %input.styled-button.float_left{:type => "submit", :value => "Transfer"}
       %a.styled-button{:href => "/item/new"} Create new Item
     -if i_am_admin
-      %a.styled-button{:href => "/organization_change/#{viewed_organization.name}"} Make Changes
+      %a.styled-button{:href => "/organization/#{viewed_organization.name}/edit"} Make Changes
 %h3
   :escaped
     #{"Credits of " + viewed_organization.name}:
@@ -50,7 +50,7 @@
         %th Active
         %th
     %tbody
-      -if viewed_organization.has_member?(@user)
+      -if @user.working_on_behalf_of?(viewed_organization)
         %tr
           %form{:action => "/item/quick_add", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
             %td
@@ -89,11 +89,13 @@
                   %input{:name => "_method", :type => "hidden", :value => "delete"}
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
 %h3
-  Members of Organizations
+  Members
 %ul
   -for member in viewed_organization.members
     %li
-      #{member.name}
+      %a{:href => "/user/#{member.name}"}
+        :escaped
+          #{member.name}
 %h3
   #{"Description of " + viewed_organization.name}
 -if viewed_organization.description == ""
@@ -101,33 +103,3 @@
 -else
   %div.markdown_view
     =marked_down_description
-%br(clear="all")
--if viewed_organization.has_admin?(@user)
-  %h3
-    Invite Users
--if viewed_organization.has_admin?(@user)
-  %table.table-minimalistic
-    %thead
-      %tr
-        %th Name
-        %th
-    %tbody
-      -for user in Store::User.all
-        %tr
-          %td
-            %a{:href => url("/user/#{user.name}")}
-              =user.name
-          %td
-            %div.action_buttons
-              -if !viewed_organization.has_member?(user)
-                %form{:action => "/organization/#{viewed_organization.name}/add/#{user.name}/", :method => "POST" }
-                  %input.styled-button.small{:type => "submit", :value => "Invite"}
-              -if viewed_organization.has_member?(user) and !viewed_organization.has_admin?(user)
-                %form{:action => "/organization/#{viewed_organization.name}/remove/#{user.name}/", :method => "POST"}
-                  %input.styled-button.small.float_left{:type => "submit", :value => "Remove"}
-              -if !viewed_organization.has_admin?(user) and viewed_organization.has_member?(user)
-                %form{:action => "/organization/#{viewed_organization.name}/add/#{user.name}/", :method => "POST"}
-                  %input.styled-button.small.float_left{:type => "submit", :value => "Add as Admin"}
-              -if viewed_organization.admins.length>1 and viewed_organization.has_admin?(user)
-                %form{:action => "/organization/#{viewed_organization.name}/remove/#{user.name}/", :method => "POST"}
-                  %input.styled-button.small.float_left{:type => "submit", :value => "Remove as Admin"}

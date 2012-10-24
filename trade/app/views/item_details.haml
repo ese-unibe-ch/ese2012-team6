@@ -60,7 +60,7 @@
         %td
           %div.comment_picture_container
             %img{:src => "#{comment.owner.image_path}", :width => "50", :height => "50"}
-          -if comment.owner == @user
+          -if comment.owner == @user.on_behalf_of
             %form{:action => "/item/#{item.id}/delete_comment/#{comment.id}", :method => "POST"}
               %input.styled-button.float_right.delete-color{:type => "submit", :value => "Delete"}
           %h4

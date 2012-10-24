@@ -28,10 +28,8 @@ module Store
     end
 
     def remove_member(member)
- 
       members.delete(member)
       member.leave_organization(self)
-
     end
 
     def add_admin(member)

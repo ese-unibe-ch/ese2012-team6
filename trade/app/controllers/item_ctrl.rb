@@ -35,7 +35,7 @@ class Item < Sinatra::Application
 
     marked_down_description = RDiscount.new(item.description, :smart, :filter_html)
 
-    haml :item, :locals => {
+    haml :item_details, :locals => {
         :item => item,
         :marked_down_description => marked_down_description.to_html,
     }
@@ -69,7 +69,6 @@ class Item < Sinatra::Application
     item.update_comments(comment)
 
     redirect "/item/#{item_id}#comments"
-
   end
 
   #deletes a comment
@@ -154,6 +153,7 @@ class Item < Sinatra::Application
     item_price = Integer(params[:item_price])
     item_description = params[:item_description] ? params[:item_description] : ""
 
+    # UG: should be done more nicely
     item_owner = Store::Organization.by_name(params[:owner])
     item_owner = @user if item_owner.nil?
 
@@ -191,7 +191,7 @@ class Item < Sinatra::Application
     # UG: Check whether user can really delete item
 
     item_id = Integer(params[:item_id])
-    @user.on_behalf_of.delete_item(item_id)
+    @user.delete_item(item_id)
 
     redirect back
   end
