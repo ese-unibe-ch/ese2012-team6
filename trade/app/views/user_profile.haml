@@ -1,0 +1,91 @@
+%div#actionbar
+  %h2.float_left
+    -if is_my_profile
+      My Profile
+    -else
+      :escaped
+        Profile of #{viewed_user.name}
+  %div.action_buttons.float_right
+    -if is_my_profile
+      %a.styled-button{:href => "/item/new"} Create new Item
+      %a.styled-button{:href => "/user/#{@user.name}/edit"} Edit Profile
+%h3
+  :escaped
+    #{is_my_profile ? "Your Credits" : "Credits of " + viewed_user.name}:
+%p
+  $#{viewed_user.credits}
+
+%div.picture_container.float_right
+  %img{:src => "#{viewed_user.image_path}", :width => "200"}
+
+%h3
+  :escaped
+    #{is_my_profile ? "You own" : viewed_user.name + " owns"} the following items:
+-if viewed_user.items.empty? and not is_my_profile
+  %p
+    No items available
+-else
+  %table.table-minimalistic
+    %thead
+      %tr
+        %th Name
+        %th Price
+        %th Active
+        %th
+    %tbody
+      -if @user.working_as_self?
+        %tr
+          %form{:action => "/item/quick_add", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
+            %td
+              %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
+            %td
+              %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
+            %td
+            %td
+              %input{:name => "_method", :type => "hidden", :value => "put"}
+              %input.styled-button.small{:type => "submit", :value => "Quick Add"}
+      -for item in viewed_user.items
+        %tr
+          %td
+            %a{:href => url("/item/#{item.id}")}
+              =item.name
+          %td
+            #{item.price}
+          %td
+            -if item.active?
+              %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
+            -else
+              %input{:type => "checkbox", :disabled => "disabled"}
+          %td
+            %div.action_buttons
+              -if @user.can_activate?(item) or @user.name == "admin"
+                -if item.active?
+                  %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
+                    %input.styled-button.small.float_left{:type => "submit", :value => "Deactivate"}
+                -else
+                  %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
+                    %input.styled-button.small{:type => "submit", :value => "Activate"}
+              -if @user.can_edit?(item) or @user.name == "admin"
+                %a.styled-button.small{:href => "/item/#{item.id}/edit"} Edit
+              -if @user.can_delete?(item)
+                %form{:action => "/item/#{item.id}", :method => "POST"}
+                  %input{:name => "_method", :type => "hidden", :value => "delete"}
+                  %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
+%h3
+  Member of Organizations
+-if viewed_user.get_organizations.empty?
+  %p
+    None
+-else
+  %ul
+    -for org in viewed_user.get_organizations
+      %li
+        :escaped
+          #{org.name}
+%h3
+  #{is_my_profile ? "Your Description" : "Description of " + viewed_user.name}:
+-if viewed_user.description == ""
+  %p No description available
+-else
+  %div.markdown_view
+    =marked_down_description

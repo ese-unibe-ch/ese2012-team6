@@ -23,7 +23,7 @@ module Security
 
     # @param [String] string
     def self.destroy_script(string)
-     string=string.gsub(/\W/,"")
+     string=string.gsub(/\<(\/)*[a-zA-Z]*\>/,"")
      string=remove_leading_whitespace(string)
      string
     end

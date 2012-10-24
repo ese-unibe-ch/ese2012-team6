@@ -2,11 +2,13 @@ require 'bcrypt'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
-require_relative '../storage/database'
+require_relative '../store/system_user'
 
 module Store
-  class User
-    attr_accessor :name, :credits, :items, :pwd_hash, :pwd_salt, :description, :open_item_page_time, :image_path
+  class User < System_User
+    @@users = {}
+
+    attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations
 
     def initialize
       self.name = ""
@@ -17,10 +19,8 @@ module Store
       self.description = ""
       self.open_item_page_time = Time.now
 	    self.image_path = "/images/no_image.gif"
-    end
-
-    def name=(name)
-      @name = Security::StringChecker.destroy_script(name)
+      self.on_behalf_of = self
+      self.organizations = []
     end
 
     def self.named(name)
@@ -43,6 +43,17 @@ module Store
       return user
     end
 
+    # returns whether the password matches the saved password
+    def password_matches?(password)
+      return self.pwd_hash == BCrypt::Engine.hash_secret(password, self.pwd_salt)
+    end
+
+    # change the password of the user
+    def change_password(password)
+      self.pwd_salt = BCrypt::Engine.generate_salt
+      self.pwd_hash = BCrypt::Engine.hash_secret(password, self.pwd_salt)
+    end
+
     def self.named_pwd_description(name, password, description)
       user = User.new
       user.name = name
@@ -55,104 +66,71 @@ module Store
       return user
     end
 
-    def password_matches?(password)
-      return self.pwd_hash == BCrypt::Engine.hash_secret(password, self.pwd_salt)
+    # log in the user
+    def login
+      Analytics::UserLoginActivity.with_username(name).log
+    end
+    # log out the user
+    def logout
+      Analytics::UserLogoutActivity.with_username(name).log
     end
 
-    def change_password(password)
-      self.pwd_salt = BCrypt::Engine.generate_salt
-      self.pwd_hash = BCrypt::Engine.hash_secret(password, self.pwd_salt)
+    def send_money(amount)
+      fail unless amount >= 0
+      self.credits += amount
     end
 
-    def propose_item(name, price, description = "", log = true)
-      item = Item.named_priced_with_owner(name, price, self)
-      item.description = description
+    # sends a certain amount of money from the user to a certain organization
+    def send_money_to(organization, amount)
+      fail if organization.nil?
+      return false unless self.credits >= amount
 
-      self.items << item
+      self.credits -= amount
+      organization.send_money(amount)
 
-      Storage::Database.instance.add_item(item)
-      Analytics::ActivityLogger.log_activity(Analytics::ItemAddActivity.with_creator_item(self, item)) if log
+      fail if self.credits < 0
 
-      return item
+      return true
     end
 
-    def get_active_items
-      active_items = self.items.select {|i| i.active?}
-
-      return active_items
+    # tell user to work on behalf of an organization
+    def work_on_behalf_of(organization)
+      self.on_behalf_of = organization.nil? ? self : organization
     end
 
-    def add_item(item)
-      self.items << item
-      item.owner = self
+    # become a member of an organization
+    def enter_organization(organization)
+      self.organizations << organization
     end
 
-    def remove_item(item)
-      if self.items.include?(item)
-        item.owner = nil
-        self.items.delete(item)
-      end
+    # resign as a member of an organization
+    def leave_organization(organization)
+      self.organizations.delete organization
     end
 
-    def delete_item(item_id, log = true)
-      item = Storage::Database.instance.get_item_by_id(item_id)
-      self.remove_item(item)
-      Storage::Database.instance.delete_item(item)
-
-      Analytics::ActivityLogger.log_activity(Analytics::ItemDeleteActivity.with_remover_item(self, item)) if log
+    # return all organizations this user is a member of
+    def get_organizations
+      return self.organizations
     end
 
-    def buy_item(item, log = true)
-      seller = item.owner
-
-      if seller.nil?
-        Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false)) if log
-        return false, "item_no_owner" #Item does not belong to anybody
-      elsif self.credits < item.price
-        Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false)) if log
-        return false, "not_enough_credits" #Buyer does not have enough credits
-      elsif !item.active?
-        Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false)) if log
-        return false, "buy_inactive_item" #Trying to buy inactive item
-      elsif !seller.items.include?(item)
-        Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false)) if log
-        return false, "seller_not_own_item" #Seller does not own item to buy
-      end
-
-      seller.remove_item(item)
-      seller.credits += item.price
-
-      item.owner = self
-      item.set_inactive
-
-      self.add_item(item)
-      self.credits -= item.price
-	    item.edit_time = Time.now
-      Analytics::ActivityLogger.log_activity(Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item)) if log
-
-      return true, "Transaction successful"
+    # return whether user is working on behalf of himself or not
+    def working_as_self?
+      return self.on_behalf_of.eql?(self)
     end
 
-    def can_edit?(item)
-      return (item.owner.eql?(self) and item.editable?)
+    # return whether user is working on behalf of a certain organization
+    def working_on_behalf_of?(org)
+      return self.on_behalf_of.eql?(org)
     end
 
-    alias :can_delete? :can_edit?
-
-    def can_buy?(item)
-      return (not item.owner.eql?(self) and item.active?)
+    # returns whether user is a member of an organization
+    def is_member_of?(organization)
+      return organization.has_member?(self)
     end
 
-    def can_activate?(item)
-      return item.owner.eql?(self)
-    end
-
-    def to_s
-      return "#{self.name}, #{self.credits}"
-    end
-
-    def self.id_image_to_filename(id, path)
-      "#{id}_#{path}"
+    # returns whether user is an admin of an organization
+    def is_admin_of?(organization)
+      return organization.has_admin?(self)
     end
   end
 end

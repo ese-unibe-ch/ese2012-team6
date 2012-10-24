@@ -9,7 +9,7 @@
       %th Credits
       %th No. of items
   %tbody
-    -for user in @database.get_users
+    -for user in Store::User.all
       %tr
         %td
           %a{:href => url("/user/#{user.name}")}

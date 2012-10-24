@@ -5,20 +5,18 @@ require_relative('../models/store/item')
 class Main < Sinatra::Application
 
   before do
-    @database = Storage::Database.instance
-    @user = @database.get_user_by_name(session[:name])
+    @user = Store::User.by_name(session[:name])
   end
 
   # Default page handler, shows store page
   get "/" do
+    redirect '/login' unless @user
 
-    redirect '/login' unless session[:name]
-    user = @database.get_user_by_name(session[:name])
-    user.open_item_page_time = Time.now
+    @user.open_item_page_time = Time.now
 
     most_recent_purchases = Analytics::ActivityLogger.get_most_recent_purchases(10)
 
-    haml :store, :locals => { :users => @database.get_users,
+    haml :store, :locals => { :users => Store::User.all,
                               :most_recent_purchases => most_recent_purchases
     }
   end
@@ -62,8 +60,15 @@ class Main < Sinatra::Application
         error_message = "You entered a wrong password"
       when "wrong_size"
         error_message = "Please choose a picture with the maximum size of 400kB"
+      when "no_name"
+        error_message = "Type a name for your Organization"
+      when "user_credit_transfer_failed"
+        error_message = "You do not have enough credits to transfer"
+      when "organization_credit_transfer_failed"
+        error_message = "Organization does not have enough credits to transfer"
+      when "wrong_transfer_amount"
+        error_message = "You must transfer a positive integral amount of credits"
     end
-
 
     last_page = back
 

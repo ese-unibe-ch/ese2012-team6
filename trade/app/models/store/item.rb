@@ -4,8 +4,9 @@ require_relative '../security/string_checker'
 
 module Store
   class Item
-    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path
+    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments
     @@last_id = 0
+    @@items = {}
 
     def initialize
       @@last_id += 1
@@ -14,12 +15,50 @@ module Store
       self.description = ""
       self.image_path = "/images/no_image.gif"
       self.edit_time = Time.now
+      self.comments = []
+    end
+
+    def self.clear_all
+      @@items.clear
+    end
+
+    # save item to system
+    def save
+      fail if @@items.has_key?(self.id)
+      @@items[self.id] = self
+      fail unless @@items.has_key?(self.id)
+    end
+
+    # delete item from system
+    def delete
+      fail unless @@items.has_key?(self.id)
+      @@items.delete(self.id)
+      fail if @@items.has_key?(self.id)
+    end
+
+    def update_comments(comment)
+      comments << comment
+    end
+
+    def delete_comment(comment)
+      comments.delete(comment)
+    end
+
+    # retrieve item object by id from system
+    def self.by_id(id)
+      return @@items[id]
+    end
+
+    # get all stored items
+    def self.all
+      return @@items.values.dup
     end
 
     def name=(name)
       @name = Security::StringChecker.destroy_script(name)
     end
 
+    # create a new item object with a name, price and owner
     def self.named_priced_with_owner(name, price, owner)
       item = Item.new
       item.name = name
@@ -28,10 +67,12 @@ module Store
       return item
     end
 
+    # determines whether a string is a valid price for an item
     def self.valid_price?(price)
-      return (!!(price =~ /^[-+]?[1-9]([0-9]*)?$/) && Integer(price) >= 0)
+      return (!!(price =~ /^[-+]?[0-9]([0-9]*)?$/))
     end
 
+    # extends the id of an item to a filename
     def self.id_image_to_filename(id, path)
       "#{id}_#{path}"
     end
@@ -40,14 +81,17 @@ module Store
       return "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
     end
 
-    def set_active
+    # activate the item (you don't say...)
+    def activate
       self.active = true
     end
 
-    def set_inactive
+    # deactivate the item (thanks captain obvious)
+    def deactivate
       self.active = false
     end
 
+    # update the item's status
     def update_status(new_status, log = true)
 
       new_status = (new_status == "true")
@@ -55,19 +99,38 @@ module Store
 
       if old_status != new_status
         self.active = new_status
-        self.edit_time = Time.now
-        Analytics::ActivityLogger.log_activity(Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status)) if log
+
+        self.notify_change
+        Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log
       end
     end
 
+    # returns whether the item is active or not
     def active?
       return self.active
     end
 
+    # returns whether the item is generally editable
     def editable?
       return (not self.active)
     end
 
+    # returns whether the item is editable by a certain user object
+    def editable_by?(user)
+      fail if user.nil?
+      return (self.editable? && ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user))))
+    end
+
+    # returns whether the item is deletable by a certain user object
+    alias :deletable_by? :editable_by?
+
+    # returns whether the item is activatable by a certain user object
+    def activatable_by?(user)
+      fail if user.nil?
+      return ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user)))
+    end
+
+    # update the item's properties
     def update(new_name, new_price, new_desc, log = true)
 
       fail unless self.editable?
@@ -79,9 +142,15 @@ module Store
         self.name = new_name
         self.price = new_price
         self.description = new_desc
-        self.edit_time = Time.now
-        Analytics::ActivityLogger.log_activity(Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals)) if log
+
+        self.notify_change
+        Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals).log if log
       end
+    end
+
+    # tell the item its properties have been changed
+    def notify_change
+      self.edit_time = Time.now
     end
   end
 end

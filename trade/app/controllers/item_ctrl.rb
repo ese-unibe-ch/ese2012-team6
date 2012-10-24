@@ -2,17 +2,17 @@ require 'rdiscount'
 
 require_relative '../models/storage/picture_uploader'
 require_relative '../models/security/string_checker'
+require_relative '../models/store/comment'
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
 
   before do
-    @database = Storage::Database.instance
-    @user = @database.get_user_by_name(session[:name])
+    @user = Store::User.by_name(session[:name])
   end
 
   # shows all items in the system
   get "/items" do
-    redirect '/login' unless session[:name]
+    redirect '/login' unless @user
 
     haml :all_items
   end
@@ -25,67 +25,68 @@ class Item < Sinatra::Application
 
   # shows an item details page
   get "/item/:item_id" do
-    redirect '/login' unless session[:name]
+    redirect '/login' unless @user
 
-    user = @database.get_user_by_name(session[:name])
-    user.open_item_page_time = Time.now
+    @user.open_item_page_time = Time.now
     item_id = Integer(params[:item_id])
-    item = @database.get_item_by_id(item_id)
+    item = Store::Item.by_id(item_id)
 
     redirect "/user/#{@user.name}" if item.nil?
 
     marked_down_description = RDiscount.new(item.description, :smart, :filter_html)
 
-    haml :item, :locals => {
+    haml :item_details, :locals => {
         :item => item,
-        :marked_down_description => marked_down_description.to_html
+        :marked_down_description => marked_down_description.to_html,
     }
   end
 
   # shows a page for easy item editing
   get "/item/:item_id/edit" do
-    redirect '/login' unless session[:name]
+    redirect '/login' unless @user
 
     item_id = Integer(params[:item_id])
-    item = @database.get_item_by_id(item_id)
+    item = Store::Item.by_id(item_id)
 
     redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
 
     haml :edit_item, :locals => {
-        :item => item
+        :item => item,
+        :show_previous_description => params[:sld] # UG: tell the view whether to display the previous stored description
     }
   end
 
-  #handles undo save description
-  post "/item/:item_id/edit/undo_description" do
+  #stores a new comment
+  post "/item/:item_id/add_comment" do
     redirect '/login' unless session[:name]
 
     item_id = Integer(params[:item_id])
-    item = @database.get_item_by_id(item_id)
+    item = Store::Item.by_id(item_id)
+    comment_description = params[:item_comment]
 
-    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
-    previous_description = Analytics::ActivityLogger.get_previous_description(item)
+    comment = Store::Comment.new_comment(comment_description, @user.on_behalf_of, Time.now.asctime)
 
-    item.update(item.name, item.price, previous_description)
+    item.update_comments(comment)
 
-    redirect "/item/#{item_id}"
+    redirect "/item/#{item_id}#comments"
   end
 
-  #handles undo save description
-  get "/item/:item_id/edit/description" do
+  #deletes a comment
+  post "/item/:item_id/delete_comment/:comment_id" do
     redirect '/login' unless session[:name]
 
     item_id = Integer(params[:item_id])
-    item = @database.get_item_by_id(item_id)
+    item = Store::Item.by_id(item_id)
+    comment_id = Integer(params[:comment_id])
+    comment = Store::Comment.by_id(comment_id)
+    item.delete_comment(comment)
 
-    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
-
-    haml :edit_description, :locals => { :item => item}
+    redirect "/item/#{item_id}#comments"
   end
 
   # handles item editing, updates model in database
   post "/item/:item_id/edit" do
-    redirect '/login' unless session[:name]
+    redirect '/login' unless @user
 
     item_id = Integer(params[:item_id])
     item_name = params[:item_name]
@@ -94,10 +95,11 @@ class Item < Sinatra::Application
 
     item_price = Integer(params[:item_price])
     item_description = params[:item_description]
-    item = @database.get_item_by_id(item_id)
+
+    item = Store::Item.by_id(item_id)
 
     # UG: necessary because this handler can also be called by scripts
-    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
+    redirect "/item/#{item_id}" unless @user.can_edit?(item)
 
     file = params[:file_upload]
 
@@ -121,12 +123,12 @@ class Item < Sinatra::Application
 
   # handles item activation/deactivation request
   post "/item/:item_id/act_deact/:activate" do
-    redirect '/login' unless session[:name]
+    redirect '/login' unless @user
 
     activate_str = params[:activate]
-    item = @database.get_item_by_id(Integer(params[:item_id]))
+    item = Store::Item.by_id(Integer(params[:item_id]))
 
-    changed_owner = (@user.open_item_page_time < item.edit_time && item.owner != @user)
+    changed_owner = @user.open_item_page_time < item.edit_time && !@user.can_activate?(item)
 
     redirect url("/error/not_owner_of_item") if changed_owner
     redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
@@ -138,6 +140,7 @@ class Item < Sinatra::Application
 
   # handles new item creation, must be PUT request
   put "/item" do
+    redirect '/login' unless @user
     redirect back if params[:item_name] == "" or params[:item_price] == ""
 
     file = params[:file_upload]
@@ -150,7 +153,11 @@ class Item < Sinatra::Application
     item_price = Integer(params[:item_price])
     item_description = params[:item_description] ? params[:item_description] : ""
 
-    item = @user.propose_item(item_name, item_price, item_description)
+    # UG: should be done more nicely
+    item_owner = Store::Organization.by_name(params[:owner])
+    item_owner = @user if item_owner.nil?
+
+    item = item_owner.propose_item(item_name, item_price, item_description)
 
     if file
       file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
@@ -159,12 +166,29 @@ class Item < Sinatra::Application
       item.image_path = uploader.upload(file, file_name)
     end
 
-    redirect "/item/#{item.id}" if back == url("/item/new?")
+    redirect "/item/#{item.id}" if back == url("/item/new")
+    redirect back
+  end
+
+  put "/item/quick_add" do
+    redirect '/login' unless @user
+    redirect back if params[:item_name] == "" or params[:item_price] == ""
+
+    item_name = Security::StringChecker.destroy_script(params[:item_name])
+
+    redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
+    item_price = Integer(params[:item_price])
+
+    @user.on_behalf_of.propose_item(item_name, item_price)
+
+    redirect "/item/#{item.id}" if back == url("/item/new")
     redirect back
   end
 
   # handles item deletion
   delete "/item/:item_id" do
+    redirect '/login' unless @user
+    # UG: Check whether user can really delete item
 
     item_id = Integer(params[:item_id])
     @user.delete_item(item_id)

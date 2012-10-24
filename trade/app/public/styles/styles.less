@@ -89,12 +89,68 @@ a, a.visited {
   li:hover {
     background-color: rgb(206, 224, 241);
   }
+
+  div#context_switch {
+    float:right;
+    display:inline;
+
+    p {
+      font-size: 11px;
+      margin: 0;
+      padding: 0;
+    }
+  }
+}
+
+#actionbar {
+  display: table-row;
+  width: 50%;
+
+  h1, h2, h3, h4 {
+    margin: 0;
+  }
 }
 
 #content {
   padding: 1em;
   width: 100%;
   display: table;
+}
+
+.table-comments {
+  max-width: 600px;
+  word-wrap: break-word;
+  font-size: 12px;
+  background: #fff;
+  margin: 0em;
+  border-collapse: collapse;
+  text-align: left;
+
+
+  th {
+    font-size: 16px;
+    font-weight: normal;
+    color: #039;
+    padding: 10px 0px;
+    border-bottom: 2px solid #6678b1;
+  }
+
+  td.textarea{
+    border-bottom: 1px solid #ccc;
+    color: #669;
+    padding: 6px 8px;
+    background: #eff2ff;
+  }
+
+  td {
+    border-bottom: 1px solid #ccc;
+    color: #669;
+    padding: 6px 8px;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
 }
 
 .table-minimalistic {
@@ -130,7 +186,6 @@ a, a.visited {
 }
 
 .styled-button {
-
   background-color:#EEE;
   border-radius:0;
   -webkit-border-radius:0;
@@ -141,11 +196,22 @@ a, a.visited {
   font-size:13px;
   font-weight: normal;
   padding:2px 6px;
-  margin:0px;
+//margin:0 4px;
+  margin: 0 0 0 4px;
+  display:inline;
 
   &:hover {
     box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.35);
+    cursor: default;
   }
+}
+.float_left {
+  display:inline;
+  float: left;
+}
+.float_right {
+  display:inline;
+  float: right;
 }
 
 .small {
@@ -166,18 +232,15 @@ a, a.visited {
 }
 
 .action_buttons {
-  min-width: 80px;
-  display: inline-block;
-
-  &.float_right {
-    float: right;
+  /*important so that buttons are inline*/
+  form {
+    float:left
   }
-}
 
-.button_container {
-  margin-right: 8px;
-  float:left;
-  display:inline;
+  a {
+    float: left;
+    display: inline;
+  }
 }
 
 .ralign {
@@ -188,6 +251,16 @@ a, a.visited {
   padding: 1em 2em 1em 1em;
   border-right: 1px solid;
   border-color: #23496B;
+  float: left;
+
+  &.float_right {
+    float: right;
+    border: 0;
+  }
+}
+
+.comment_picture_container {
+  padding: 0.1em 0.3em 0.1em 0.1em;
   float: left;
 
   &.float_right {
@@ -222,6 +295,12 @@ a, a.visited {
   resize: none;
 }
 
+.comment {
+  width: 600px;
+  height: 120px;
+  resize: none;
+}
+
 .bold {
   font-weight: bold;
 }
@@ -252,8 +331,31 @@ p{
 
 div.markdown_view {
 /*UG: ToDo */
+  max-width: 600px;
+  word-wrap: break-word;
+  float: left;
 }
 
 p#reqistry_information{
   width: 455px;
+}
+
+.smiley-view{
+  display: inline-block;
+  margin-left: 1em;
+
+  img:hover{
+    background: #faffaf;
+    color: #009;
+  }
+
+}
+
+div.money-sender {
+  display: inline;
+  font-size: 11px;
+
+  form {
+    display: inline;
+  }
 }
