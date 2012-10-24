@@ -7,10 +7,6 @@
     Description
   %p
     %textarea.textbox8.about_yourself{:name => "org_desc"}
-      - lines = ("#{org_desc}").split("\n")
-      - unless lines.empty?
-        - lines.each do |line|
-          =line
   %h3
     Add members to Organization
     %table.table-minimalistic
@@ -19,9 +15,7 @@
           %th Name
           %th Add
       %tbody
-        -i=0
         -for user in Store::User.all
-          -i = i+ 1
           -if user != viewer
             %tr
               %td

@@ -16,7 +16,7 @@
       %input.styled-button.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
   -if @user.can_buy?(item)
     %form{:action => "/user/buy/#{item.id}", :method => "POST"}
-      %input.styled-button.buy-color{:type => "submit", :value => "Buy"}
+      %input.styled-button.buy-color{:type => "submit", :value => @user.on_behalf_of == @user ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
 %h4
   -if item.active?
     This item is currently being traded
@@ -60,11 +60,11 @@
         %td
           %div.comment_picture_container
             %img{:src => "#{comment.owner.image_path}", :width => "50", :height => "50"}
-          -if comment.owner == @user
+          -if comment.owner == @user.on_behalf_of
             %form{:action => "/item/#{item.id}/delete_comment/#{comment.id}", :method => "POST"}
               %input.styled-button.float_right.delete-color{:type => "submit", :value => "Delete"}
           %h4
-            %a{:href => url("/user/#{item.owner.name}")}
+            %a{:href => url("#{comment.owner.is_organization? ? "/organization/" : "/user/"}#{comment.owner.name}")}
               :escaped
                 #{comment.owner.name}
             wrote at: #{comment.time_stamp}

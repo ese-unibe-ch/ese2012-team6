@@ -103,3 +103,15 @@ function validate_item_edit(form) {
 
     return true;
 }
+
+function validate_gift_transfer(form) {
+    form.gift_amount.value = form.gift_amount.value.trim();
+
+    if (form.gift_amount.value == "") {
+        form.gift_amount.style.backgroundColor = "rgba(245, 106, 82, 0.41)";
+        document.getElementById('error_message').innerHTML = "Please enter an item name";
+        return false;
+    }
+
+    return true;
+}

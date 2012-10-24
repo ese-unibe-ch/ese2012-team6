@@ -35,7 +35,7 @@ class Item < Sinatra::Application
 
     marked_down_description = RDiscount.new(item.description, :smart, :filter_html)
 
-    haml :item, :locals => {
+    haml :item_details, :locals => {
         :item => item,
         :marked_down_description => marked_down_description.to_html,
     }
@@ -64,12 +64,11 @@ class Item < Sinatra::Application
     item = Store::Item.by_id(item_id)
     comment_description = params[:item_comment]
 
-    comment = Store::Comment.new_comment(comment_description, @user, Time.now.asctime)
+    comment = Store::Comment.new_comment(comment_description, @user.on_behalf_of, Time.now.asctime)
 
     item.update_comments(comment)
 
     redirect "/item/#{item_id}#comments"
-
   end
 
   #deletes a comment
@@ -129,7 +128,7 @@ class Item < Sinatra::Application
     activate_str = params[:activate]
     item = Store::Item.by_id(Integer(params[:item_id]))
 
-    changed_owner = (@user.open_item_page_time < item.edit_time && item.owner != @user)
+    changed_owner = @user.open_item_page_time < item.edit_time && !@user.can_activate?(item)
 
     redirect url("/error/not_owner_of_item") if changed_owner
     redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
@@ -154,7 +153,11 @@ class Item < Sinatra::Application
     item_price = Integer(params[:item_price])
     item_description = params[:item_description] ? params[:item_description] : ""
 
-    item = @user.on_behalf_of.propose_item(item_name, item_price, item_description)
+    # UG: should be done more nicely
+    item_owner = Store::Organization.by_name(params[:owner])
+    item_owner = @user if item_owner.nil?
+
+    item = item_owner.propose_item(item_name, item_price, item_description)
 
     if file
       file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
@@ -162,6 +165,21 @@ class Item < Sinatra::Application
       uploader = Storage::PictureUploader.with_path("/images/items")
       item.image_path = uploader.upload(file, file_name)
     end
+
+    redirect "/item/#{item.id}" if back == url("/item/new")
+    redirect back
+  end
+
+  put "/item/quick_add" do
+    redirect '/login' unless @user
+    redirect back if params[:item_name] == "" or params[:item_price] == ""
+
+    item_name = Security::StringChecker.destroy_script(params[:item_name])
+
+    redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
+    item_price = Integer(params[:item_price])
+
+    @user.on_behalf_of.propose_item(item_name, item_price)
 
     redirect "/item/#{item.id}" if back == url("/item/new")
     redirect back

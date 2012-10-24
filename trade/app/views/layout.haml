@@ -13,7 +13,7 @@
       %div#status_bar
         -if not @user.nil?
           %span.credit_status
-            Credits: $#{@user.credits} | Items: #{@user.items.size}
+            Credits: $#{@user.on_behalf_of.credits} | Items: #{@user.on_behalf_of.items.size}
           %span.login_status
             Logged in as
             %a{:href => url("/user/#{@user.name}")}
@@ -37,11 +37,14 @@
             %li
               %a{:href => url("/items")} Items
             %li
-              %a{:href => url("/user/#{@user.name}")} My Profile
+              %a{:href => url("/organizations")} Organizations
+            %li
+              -if @user.working_as_self?
+                %a{:href => url("/user/#{@user.name}")} Profile
+              -else
+                %a{:href => url("/organization/#{@user.on_behalf_of.name}")} Profile
             %li
               %a{:href => url("/activities")} Activities
-            %li
-              %a{:href => url("/organizations")} Organizations
           %div#context_switch
             %p
               Work on behalf of:

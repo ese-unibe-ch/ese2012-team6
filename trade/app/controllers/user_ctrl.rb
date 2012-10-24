@@ -8,15 +8,15 @@ class User < Sinatra::Application
   # handle on behalf of selector change
   post "/user/work_on_behalf_of/" do
     org_id = params[:on_behalf_of]
+
+    old_on_behalf_of = @user.on_behalf_of
     org = Store::Organization.by_name(org_id)
-    if org == nil
-      org=@user
-    end
+    @user.work_on_behalf_of(org)
 
-   @user.work_on_behalf_of(org)
-
-
-   redirect back
+    #redirect "/organization/#{@user.on_behalf_of.name}" if (back == url("/user/#{@user.name}") && !@user.working_as_self?)
+    #redirect "/organization/#{@user.on_behalf_of.name}" if (back == url("/organization/#{old_on_behalf_of.name}").gsub(" ", "%20") && !@user.working_as_self?)
+    #redirect "/user/#{@user.name}" if (back == url("/organization/#{old_on_behalf_of.name}").gsub(" ", "%20") && @user.working_as_self?)
+    redirect back
   end
 
   # Handles user display page, shows profile of user
@@ -27,7 +27,7 @@ class User < Sinatra::Application
     is_my_profile = (@user == viewed_user)
     marked_down_description = RDiscount.new(viewed_user.description, :smart, :filter_html)
 
-    haml :profile, :locals => {
+    haml :user_profile, :locals => {
         :viewed_user => viewed_user,
         :is_my_profile => is_my_profile,
         :marked_down_description => marked_down_description.to_html
@@ -51,14 +51,10 @@ class User < Sinatra::Application
 
     redirect 'error/pwd_rep_no_match' if new_pwd != new_pwd_rep
     redirect "/error/wrong_password" unless @user.password_matches?(old_pwd)
+    redirect "/error/pwd_unsafe" unless Security::StringChecker.is_safe_pw?(new_pwd)
 
     @user.description = new_desc
-
-    if new_pwd != ""
-      redirect "/error/pwd_unsafe" unless Security::StringChecker.is_safe_pw?(new_pwd)
-
-      @user.change_password(new_pwd)
-    end
+    @user.change_password(new_pwd)
 
     redirect "/user/#{@user.name}"
   end
@@ -73,13 +69,10 @@ class User < Sinatra::Application
     changed_item_details =  @user.open_item_page_time < item.edit_time
     redirect url("/error/item_changed_details") if changed_item_details
 
-    buy_success, buy_message = @user.buy_item(item)
+    buy_success, buy_message = @user.on_behalf_of.buy_item(item)
 
-    if buy_success
-      redirect back
-    else
-      redirect url("/error/#{buy_message}")
-    end
+    redirect url("/error/#{buy_message}") unless buy_success
+    redirect back
   end
 
   # Shows a list of all users
@@ -104,5 +97,23 @@ class User < Sinatra::Application
     @user.image_path = uploader.upload(file, filename)
 
     redirect to("/user/#{params[:name]}")
+  end
+
+  post '/user/send_money/:org_name' do
+    redirect '/login' unless @user
+
+    org_name = params[:org_name]
+    org = Store::Organization.by_name(org_name)
+
+    fail unless org.has_member?(@user)
+    redirect "/error/wrong_transfer_amount" unless (!!(params[:gift_amount] =~ /^[-+]?[1-9]([0-9]*)?$/) && Integer(params[:gift_amount]) >= 0)
+
+    amount = Integer(params[:gift_amount])
+
+    success = @user.send_money_to(org, amount)
+
+    redirect "/error/user_credit_transfer_failed" unless success
+
+    redirect back
   end
 end
