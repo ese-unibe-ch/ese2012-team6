@@ -143,7 +143,7 @@ class Organization < Sinatra::Application
       end
     end
 
-    redirect "/organization/#{viewed_organization}"
+    redirect "/organization/#{organization.name}"
   end
 
   # Handles organization's picture upload
@@ -152,7 +152,7 @@ class Organization < Sinatra::Application
 
     viewed_organization = Store::Organization.by_name(params[:name])
     file = params[:file_upload]
-    redirect to("/organization/#{viewed_organization}") unless file
+    redirect to("/organization/#{viewed_organization.name}") unless file
 
     redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
 
