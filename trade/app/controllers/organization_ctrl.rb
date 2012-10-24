@@ -98,7 +98,8 @@ class Organization < Sinatra::Application
     else
       organization.add_member(user)
     end
-    redirect "/organization/#{params[:organization_name]}"
+    #redirect "/organization/#{params[:organization_name]}"
+    redirect (back + "#manage_admins")
  end
 
   post "/organization/:organization_name/remove/:username/" do
@@ -113,7 +114,8 @@ class Organization < Sinatra::Application
       organization.remove_member(user)
     end
 
-    redirect "/organization/#{params[:organization_name]}"
+    #redirect "/organization/#{params[:organization_name]}"
+    redirect (back + "#manage_admins")
 
   end
 
