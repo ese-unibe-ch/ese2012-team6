@@ -118,6 +118,11 @@ module Store
       return self.on_behalf_of.eql?(self)
     end
 
+    # return whether user is working on behalf of a certain organization
+    def working_on_behalf_of?(org)
+      return self.on_behalf_of.eql?(org)
+    end
+
     # returns whether user is a member of an organization
     def is_member_of?(organization)
       return organization.has_member?(self)

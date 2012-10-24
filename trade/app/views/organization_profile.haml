@@ -50,7 +50,7 @@
         %th Active
         %th
     %tbody
-      -if is_my_organization
+      -if @user.working_on_behalf_of?(viewed_organization)
         %tr
           %form{:action => "/item/quick_add", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
             %td
