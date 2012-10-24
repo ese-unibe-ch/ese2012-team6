@@ -13,9 +13,9 @@ class User < Sinatra::Application
     org = Store::Organization.by_name(org_id)
     @user.work_on_behalf_of(org)
 
-    redirect "/organization/#{@user.on_behalf_of.name}" if (back == url("/user/#{@user.name}") && !@user.working_as_self?)
-    redirect "/organization/#{@user.on_behalf_of.name}" if (back == url("/organization/#{old_on_behalf_of.name}").gsub(" ", "%20") && !@user.working_as_self?)
-    redirect "/user/#{@user.name}" if (back == url("/organization/#{old_on_behalf_of.name}").gsub(" ", "%20") && @user.working_as_self?)
+    #redirect "/organization/#{@user.on_behalf_of.name}" if (back == url("/user/#{@user.name}") && !@user.working_as_self?)
+    #redirect "/organization/#{@user.on_behalf_of.name}" if (back == url("/organization/#{old_on_behalf_of.name}").gsub(" ", "%20") && !@user.working_as_self?)
+    #redirect "/user/#{@user.name}" if (back == url("/organization/#{old_on_behalf_of.name}").gsub(" ", "%20") && @user.working_as_self?)
     redirect back
   end
 

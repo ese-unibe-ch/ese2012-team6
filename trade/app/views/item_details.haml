@@ -64,14 +64,9 @@
             %form{:action => "/item/#{item.id}/delete_comment/#{comment.id}", :method => "POST"}
               %input.styled-button.float_right.delete-color{:type => "submit", :value => "Delete"}
           %h4
-            -if comment.owner.is_organization?
-              %a{:href => url("/organization/#{comment.owner.name}")}
-                :escaped
-                  #{comment.owner.name}
-            -else
-              %a{:href => url("/user/#{comment.owner.name}")}
-                :escaped
-                  #{comment.owner.name}
+            %a{:href => url("#{comment.owner.is_organization? ? "/organization/" : "/user/"}#{comment.owner.name}")}
+              :escaped
+                #{comment.owner.name}
             wrote at: #{comment.time_stamp}
           %br
           %div.markdown_view
