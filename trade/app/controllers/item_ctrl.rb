@@ -7,7 +7,7 @@ require_relative '../models/store/comment'
 class Item < Sinatra::Application
 
   before do
-    @user = Store::User.by_name(session[:name])
+    @user = Store::User.by_id(session[:name])
   end
 
   # shows all items in the system

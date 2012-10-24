@@ -5,7 +5,7 @@ require_relative('../models/store/item')
 class Main < Sinatra::Application
 
   before do
-    @user = Store::User.by_name(session[:name])
+    @user = Store::User.by_id(session[:name])
   end
 
   # Default page handler, shows store page

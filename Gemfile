@@ -9,3 +9,4 @@ gem 'rdiscount', '~>1.6.8'
 gem 'less', '~>2.2.2'
 gem 'thin', '~>1.5.0'
 gem 'shotgun', '~>0.9'
+gem "rbtree", "~> 0.3.0"

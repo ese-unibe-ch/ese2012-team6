@@ -6,7 +6,7 @@ require_relative('../models/store/user')
 class Authentication < Sinatra::Application
 
   before do
-    @user = Store::User.by_name(session[:name])
+    @user = Store::User.by_id(session[:name])
   end
 
   # GET handler for login request, shows login form
@@ -24,7 +24,7 @@ class Authentication < Sinatra::Application
     redirect '/error/login_no_pwd_user' if name.nil? or password.nil? or name == "" or password == ""
     redirect '/error/user_no_exists' unless Store::User.exists?(name)
 
-    user = Store::User.by_name(name)
+    user = Store::User.by_id(name)
     redirect '/error/wrong_password' unless user.password_matches?(password)
 
     session[:name] = name

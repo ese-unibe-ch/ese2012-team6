@@ -1,16 +1,26 @@
 #superclass for user and organization
 require 'bcrypt'
+require 'rbtree'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 
 module Store
-  class System_User
-    attr_accessor :name, :credits, :items, :description, :open_item_page_time, :image_path
-    @@users={}
+  class SystemUser
+    attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
+    @@last_id = 0
+    @@users = RBTree.new
+    @@id_name = {}
 
     def initialize
-      raise "Abstract"
+      @@last_id += 1
+      self.id = @@last_id
+      self.name = ""
+      self.credits = 0
+      self.items = []
+      self.description = ""
+      self.open_item_page_time = Time.now
+      self.image_path = "/images/no_image.gif"
     end
 
     #overrides name setter to avoid scripts.
@@ -19,19 +29,23 @@ module Store
     end
 
     def save
-      fail if @@users.has_key?(self.name)
-      @@users[self.name] = self
-      fail unless @@users.has_key?(self.name)
+      fail if @@users.has_key?(self.id)
+      @@users[self.id] = self
+      fail unless @@users.has_key?(self.id)
     end
 
     def delete
-      fail unless @@users.has_key?(self.name)
-      @@users.delete(self.name)
-      fail if @@users.has_key?(self.name)
+      fail unless @@users.has_key?(self.id)
+      @@users.delete(self.id)
+      fail if @@users.has_key?(self.id)
+    end
+
+    def self.by_id(id)
+      return @@users[id]
     end
 
     def self.by_name(name)
-      return @@users[name]
+
     end
 
     def self.all

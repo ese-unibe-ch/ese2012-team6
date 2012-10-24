@@ -1,24 +1,20 @@
 require 'bcrypt'
+require 'rbtree'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../store/system_user'
 
 module Store
-  class User < System_User
-    @@users = {}
+  class User < SystemUser
+    @@users = RBTree.new
 
     attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations
 
     def initialize
-      self.name = ""
-      self.credits = 100
-      self.items = []
+      super
       self.pwd_hash = ""
       self.pwd_salt = ""
-      self.description = ""
-      self.open_item_page_time = Time.now
-	    self.image_path = "/images/no_image.gif"
       self.on_behalf_of = self
       self.organizations = []
     end

@@ -7,7 +7,7 @@ require_relative('../models/store/organization')
 class Organization < Sinatra::Application
 
   before do
-    @user = Store::User.by_name(session[:name])
+    @user = Store::User.by_id(session[:name])
   end
 
   # Shows registration form
@@ -44,7 +44,7 @@ class Organization < Sinatra::Application
 
     if members != nil
       for username in members
-        organization.add_member(Store::User.by_name(username))
+        organization.add_member(Store::User.by_id(username))
       end
     end
 
@@ -91,7 +91,7 @@ class Organization < Sinatra::Application
     redirect '/login' unless @user
 
     organization = Store::Organization.by_name(params[:organization_name])
-    user         = Store::User.by_name(params[:username])
+    user         = Store::User.by_id(params[:username])
 
     if !user.is_admin_of?(organization) and user.is_member_of?(organization)
       organization.add_admin(user)
@@ -106,7 +106,7 @@ class Organization < Sinatra::Application
     redirect '/login' unless @user
 
     organization = Store::Organization.by_name(params[:organization_name])
-    user         = Store::User.by_name(params[:username])
+    user         = Store::User.by_id(params[:username])
 
     if user.is_admin_of?(organization)
       organization.remove_admin(user)
@@ -133,13 +133,13 @@ class Organization < Sinatra::Application
 
     if member_put != nil
       for username in member_put
-        organization.add_member(Store::User.by_name(username))
+        organization.add_member(Store::User.by_id(username))
       end
     end
 
     if member_rem != nil
       for username in member_rem
-        organization.remove_member(Store::User.by_name(username))
+        organization.remove_member(Store::User.by_id(username))
       end
     end
 

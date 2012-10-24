@@ -1,16 +1,13 @@
+require 'rbtree'
 require_relative '../store/system_user'
+
 module Store
-  class Organization < System_User
+  class Organization < SystemUser
     attr_accessor :members, :admins
-    @@organizations = {}
+    @@organizations = RBTree.new
 
     def initialize
-      self.name = ""
-      self.credits = 0
-      self.items = []
-      self.description = ""
-      self.open_item_page_time = Time.now
-      self.image_path = "/images/no_image.gif"
+      super
       self.members =[]
       self.admins =[]
     end

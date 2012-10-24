@@ -2,7 +2,7 @@
 class User < Sinatra::Application
 
   before do
-    @user = Store::User.by_name(session[:name])
+    @user = Store::User.by_id(session[:name])
   end
 
   # handle on behalf of selector change
@@ -23,7 +23,7 @@ class User < Sinatra::Application
   get "/user/:user_name" do
     redirect '/login' unless @user
 
-    viewed_user = Store::User.by_name(params[:user_name])
+    viewed_user = Store::User.by_id(params[:user_name])
     is_my_profile = (@user == viewed_user)
     marked_down_description = RDiscount.new(viewed_user.description, :smart, :filter_html)
 
