@@ -34,3 +34,5 @@ module Security
     end
   end
 end
+
+# Regex für E-Mail: (/^((\w)*\.?)*\@((\w)*\.)*(\w){2,3}/)

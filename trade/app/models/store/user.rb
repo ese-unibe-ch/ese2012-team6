@@ -16,6 +16,7 @@ module Store
       self.items = []
       self.pwd_hash = ""
       self.pwd_salt = ""
+      self.email = ""
       self.description = ""
       self.open_item_page_time = Time.now
 	    self.image_path = "/images/no_image.gif"

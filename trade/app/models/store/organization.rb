@@ -8,6 +8,7 @@ module Store
       self.name = ""
       self.credits = 0
       self.items = []
+      self.email = ""
       self.description = ""
       self.open_item_page_time = Time.now
       self.image_path = "/images/no_image.gif"
