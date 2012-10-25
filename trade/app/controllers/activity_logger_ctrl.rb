@@ -4,7 +4,7 @@ require_relative '../models/analytics/activity_logger'
 class ActivityLogger < Sinatra::Application
 
   before do
-    @user = Store::User.by_id(session[:name])
+    @user = Store::User.fetch_by(:name => session[:name])
   end
 
   get '/activities' do

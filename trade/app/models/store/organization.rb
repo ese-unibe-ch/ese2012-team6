@@ -53,20 +53,18 @@ module Store
       fail if  @@organizations .has_key?(self.name)
     end
 
-    def self.fetch_by(*args)
-      fail unless (args[:name] || args[:id])
+    def self.fetch_by(args = {})
       return  @@organizations[args[:id]] unless args[:id].nil?
-      return  @@organizations.detect{|org| org.name == args[:name]}
+      return  @@organizations.values.detect{|org| org.name == args[:name]}
     end
 
-    def self.exists?(*args)
-      fail unless (args[:name] || args[:id])
+    def self.exists?(args = {})
       return @@organizations .has_key?(args[:id]) unless args[:id].nil?
-      return @@organizations.each{|org| org.name == args[:name]}
+      return @@organizations.values.one?{ |org| org.name == args[:name]}
     end
 
     def self.all
-      return  @@organizations .values.dup
+      return  @@organizations.values.dup
     end
 
     def send_money(amount)

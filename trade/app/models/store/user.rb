@@ -19,16 +19,18 @@ module Store
       self.organizations = []
     end
 
-    def self.fetch_by(*args)
-      fail unless (args[:name] || args[:id])
+    def self.fetch_by(args = {})
       return  @@users[args[:id]] unless args[:id].nil?
-      return  @@users.detect{|org| org.name == args[:name]}
+      return  @@users.values.detect{|org| org.name == args[:name]}
     end
 
-    def self.exists?(*args)
-      fail unless (args[:name] || args[:id])
+    def self.exists?(args = {})
       return @@users .has_key?(args[:id]) unless args[:id].nil?
-      return @@users.each{|org| org.name == args[:name]}
+      return @@users.values.one?{ |user| user.name == args[:name]}
+    end
+
+    def self.all
+      return @@users.values.dup
     end
 
     def save

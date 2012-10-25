@@ -18,7 +18,7 @@ class Register < Sinatra::Application
     user_description = params[:description].strip #remove leading and trailing whitespaces
 
     redirect 'error/no_user_name' if user_name == ""
-    redirect 'error/user_already_exists' if Store::User.exists?(user_name)
+    redirect 'error/user_already_exists' if Store::User.exists?(:name => user_name)
     redirect 'error/pwd_unsafe' unless Security::StringChecker.is_safe_pw?(user_pwd)
     redirect 'error/pwd_rep_no_match' if user_pwd != user_repeated_pwd
 

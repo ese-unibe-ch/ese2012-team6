@@ -12,6 +12,8 @@ GEM
     less (2.2.2)
       commonjs (~> 0.2.6)
     rack (1.4.1)
+    rack-flash (0.1.2)
+      rack
     rack-protection (1.2.0)
       rack
     rack-test (0.6.2)
@@ -47,6 +49,7 @@ DEPENDENCIES
   bcrypt-ruby (~> 3.0.1)
   haml (~> 3.1.7)
   less (~> 2.2.2)
+  rack-flash
   rbtree (~> 0.3.0)
   rcov (~> 1.0.0)
   rdiscount (~> 1.6.8)

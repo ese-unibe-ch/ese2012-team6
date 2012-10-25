@@ -2,7 +2,7 @@
 class User < Sinatra::Application
 
   before do
-    @user = Store::User.by_id(session[:name])
+    @user = Store::User.fetch_by(:name => session[:name])
   end
 
   # handle on behalf of selector change
@@ -10,7 +10,7 @@ class User < Sinatra::Application
     org_id = params[:on_behalf_of]
 
     old_on_behalf_of = @user.on_behalf_of
-    org = Store::Organization.by_name(org_id)
+    org = Store::Organization.fetch_by(:name => org_id)
     @user.work_on_behalf_of(org)
 
     #redirect "/organization/#{@user.on_behalf_of.name}" if (back == url("/user/#{@user.name}") && !@user.working_as_self?)
@@ -23,7 +23,7 @@ class User < Sinatra::Application
   get "/user/:user_name" do
     redirect '/login' unless @user
 
-    viewed_user = Store::User.by_id(params[:user_name])
+    viewed_user = Store::User.fetch_by(:name => params[:user_name])
     is_my_profile = (@user == viewed_user)
     marked_down_description = RDiscount.new(viewed_user.description, :smart, :filter_html)
 
@@ -103,7 +103,7 @@ class User < Sinatra::Application
     redirect '/login' unless @user
 
     org_name = params[:org_name]
-    org = Store::Organization.by_name(org_name)
+    org = Store::Organization.fetch_by(:name => org_name)
 
     fail unless org.has_member?(@user)
     redirect "/error/wrong_transfer_amount" unless (!!(params[:gift_amount] =~ /^[-+]?[1-9]([0-9]*)?$/) && Integer(params[:gift_amount]) >= 0)

@@ -2,6 +2,7 @@ require 'rubygems'
 require 'sinatra'
 require 'haml'
 require 'require_relative'
+require 'rack-flash'
 
 require_relative('models/store/item')
 require_relative('models/store/user')
@@ -17,6 +18,9 @@ require_relative('controllers/organization_ctrl')
 
 class App < Sinatra::Base
 
+  use Rack::Flash
+
+  # Controllers
   use Authentication
   use Main
   use Register

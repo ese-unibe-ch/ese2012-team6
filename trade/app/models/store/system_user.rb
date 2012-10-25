@@ -29,7 +29,7 @@ module Store
     end
 
     # fetches SystemUser object, args must contain key :name or :id
-    def self.fetch_by(*args)
+    def self.fetch_by(args = {})
       return Store::User.fetch_by(args) if Store::User.exists?(args)
       return Store::Organization.fetch_by(args) if Store::Organization.exists?(args)
     end
@@ -39,7 +39,7 @@ module Store
       return Store::User.all.concat(Store::Organization.all)
     end
 
-    def self.exists?(*args)
+    def self.exists?(args = {})
       return Store::User.exists?(args) || Store::Organization.exists?(args)
     end
 

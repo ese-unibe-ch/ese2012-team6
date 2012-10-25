@@ -5,10 +5,6 @@ require_relative('../models/store/user')
 # Handles all requests concerning User Authentication, namely Login and Logout
 class Authentication < Sinatra::Application
 
-  before do
-    @user = Store::User.by_id(session[:name])
-  end
-
   # GET handler for login request, shows login form
   get "/login" do
     redirect '/' if @user
@@ -22,9 +18,9 @@ class Authentication < Sinatra::Application
     password = params[:password].gsub(/\s+/, "") #remove all whitespaces
 
     redirect '/error/login_no_pwd_user' if name.nil? or password.nil? or name == "" or password == ""
-    redirect '/error/user_no_exists' unless Store::User.exists?(name)
+    redirect '/error/user_no_exists' unless Store::User.exists?(:name => name)
 
-    user = Store::User.by_id(name)
+    user = Store::User.fetch_by(:name => name)
     redirect '/error/wrong_password' unless user.password_matches?(password)
 
     session[:name] = name
