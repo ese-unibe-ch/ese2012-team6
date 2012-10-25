@@ -10,4 +10,4 @@ gem 'less', '~>2.2.2'
 gem 'thin', '~>1.5.0'
 gem 'shotgun', '~>0.9'
 gem 'rbtree', "~> 0.3.0"
-gem 'rack-flash'
+gem 'rack-flash3'
