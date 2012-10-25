@@ -7,10 +7,10 @@ class User < Sinatra::Application
 
   # handle on behalf of selector change
   post "/user/work_on_behalf_of/" do
-    org_id = params[:on_behalf_of]
+    id = params[:on_behalf_of]
 
     old_on_behalf_of = @user.on_behalf_of
-    org = Store::Organization.fetch_by(:name => org_id)
+    org = Store::SystemUser.fetch_by(:name => id)
     @user.work_on_behalf_of(org)
 
     #redirect "/organization/#{@user.on_behalf_of.name}" if (back == url("/user/#{@user.name}") && !@user.working_as_self?)

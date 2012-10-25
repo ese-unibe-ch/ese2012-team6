@@ -8,11 +8,13 @@ require_relative '../store/system_user'
 module Store
   class User < SystemUser
     @@users = RBTree.new
+    @@name_id_rel = {}
 
     attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations
 
     def initialize
       super
+      self.credits = 100
       self.pwd_hash = ""
       self.pwd_salt = ""
       self.on_behalf_of = self
@@ -21,12 +23,13 @@ module Store
 
     def self.fetch_by(args = {})
       return  @@users[args[:id]] unless args[:id].nil?
-      return  @@users.values.detect{|org| org.name == args[:name]}
+      return  @@users[@@name_id_rel[args[:name]]] unless (args[:name].nil? || @@name_id_rel[args[:name]].nil?)
+      return nil
     end
 
     def self.exists?(args = {})
       return @@users .has_key?(args[:id]) unless args[:id].nil?
-      return @@users.values.one?{ |user| user.name == args[:name]}
+      return @@name_id_rel.has_key?(args[:name])
     end
 
     def self.all
@@ -34,15 +37,17 @@ module Store
     end
 
     def save
-      fail if @@users .has_key?(self.name)
-      @@users[self.name] = self
-      fail unless @@users .has_key?(self.name)
+      fail if @@users .has_key?(self.id)
+      @@users[self.id] = self
+      @@name_id_rel[self.name] = self.id
+      fail unless @@users .has_key?(self.id)
     end
 
     def delete
-      fail unless  @@users .has_key?(self.name)
-      @@users .delete(self.name)
-      fail if @@users .has_key?(self.name)
+      fail unless  @@users .has_key?(self.id)
+      @@users .delete(self.id)
+      @@name_id_rel.delete(self.name)
+      fail if @@users .has_key?(self.id)
     end
 
     def self.named(name)

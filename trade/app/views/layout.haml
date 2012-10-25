@@ -55,7 +55,7 @@
                 - else
                   %option{:value => @user.name} Myself
                 - for org in @user.get_organizations
-                  - if @user.work_on_behalf_of(org)
+                  - if @user.working_on_behalf_of?(org)
                     %option{:value => org.name, :selected => "true"}
                       =org.name
                   - else

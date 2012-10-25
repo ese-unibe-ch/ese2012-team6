@@ -69,7 +69,7 @@ module Store
 
     # determines whether a string is a valid price for an item
     def self.valid_price?(price)
-      return (!!(price =~ /^[-+]?[0-9]([0-9]*)?$/))
+      return (!!(price =~ /^[-+]?[0-9]([0-9]*)?$/)) && price.to_i >= 0
     end
 
     # extends the id of an item to a filename

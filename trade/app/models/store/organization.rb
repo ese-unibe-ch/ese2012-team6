@@ -5,6 +5,7 @@ module Store
   class Organization < SystemUser
     attr_accessor :members, :admins
     @@organizations = RBTree.new
+    @@name_id_rel = {}
 
     def initialize
       super
@@ -42,25 +43,29 @@ module Store
     end
 
     def save
-      fail if  @@organizations .has_key?(self.name)
-      @@organizations[self.name] = self
-      fail unless  @@organizations .has_key?(self.name)
+      fail if  @@organizations.has_key?(self.id)
+      @@organizations[self.id] = self
+      @@name_id_rel[self.name] = self.id
+      fail unless  @@organizations .has_key?(self.id)
     end
 
     def delete
-      fail unless  @@organizations .has_key?(self.name)
-      @@organizations .delete(self.name)
-      fail if  @@organizations .has_key?(self.name)
+      fail unless  @@organizations .has_key?(self.id)
+      @@organizations.delete(self.id)
+      @@name_id_rel.delete(self.name)
+      fail if  @@organizations .has_key?(self.id)
     end
 
     def self.fetch_by(args = {})
       return  @@organizations[args[:id]] unless args[:id].nil?
-      return  @@organizations.values.detect{|org| org.name == args[:name]}
+      return  @@organizations[@@name_id_rel[args[:name]]] unless (args[:name].nil? || @@name_id_rel[args[:name]].nil?)
+
+      return nil
     end
 
     def self.exists?(args = {})
       return @@organizations .has_key?(args[:id]) unless args[:id].nil?
-      return @@organizations.values.one?{ |org| org.name == args[:name]}
+      return @@name_id_rel.has_key?(args[:name])
     end
 
     def self.all

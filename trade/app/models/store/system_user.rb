@@ -10,7 +10,6 @@ module Store
     attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
 
     @@last_id = 0
-    @@id_name = {}
 
     def initialize
       @@last_id += 1
