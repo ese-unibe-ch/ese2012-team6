@@ -19,6 +19,30 @@ module Store
       self.organizations = []
     end
 
+    def self.fetch_by(*args)
+      fail unless (args[:name] || args[:id])
+      return  @@users[args[:id]] unless args[:id].nil?
+      return  @@users.detect{|org| org.name == args[:name]}
+    end
+
+    def self.exists?(*args)
+      fail unless (args[:name] || args[:id])
+      return @@users .has_key?(args[:id]) unless args[:id].nil?
+      return @@users.each{|org| org.name == args[:name]}
+    end
+
+    def save
+      fail if @@users .has_key?(self.name)
+      @@users[self.name] = self
+      fail unless @@users .has_key?(self.name)
+    end
+
+    def delete
+      fail unless  @@users .has_key?(self.name)
+      @@users .delete(self.name)
+      fail if @@users .has_key?(self.name)
+    end
+
     def self.named(name)
       user = User.new
       user.name = name

@@ -8,8 +8,8 @@ require_relative '../analytics/activity'
 module Store
   class SystemUser
     attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
+
     @@last_id = 0
-    @@users = RBTree.new
     @@id_name = {}
 
     def initialize
@@ -28,32 +28,19 @@ module Store
       @name = Security::StringChecker.destroy_script(name)
     end
 
-    def save
-      fail if @@users.has_key?(self.id)
-      @@users[self.id] = self
-      fail unless @@users.has_key?(self.id)
+    # fetches SystemUser object, args must contain key :name or :id
+    def self.fetch_by(*args)
+      return Store::User.fetch_by(args) if Store::User.exists?(args)
+      return Store::Organization.fetch_by(args) if Store::Organization.exists?(args)
     end
 
-    def delete
-      fail unless @@users.has_key?(self.id)
-      @@users.delete(self.id)
-      fail if @@users.has_key?(self.id)
-    end
-
-    def self.by_id(id)
-      return @@users[id]
-    end
-
-    def self.by_name(name)
-
-    end
-
+    # return all system users
     def self.all
-      return @@users.values.dup
+      return Store::User.all.concat(Store::Organization.all)
     end
 
-    def self.exists?(name)
-      return @@users.has_key?(name)
+    def self.exists?(*args)
+      return Store::User.exists?(args) || Store::Organization.exists?(args)
     end
 
     def propose_item(name, price, description = "", log = true)
@@ -135,7 +122,6 @@ module Store
 
     alias :can_delete? :can_edit?
 
-    #if ((item.owner != @user.on_behalf_of) && item.active?)
     def can_buy?(item)
       return ((item.owner != self.on_behalf_of) && item.active?)
     end
