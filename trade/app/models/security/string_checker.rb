@@ -32,7 +32,13 @@ module Security
       string=string.gsub(/\A(\s)*/,"")
       string.gsub(/(\s)*\z/,"")
     end
+
+    def self.is_email?(email)
+      is_email = false
+      if email. == /^((\w)*\.?)*\@((\w)*\.)*(\w){2,3}/.match(email)
+        is_email = true
+      end
+      is_email
+    end
   end
 end
-
-# Regex für E-Mail: (/^((\w)*\.?)*\@((\w)*\.)*(\w){2,3}/)

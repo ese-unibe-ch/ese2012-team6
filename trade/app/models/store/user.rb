@@ -55,7 +55,7 @@ module Store
       self.pwd_hash = BCrypt::Engine.hash_secret(password, self.pwd_salt)
     end
 
-    def self.named_pwd_description(name, password, description)
+    def self.named_pwd_description(name, password, description, email)
       user = User.new
       user.name = name
 

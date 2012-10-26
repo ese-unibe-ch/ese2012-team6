@@ -20,11 +20,12 @@ class Register < Sinatra::Application
 
     redirect 'error/no_user_name' if user_name == ""
     redirect 'error/no_email' if user_email == ""
+    redirect 'error/no_email' unless Security::StringChecker.is_email?(user_email)
     redirect 'error/user_already_exists' if Store::User.exists?(user_name)
     redirect 'error/pwd_unsafe' unless Security::StringChecker.is_safe_pw?(user_pwd)
     redirect 'error/pwd_rep_no_match' if user_pwd != user_repeated_pwd
 
-    new_user = Store::User.named_pwd_description(user_name, user_pwd, user_description)
+    new_user = Store::User.named_pwd_description(user_name, user_pwd, user_description, user_email)
     new_user.save
 
     redirect '/'
