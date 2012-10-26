@@ -30,10 +30,7 @@ class Organization < Sinatra::Application
   # Handles creating organization
   put '/organization' do
     redirect '/login' unless @user
-
-    if params[:org_name]==""
-      redirect 'error/no_name'
-    end
+    redirect 'error/no_name' if params[:org_name]==""
 
     org_name = Security::StringChecker.destroy_script(params[:org_name])
     org_desc = params[:org_desc]
@@ -59,11 +56,11 @@ class Organization < Sinatra::Application
     redirect '/login' unless @user
 
     viewed_organization = Store::Organization.by_name(params[:organization_name])
-    is_my_organization = viewed_organization.organization_members.detect(@user) != nil
-    i_am_admin = viewed_organization.organization_admin.detect(@user) != nil
+    is_my_organization = @user.is_member_of?(viewed_organization)
+    i_am_admin = @user.is_admin_of?(viewed_organization)
     marked_down_description = RDiscount.new(viewed_organization.description, :smart, :filter_html)
 
-    haml :organization, :locals => {:viewed_organization => viewed_organization,
+    haml :organization_profile, :locals => {:viewed_organization => viewed_organization,
                                     :is_my_organization => is_my_organization,
                                     :i_am_admin => i_am_admin,
                                     :marked_down_description => marked_down_description.to_html
@@ -71,24 +68,18 @@ class Organization < Sinatra::Application
   end
 
   # Shows selected organization
-  get '/organization_change/:organization_name' do
+  get '/organization/:organization_name/edit' do
     redirect '/login' unless @user
 
     viewed_organization = Store::Organization.by_name(params[:organization_name])
 
-    if viewed_organization.organization_members.detect(@user)
-      is_my_organization = true
-    else is_my_organization = false
-    end
+    redirect "/organization/#{viewed_organization.name}" unless @user.is_admin_of?(viewed_organization)
 
-    if viewed_organization.organization_admin.detect(@user)
-      i_am_admin = true
-    else i_am_admin = false
-    end
-
+    is_my_organization = viewed_organization.has_member?(@user)
+    i_am_admin = @user.is_admin_of?(viewed_organization)
     marked_down_description = viewed_organization.description
 
-    haml :change_organization, :locals => {:viewed_organization => viewed_organization,
+    haml :edit_organization, :locals => {:viewed_organization => viewed_organization,
                                            :is_my_organization => is_my_organization,
                                            :i_am_admin => i_am_admin,
                                            :marked_down_description => marked_down_description,
@@ -96,13 +87,45 @@ class Organization < Sinatra::Application
                                           }
   end
 
-  # Handles changing organization
-  put '/organization_change/:org_name' do
+  post "/organization/:organization_name/add/:username/" do
     redirect '/login' unless @user
 
-    viewer = params[:org_name]
+    organization = Store::Organization.by_name(params[:organization_name])
+    user         = Store::User.by_name(params[:username])
+
+    if !user.is_admin_of?(organization) and user.is_member_of?(organization)
+      organization.add_admin(user)
+    else
+      organization.add_member(user)
+    end
+    #redirect "/organization/#{params[:organization_name]}"
+    redirect (back + "#manage_admins")
+ end
+
+  post "/organization/:organization_name/remove/:username/" do
+    redirect '/login' unless @user
+
+    organization = Store::Organization.by_name(params[:organization_name])
+    user         = Store::User.by_name(params[:username])
+
+    if user.is_admin_of?(organization)
+      organization.remove_admin(user)
+    else
+      organization.remove_member(user)
+    end
+
+    #redirect "/organization/#{params[:organization_name]}"
+    redirect (back + "#manage_admins")
+
+  end
+
+  # Handles changing organization
+  post '/organization/:org_name/edit' do
+    redirect '/login' unless @user
+
+    viewed_organization = params[:org_name]
     org_desc = params[:org_desc]
-    organization = Store::Organization.by_name(viewer)
+    organization = Store::Organization.by_name(viewed_organization)
     organization.description = org_desc
 
     member_put = params[:member]
@@ -120,23 +143,39 @@ class Organization < Sinatra::Application
       end
     end
 
-    redirect "/organization/#{viewer}"
+    redirect "/organization/#{organization.name}"
   end
 
   # Handles organization's picture upload
-  post '/organization/:name' do
+  post '/organization/:name/pic_upload' do
     redirect '/login' unless @user
 
-    viewer = Store::Organization.by_name(params[:name])
+    viewed_organization = Store::Organization.by_name(params[:name])
     file = params[:file_upload]
-    redirect to("/organization/#{viewer}") unless file
+    redirect to("/organization/#{viewed_organization.name}") unless file
 
     redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
 
-    filename = Store::Organization.id_image_to_filename(viewer, file[:filename])
+    filename = Store::Organization.id_image_to_filename(viewed_organization, file[:filename])
     uploader = Storage::PictureUploader.with_path("/images/organizations")
-    viewer.image_path = uploader.upload(file, filename)
+    viewed_organization.image_path = uploader.upload(file, filename)
 
+    redirect back
+  end
+
+  post '/organization/:org_name/send_money' do
+    redirect '/login' unless @user
+
+    org_name = params[:org_name]
+    org = Store::Organization.by_name(org_name)
+
+    fail unless @user.is_admin_of?(org)
+    redirect "/error/wrong_transfer_amount" unless (!!(params[:gift_amount] =~ /^[-+]?[1-9]([0-9]*)?$/) && Integer(params[:gift_amount]) >= 0)
+
+    amount = Integer(params[:gift_amount])
+    success = org.send_money_to(@user, amount)
+
+    redirect "/error/organization_credit_transfer_failed" unless success
     redirect back
   end
 end

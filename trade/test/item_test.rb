@@ -86,6 +86,8 @@ class ItemTest < Test::Unit::TestCase
   end
 
   def test_get_all_items
+    Store::Item.clear_all
+
     item1 = Store::Item.named_priced_with_owner("TestItem1", 0, nil)
     item2 = Store::Item.named_priced_with_owner("TestItem2", 0, nil)
     item3 = Store::Item.named_priced_with_owner("TestItem3", 0, nil)
@@ -94,6 +96,37 @@ class ItemTest < Test::Unit::TestCase
     item2.save
     item3.save
 
-    assert_equal([item1, item2, item3], Store::Item.all)
+    all_items = Store::Item.all
+
+    [item1, item2, item3].each {
+      |item|
+      assert(item, all_items.include?(item))
+    }
+
+  end
+
+  def test_is_editable_by_owner
+    user = Store::User.named("Hans")
+    item = user.propose_item("TestItem", 100, "", false)
+    assert_equal(true, item.editable_by?(user))
+    item.activate
+    assert_equal(false, item.editable_by?(user))
+  end
+
+  def test_is_editable_by_other
+    user = Store::User.named("Hans")
+    other = Store::User.named("Herbert")
+    item = user.propose_item("TestItem", 100, "", false)
+    assert_equal(true, item.editable_by?(user))
+    item.activate
+    assert_equal(false, item.editable_by?(other))
+  end
+
+  def test_activatable_by_owner
+    user = Store::User.named("Hans")
+    item = user.propose_item("TestItem", 100, "", false)
+    assert_equal(true, item.activatable_by?(user))
+    item.activate
+    assert_equal(true, item.activatable_by?(user))
   end
 end

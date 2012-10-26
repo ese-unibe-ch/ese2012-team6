@@ -1,11 +1,10 @@
-%h2
-  Organizations
+%div#actionbar
+  %h2.float_left
+    Organizations
+  %div.action_buttons.float_right
+    %a.styled-button{:href => "/organization/new"} Create new Organization
 %h3
   The following organizations are registered by the system
-%h3
-  %br
-%div.action_buttons.float_right
-  %a.styled-button{:href => "/organization/new"} Create new Organization
 %table.table-minimalistic
   %thead
     %tr
@@ -23,6 +22,6 @@
         %td.ralign
           #{organization.credits}
         %td.ralign
-          #{organization.organization_members.size}
+          #{organization.members.size}
         %td.ralign
           #{organization.items.size}

@@ -1,0 +1,105 @@
+%div#actionbar
+  %h2.float_left
+    :escaped
+       #{viewed_organization.name}
+  %div.action_buttons.float_right
+    -if is_my_organization
+      %div.money-sender
+        %table
+          %tr
+            %form{:action => "/user/send_money/#{viewed_organization.name}", :method => "POST", :onsubmit => "return validate_gift_transfer(this);"}
+              %td.ralign
+                %label Amount To Organization
+              %td
+                %input.textbox8{:type => "text", :name => "gift_amount", :style => "width: 2em"}
+              %td
+                %input.styled-button.float_left{:type => "submit", :value => "Transfer"}
+          -if i_am_admin
+            %tr
+              %form{:action => "/organization/#{viewed_organization.name}/send_money", :method => "POST", :onsubmit => "return validate_gift_transfer(this);"}
+                %td.ralign
+                  %label Amount To Me
+                %td
+                  %input.textbox8{:type => "text", :name => "gift_amount", :style => "width: 2em"}
+                %td
+                  %input.styled-button.float_left{:type => "submit", :value => "Transfer"}
+      %a.styled-button{:href => "/item/new"} Create new Item
+    -if i_am_admin
+      %a.styled-button{:href => "/organization/#{viewed_organization.name}/edit"} Make Changes
+%h3
+  :escaped
+    #{"Credits of " + viewed_organization.name}:
+%p
+  $#{viewed_organization.credits}
+
+%div.picture_container.float_right
+  %img{:src => "#{viewed_organization.image_path}", :width => "200"}
+
+%h3
+  :escaped
+    #{viewed_organization.name + " owns"} the following items:
+-if viewed_organization.items.empty? and not is_my_organization
+  %p
+    No items available
+-else
+  %table.table-minimalistic
+    %thead
+      %tr
+        %th Name
+        %th Price
+        %th Active
+        %th
+    %tbody
+      -if @user.working_on_behalf_of?(viewed_organization)
+        %tr
+          %form{:action => "/item/quick_add", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
+            %td
+              %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
+            %td
+              %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
+            %td
+            %td
+              %input{:name => "_method", :type => "hidden", :value => "put"}
+              %input.styled-button.small{:type => "submit", :value => "Quick Add"}
+      -for item in viewed_organization.items
+        %tr
+          %td
+            %a{:href => url("/item/#{item.id}")}
+              =item.name
+          %td
+            #{item.price}
+          %td
+            -if item.active?
+              %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
+            -else
+              %input{:type => "checkbox", :disabled => "disabled"}
+          %td
+            %div.action_buttons
+              -if @user.can_activate?(item)
+                -if item.active?
+                  %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
+                    %input.styled-button.small.float_left{:type => "submit", :value => "Deactivate"}
+                -else
+                  %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
+                    %input.styled-button.small{:type => "submit", :value => "Activate"}
+              -if @user.can_edit?(item)
+                %a.styled-button.small{:href => "/item/#{item.id}/edit"} Edit
+              -if @user.can_delete?(item)
+                %form{:action => "/item/#{item.id}", :method => "POST"}
+                  %input{:name => "_method", :type => "hidden", :value => "delete"}
+                  %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
+%h3
+  Members
+%ul
+  -for member in viewed_organization.members
+    %li
+      %a{:href => "/user/#{member.name}"}
+        :escaped
+          #{member.name}
+%h3
+  #{"Description of " + viewed_organization.name}
+-if viewed_organization.description == ""
+  %p No description available
+-else
+  %div.markdown_view
+    =marked_down_description

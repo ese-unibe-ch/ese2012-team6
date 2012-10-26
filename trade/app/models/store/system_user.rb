@@ -8,6 +8,7 @@ module Store
   class System_User
     attr_accessor :name, :credits, :items, :description, :open_item_page_time, :image_path
     @@users={}
+    SELL_BONUS = 0.05
 
     def initialize
       raise "Abstract"
@@ -74,8 +75,10 @@ module Store
 
     def delete_item(item_id, log = true)
       item = Store::Item.by_id(item_id)
+      fail if item.nil?
+      fail unless self.can_delete?(item)
 
-      self.release_item(item)
+      item.owner.release_item(item)
       item.delete
 
       Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
@@ -99,7 +102,7 @@ module Store
       end
 
       seller.release_item(item)
-      seller.credits += item.price
+      seller.credits += item.price + item.price * SELL_BONUS
 
       item.deactivate
 
@@ -114,17 +117,18 @@ module Store
     end
 
     def can_edit?(item)
-      return (item.owner.eql?(self) and item.editable?)
+      return item.editable_by?(self)
     end
 
     alias :can_delete? :can_edit?
 
+    #if ((item.owner != @user.on_behalf_of) && item.active?)
     def can_buy?(item)
-      return (not item.owner.eql?(self) and item.active?)
+      return ((item.owner != self.on_behalf_of) && item.active?)
     end
 
     def can_activate?(item)
-      return item.owner.eql?(self)
+      return item.activatable_by?(self)
     end
 
     def to_s
@@ -138,6 +142,5 @@ module Store
     def is_organization?
       false
     end
-
   end
 end
