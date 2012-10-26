@@ -1,31 +1,31 @@
 %div#actionbar
   %h2.float_left
     :escaped
-       #{viewed_organization.name}
-  %div.action_buttons.float_right
-    -if is_my_organization
-      %div.money-sender
-        %table
+      #{viewed_organization.name}
+  -if is_my_organization
+    %div.money-sender
+      %table
+        %tr
+          %form{:action => "/user/send_money/#{viewed_organization.name}", :method => "POST", :onsubmit => "return validate_gift_transfer(this);"}
+            %td.ralign
+              %label Amount To Organization
+            %td
+              %input.textbox8{:type => "text", :name => "gift_amount", :style => "width: 2em"}
+            %td
+              %input.styled-button.float_left{:type => "submit", :value => "Transfer"}
+        -if i_am_admin
           %tr
-            %form{:action => "/user/send_money/#{viewed_organization.name}", :method => "POST", :onsubmit => "return validate_gift_transfer(this);"}
+            %form{:action => "/organization/#{viewed_organization.name}/send_money", :method => "POST", :onsubmit => "return validate_gift_transfer(this);"}
               %td.ralign
-                %label Amount To Organization
+                %label Amount To Me
               %td
                 %input.textbox8{:type => "text", :name => "gift_amount", :style => "width: 2em"}
               %td
                 %input.styled-button.float_left{:type => "submit", :value => "Transfer"}
-          -if i_am_admin
-            %tr
-              %form{:action => "/organization/#{viewed_organization.name}/send_money", :method => "POST", :onsubmit => "return validate_gift_transfer(this);"}
-                %td.ralign
-                  %label Amount To Me
-                %td
-                  %input.textbox8{:type => "text", :name => "gift_amount", :style => "width: 2em"}
-                %td
-                  %input.styled-button.float_left{:type => "submit", :value => "Transfer"}
-      %a.styled-button{:href => "/item/new"} Create new Item
-    -if i_am_admin
-      %a.styled-button{:href => "/organization/#{viewed_organization.name}/edit"} Make Changes
+%div.action_buttons.float_right
+  %a.styled-button{:href => "/item/new"} Create new Item
+  -if i_am_admin
+    %a.styled-button{:href => "/organization/#{viewed_organization.name}/edit"} Make Changes
 %h3
   :escaped
     #{"Credits of " + viewed_organization.name}:

@@ -5,6 +5,10 @@ require_relative('../models/store/user')
 # Handles all requests concerning User Authentication, namely Login and Logout
 class Authentication < Sinatra::Application
 
+  before do
+    @user = Store::User.fetch_by(:name => session[:name])
+  end
+
   # GET handler for login request, shows login form
   get "/login" do
     redirect '/' if @user

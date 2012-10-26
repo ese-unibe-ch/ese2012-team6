@@ -17,6 +17,7 @@ require_relative('controllers/activity_logger_ctrl')
 require_relative('controllers/organization_ctrl')
 
 class App < Sinatra::Base
+  CREDIT_REDUCE_TIME = 3
 
   use Rack::Flash
 
@@ -47,13 +48,27 @@ class App < Sinatra::Base
     random = umbrella_corp.propose_item("Random", 50)
     (bender = umbrella_corp.propose_item("Bender", 110)).activate
 
-
     #add default organization
    (organization_Mordor_inc = Store::Organization.named("Mordor Inc.")).save
     organization_Mordor_inc.add_member(user_ese)
     organization_Mordor_inc.add_member(peter_griffin)
     organization_Mordor_inc.add_admin(user_ese)
     organization_Mordor_inc.send_money(200)
+
+    @last_refresh = Time.now
+  end
+
+  def self.run!(options={})
+    Thread.new do
+      loop do
+        if Time.now - @last_refresh >= CREDIT_REDUCE_TIME
+          Store::SystemUser.reduce_credits
+          @last_refresh = Time.now
+        end
+        sleep 1
+      end
+    end
+    super
   end
 end
 

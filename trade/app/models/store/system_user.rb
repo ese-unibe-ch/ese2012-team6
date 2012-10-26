@@ -10,6 +10,7 @@ module Store
     attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
 
     @@last_id = 0
+    REDUCE_RATE = 0.05
 
     def initialize
       @@last_id += 1
@@ -40,6 +41,15 @@ module Store
 
     def self.exists?(args = {})
       return Store::User.exists?(args) || Store::Organization.exists?(args)
+    end
+
+    def self.reduce_credits
+      all_users = self.all
+      all_users.each{|user| user.reduce_credits }
+    end
+
+    def reduce_credits
+      self.credits -= Integer(self.credits * REDUCE_RATE)
     end
 
     def propose_item(name, price, description = "", log = true)
