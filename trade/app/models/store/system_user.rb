@@ -8,6 +8,7 @@ module Store
   class System_User
     attr_accessor :name, :credits, :items, :description, :open_item_page_time, :image_path
     @@users={}
+    SELL_BONUS = 0.05
 
     def initialize
       raise "Abstract"
@@ -101,7 +102,7 @@ module Store
       end
 
       seller.release_item(item)
-      seller.credits += item.price
+      seller.credits += item.price + item.price * SELL_BONUS
 
       item.deactivate
 
