@@ -102,7 +102,7 @@ module Store
       end
 
       seller.release_item(item)
-      seller.credits += item.price + item.price * SELL_BONUS
+      seller.credits += item.price + Integer(item.price * SELL_BONUS)
 
       item.deactivate
 
