@@ -1,4 +1,5 @@
 require 'test/unit'
+require 'rubygems'
 require 'require_relative'
 require_relative '../app/models/security/string_checker'
 
