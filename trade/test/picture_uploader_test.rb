@@ -19,7 +19,7 @@ class Picture_Uploader_Test < Test::Unit::TestCase
     file = "mh.jpg" ### should be a hash which is used in 'edit_profile.haml'
     filename = Store::User.id_image_to_filename(user.name, file)
     uploader = pic
-                    #user.image_path = uploader.upload(file, filename)
+    #user.image_path = uploader.upload(file, filename) / need rack/test??
 
     assert_equal(filename, "X_mh.jpg")
     #assert_equal(user.image_path, "/images/users/X_mh.jpg")
