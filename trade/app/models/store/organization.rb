@@ -1,18 +1,33 @@
+require 'rbtree'
 require_relative '../store/system_user'
+
 module Store
-  class Organization < System_User
+  class Organization < SystemUser
     attr_accessor :members, :admins
-    @@organizations = {}
+
+    @@organizations = RBTree.new
+    @@name_id_rel = {}
 
     def initialize
-      self.name = ""
-      self.credits = 0
-      self.items = []
-      self.description = ""
-      self.open_item_page_time = Time.now
-      self.image_path = "/images/no_image.gif"
-      self.members =[]
-      self.admins =[]
+      super
+      self.members = []
+      self.admins = []
+    end
+
+    def self.fetch_by(args = {})
+      return  @@organizations[args[:id]] unless args[:id].nil?
+      return  @@organizations[@@name_id_rel[args[:name]]] unless (args[:name].nil? || @@name_id_rel[args[:name]].nil?)
+
+      return nil
+    end
+
+    def self.exists?(args = {})
+      return @@organizations .has_key?(args[:id]) unless args[:id].nil?
+      return @@name_id_rel.has_key?(args[:name])
+    end
+
+    def self.all
+      return  @@organizations.values.dup
     end
 
     # @param [User] member
@@ -21,9 +36,13 @@ module Store
       members.push(member)
     end
 
-    def self.named(name)
+    def self.named(name, options = {})
       organization = Organization.new
       organization.name = name
+      organization.description = options[:description] || ""
+      organization.add_admin(options[:admin]) if options[:admin]
+      organization.add_member(options[:admin]) if options[:admin]
+
       return organization
     end
 
@@ -45,56 +64,29 @@ module Store
     end
 
     def save
-      fail if  @@organizations .has_key?(self.name)
-      @@organizations[self.name] = self
-      fail unless  @@organizations .has_key?(self.name)
+      fail if  @@organizations.has_key?(self.id)
+      @@organizations[self.id] = self
+      @@name_id_rel[self.name] = self.id
+      fail unless  @@organizations .has_key?(self.id)
     end
 
     def delete
-      fail unless  @@organizations .has_key?(self.name)
-      @@organizations .delete(self.name)
-      fail if  @@organizations .has_key?(self.name)
-    end
-
-    def self.by_name(name)
-      return  @@organizations[name]
-    end
-
-    def self.all
-      return  @@organizations .values.dup
-    end
-
-    def self.exists?(name)
-      return  @@organizations .has_key?(name)
-    end
-
-    def send_money(amount)
-      fail unless amount >= 0
-      self.credits += amount
+      fail unless @@organizations .has_key?(self.id)
+      @@organizations.delete(self.id)
+      @@name_id_rel.delete(self.name)
+      fail if @@organizations .has_key?(self.id)
     end
 
     # sends a certain amount of money from the organization to an admin
     def send_money_to(admin, amount)
-      fail if admin.nil?
-      return false unless self.credits >= amount
       return false unless self.has_admin?(admin)
-
-      self.credits -= amount
-      admin.send_money(amount)
-
-      fail if self.credits < 0
-
-      return true
+      super(admin, amount)
     end
 
     # determine whether a user is a member of this organization
     def has_member?(user)
       fail if user.nil?
       return self.members.include?(user)
-    end
-    
-    def self.id_image_to_filename(id, path)
-      "#{id}_#{path}"
     end
 
     # determine whether a user is an admin of this organization

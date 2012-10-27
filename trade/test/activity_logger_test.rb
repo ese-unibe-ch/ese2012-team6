@@ -66,7 +66,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
 
     recent_purchases = Analytics::ActivityLogger.get_most_recent_purchases(2)
 
-    assert_equal(recent_purchases.size, 2)
+    assert_equal(2, recent_purchases.size)
 
     assert_equal("Hansli", recent_purchases[1].actor_name)
     assert_equal(item2.id, recent_purchases[1].item_id)

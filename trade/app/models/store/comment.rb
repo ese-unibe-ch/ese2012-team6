@@ -32,8 +32,6 @@ module Store
           gsub('8)', '![alternative text](/images/smileys/cool.gif)').gsub(':crazy:', '![alternative text](/images/smileys/crazy.gif)').
           gsub(':yeah:', '![alternative text](/images/smileys/yeah.gif)')
       return formatted_desc
-
     end
-
   end
 end

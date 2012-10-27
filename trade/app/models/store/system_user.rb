@@ -1,53 +1,65 @@
+<<<<<<< HEAD
 #superclass for user and organization
 require 'bcrypt'
+require 'rbtree'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 
 module Store
-  class System_User
-    attr_accessor :name, :credits, :items, :description, :open_item_page_time, :image_path
-    @@users={}
-    SELL_BONUS = 0.05
+  class SystemUser
+    attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
+
+    @@last_id = 0
+    CREDIT_REDUCE_RATE = 0.05
 
     def initialize
-      raise "Abstract"
+      @@last_id += 1
+      self.id = @@last_id
+      self.name = ""
+      self.credits = 0
+      self.items = []
+      self.description = ""
+      self.open_item_page_time = Time.now
+      self.image_path = "/images/no_image.gif"
     end
 
-    #overrides name setter to avoid scripts.
-    def name=(name)
-      @name = Security::StringChecker.destroy_script(name)
+    # fetches SystemUser object, args must contain key :name or :id
+    def self.fetch_by(args = {})
+      return Store::User.fetch_by(args) if Store::User.exists?(args)
+      return Store::Organization.fetch_by(args) if Store::Organization.exists?(args)
     end
 
-    def save
-      fail if @@users.has_key?(self.name)
-      @@users[self.name] = self
-      fail unless @@users.has_key?(self.name)
-    end
-
-    def delete
-      fail unless @@users.has_key?(self.name)
-      @@users.delete(self.name)
-      fail if @@users.has_key?(self.name)
+    def self.by_id(id)
+      return self.fetch_by(:id => id.to_i)
     end
 
     def self.by_name(name)
-      return @@users[name]
+      return self.fetch_by(:name => name)
     end
 
+    # return all system users
     def self.all
-      return @@users.values.dup
+      return Store::User.all.concat(Store::Organization.all)
     end
 
-    def self.exists?(name)
-      return @@users.has_key?(name)
+    def self.exists?(args = {})
+      return Store::User.exists?(args) || Store::Organization.exists?(args)
+    end
+
+    def self.reduce_credits
+      all_users = self.all
+      all_users.each{|user| user.reduce_credits }
+    end
+
+    def reduce_credits
+      self.credits -= Integer(self.credits * CREDIT_REDUCE_RATE)
     end
 
     def propose_item(name, price, description = "", log = true)
-      item = Item.named_priced_with_owner(name, price, self)
-      item.description = description
-
+      item = Item.named_priced_with_owner(name, price, self, description)
       item.save
+
       self.attach_item(item)
 
       Analytics::ItemAddActivity.with_creator_item(self, item).log if log
@@ -122,7 +134,6 @@ module Store
 
     alias :can_delete? :can_edit?
 
-    #if ((item.owner != @user.on_behalf_of) && item.active?)
     def can_buy?(item)
       return ((item.owner != self.on_behalf_of) && item.active?)
     end
@@ -141,6 +152,24 @@ module Store
 
     def is_organization?
       false
+    end
+
+    def send_money(amount)
+      fail unless amount >= 0
+      self.credits += amount
+    end
+
+    # sends a certain amount of money from the user to a certain organization
+    def send_money_to(receiver, amount)
+      fail if receiver.nil?
+      return false unless self.credits >= amount
+
+      self.credits -= amount
+      receiver.send_money(amount)
+
+      fail if self.credits < 0
+
+      return true
     end
   end
 end
