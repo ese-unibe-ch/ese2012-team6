@@ -37,15 +37,13 @@ module Security
     end
 
     def self.matches_regex?(string, regex)
-      return ((string.scan(regex))[0] == string)
+      match = regex.match(string)
+      return false unless match
+      return (match[0] == string) unless match.nil?
     end
 
     def self.is_email?(email)
-      is_email = false
-      if email. == /^((\w)*\.?)*\@((\w)*\.)*(\w){2,3}/.match(email)
-        is_email = true
-      end
-      is_email
+      return self.matches_regex?(email, /^[\w*\.?]+@(\w*\.)+\w{2,3}\z/ )
     end
   end
 end
