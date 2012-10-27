@@ -33,9 +33,10 @@ class Organization < Sinatra::Application
   # Handles creating organization
   put '/organization' do
     redirect '/login' unless @user
-    redirect 'error/no_name' if params[:org_name]==""
 
-    org_name = StringChecker.destroy_script(params[:org_name])
+    org_name = params[:org_name].strip
+    redirect 'error/invalid_username' unless StringChecker.is_valid_username?(org_name)
+
     org_desc = params[:org_desc]
 
     organization = Organization.named(org_name, :admin => @user, :description => org_desc)
@@ -137,14 +138,14 @@ class Organization < Sinatra::Application
   post '/organization/:name/pic_upload' do
     redirect '/login' unless @user
 
-    viewed_organization = Store::Organization.by_name(params[:name])
+    viewed_organization = Organization.by_name(params[:name])
     file = params[:file_upload]
     redirect to("/organization/#{viewed_organization.name}") unless file
 
     redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
 
-    filename = Store::Organization.id_image_to_filename(viewed_organization, file[:filename])
-    uploader = Storage::PictureUploader.with_path("/images/organizations")
+    filename = Organization.id_image_to_filename(viewed_organization, file[:filename])
+    uploader = PictureUploader.with_path("/images/organizations")
     viewed_organization.image_path = uploader.upload(file, filename)
 
     redirect back

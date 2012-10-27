@@ -23,18 +23,21 @@ module Security
 
     # @param [String] string
     def self.destroy_script(string)
-     string=string.gsub(/\<(\/)*[a-zA-Z]*\>/,"")
-     string=remove_leading_whitespace(string)
+     string = string.strip
+     string = string.gsub(/\<(\/)*[a-zA-Z]*\>/,"")
      string
     end
 
-    def self.remove_leading_whitespace(string)
-      string=string.gsub(/\A(\s)*/,"")
-      string.gsub(/(\s)*\z/,"")
+    def self.is_numeric?(string)
+      return self.matches_regex?(string, /^[+-]?\d+/)
     end
 
-    def self.is_numeric?(string)
-      return !(!!(string =~ /^[-+]?[1-9]([0-9]*)?$/)).nil?
+    def self.is_valid_username?(string)
+      return self.matches_regex?(string, /\w+/)
+    end
+
+    def self.matches_regex?(string, regex)
+      return ((string.scan(regex))[0] == string)
     end
   end
 end

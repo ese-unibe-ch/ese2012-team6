@@ -20,8 +20,8 @@ class Authentication < Sinatra::Application
 
   # POST handler for login request, processes input and logs user in if possible
   post "/login" do
-    name = StringChecker.destroy_script(params[:username])
-    password = params[:password].gsub(/\s+/, "") #remove all whitespaces
+    name = params[:username].strip
+    password = params[:password].strip
 
     redirect '/error/user_no_exists' unless User.exists?(:name => name)
 

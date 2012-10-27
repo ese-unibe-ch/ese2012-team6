@@ -56,10 +56,9 @@ module Store
     end
 
     def propose_item(name, price, description = "", log = true)
-      item = Item.named_priced_with_owner(name, price, self)
-      item.description = description
-
+      item = Item.named_priced_with_owner(name, price, self, description)
       item.save
+
       self.attach_item(item)
 
       Analytics::ItemAddActivity.with_creator_item(self, item).log if log

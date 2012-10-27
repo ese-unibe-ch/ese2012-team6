@@ -54,16 +54,13 @@ module Store
       return @@items.values.dup
     end
 
-    def name=(name)
-      @name = Security::StringChecker.destroy_script(name)
-    end
-
     # create a new item object with a name, price and owner
-    def self.named_priced_with_owner(name, price, owner)
+    def self.named_priced_with_owner(name, price, owner, description = "")
       item = Item.new
       item.name = name
       item.price = price
       item.owner = owner
+      item.description = description
       return item
     end
 

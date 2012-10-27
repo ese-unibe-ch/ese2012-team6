@@ -72,6 +72,8 @@ class Main < Sinatra::Application
         error_message = "Organization does not have enough credits to transfer"
       when "wrong_transfer_amount"
         error_message = "You must transfer a positive integral amount of credits"
+      when "invalid_username"
+        error_message = "Your user name must only contain word characters"
     end
 
     last_page = back
