@@ -11,7 +11,7 @@ module Store
     # map that maps unique usernames to IDs, for future use
     @@name_id_rel = {}
 
-    attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations
+    attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email
 
     def initialize
       super

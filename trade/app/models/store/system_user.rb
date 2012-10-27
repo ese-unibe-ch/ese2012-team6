@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #superclass for user and organization
 require 'bcrypt'
 require 'rbtree'
