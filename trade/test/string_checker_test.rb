@@ -7,12 +7,11 @@ class Password_Handler_Test < Test::Unit::TestCase
   include Security
 
   def test_length
-
     pw1 = "Test1"
     pw2 = "Test2test"
 
-    assert_equal(false, Security::StringChecker.is_safe_pw?(pw1))
-    assert_equal(true, Security::StringChecker.is_safe_pw?(pw2))
+    assert_equal(false, StringChecker.is_safe_pw?(pw1))
+    assert_equal(true, StringChecker.is_safe_pw?(pw2))
   end
 
   def test_number
@@ -20,8 +19,8 @@ class Password_Handler_Test < Test::Unit::TestCase
     pw1 = "Testtest"
     pw2 = "Test2test"
 
-    assert_equal(false, Security::StringChecker.is_safe_pw?(pw1))
-    assert_equal(true, Security::StringChecker.is_safe_pw?(pw2))
+    assert_equal(false, StringChecker.is_safe_pw?(pw1))
+    assert_equal(true, StringChecker.is_safe_pw?(pw2))
   end
 
   def test_uppercase
@@ -29,8 +28,8 @@ class Password_Handler_Test < Test::Unit::TestCase
     pw1 = "test1test"
     pw2 = "Test2test"
 
-    assert_equal(false, Security::StringChecker.is_safe_pw?(pw1))
-    assert_equal(true, Security::StringChecker.is_safe_pw?(pw2))
+    assert_equal(false, StringChecker.is_safe_pw?(pw1))
+    assert_equal(true, StringChecker.is_safe_pw?(pw2))
   end
 
   def test_is_nummeric
@@ -50,5 +49,21 @@ class Password_Handler_Test < Test::Unit::TestCase
     assert(!StringChecker.is_valid_username?("happy-emu"))
     assert(StringChecker.is_valid_username?("happy_emu"))
     assert(!StringChecker.is_valid_username?("happy-"))
+  end
+
+  def test_destroy_script
+    string = "<script>alert()</script>"
+    destroyed = StringChecker.destroy_script(string)
+    assert(!destroyed.include?("<script>"))
+    assert(!destroyed.include?("</script>"))
+  end
+
+  def test_is_email
+    assert(StringChecker.is_email?("happy@email.com"))
+    assert(StringChecker.is_email?("happy.emu@email.com"))
+    assert(!StringChecker.is_email?("@email.com"))
+    assert(!StringChecker.is_email?("happy@com"))
+    assert(!StringChecker.is_email?("happy-.,.@email.com"))
+    assert(StringChecker.is_email?("happy@student.email.com"))
   end
 end
