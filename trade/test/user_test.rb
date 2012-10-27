@@ -66,7 +66,7 @@ class UserTest < Test::Unit::TestCase
     assert(transaction_result, "Transaction failed when it should have succeeded\nReason: #{transaction_message}")
 
     assert_equal(0, buyer.credits, "Buyer has too many credits left")
-    assert_equal(200, seller.credits, "Seller has too few credits")
+    assert_equal(205, seller.credits, "Seller has too few credits")
 
     assert(!seller.items.include?(item), "Seller still owns the sold item")
     assert(buyer.items.include?(item), "Buyer doesn't have the item")

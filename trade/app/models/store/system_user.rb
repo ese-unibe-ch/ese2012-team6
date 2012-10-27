@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #superclass for user and organization
 require 'bcrypt'
 require 'rbtree'
@@ -12,7 +11,7 @@ module Store
 
     @@last_id = 0
     CREDIT_REDUCE_RATE = 0.05
-	SELL_BONUS = 0.05
+	  SELL_BONUS = 0.05
 
     def initialize
       @@last_id += 1
