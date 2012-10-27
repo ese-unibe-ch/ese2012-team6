@@ -10,13 +10,13 @@ class User < Sinatra::Application
   include Storage
 
   before do
-    @user = User.fetch_by(:name => session[:name])
+    @user = User.by_name(session[:name])
   end
 
   # handle on behalf of selector change
   post "/user/work_on_behalf_of/" do
     org_name = params[:on_behalf_of]
-    org = SystemUser.fetch_by(:name => org_name)
+    org = SystemUser.by_name(org_name)
     @user.work_on_behalf_of(org)
     redirect back
   end
@@ -25,7 +25,7 @@ class User < Sinatra::Application
   get "/user/:user_name" do
     redirect '/login' unless @user
 
-    viewed_user = User.fetch_by(:name => params[:user_name])
+    viewed_user = User.by_name(params[:user_name])
     is_my_profile = (@user == viewed_user)
     marked_down_description = RDiscount.new(viewed_user.description, :smart, :filter_html)
 
@@ -105,7 +105,7 @@ class User < Sinatra::Application
     redirect '/login' unless @user
 
     org_name = params[:org_name]
-    org = Organization.fetch_by(:name => org_name)
+    org = Organization.by_name(org_name)
 
     fail unless org.has_member?(@user)
     redirect "/error/wrong_transfer_amount" unless (StringChecker.is_numeric?(params[:gift_amount]) && Integer(params[:gift_amount]) >= 0)

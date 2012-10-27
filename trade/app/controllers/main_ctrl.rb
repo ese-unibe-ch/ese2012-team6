@@ -7,7 +7,7 @@ class Main < Sinatra::Application
   include Analytics
 
   before do
-    @user = User.fetch_by(:name => session[:name])
+    @user = User.by_name(session[:name])
   end
 
   # Default page handler, shows store page

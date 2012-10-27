@@ -10,7 +10,7 @@ class Organization < Sinatra::Application
   include Storage
 
   before do
-    @user = User.fetch_by(:name => session[:name])
+    @user = User.by_name(session[:name])
   end
 
   # Shows registration form
@@ -67,7 +67,7 @@ class Organization < Sinatra::Application
   get '/organization/:organization_name/edit' do
     redirect '/login' unless @user
 
-    viewed_organization = Organization.fetch_by(:name => params[:organization_name])
+    viewed_organization = Organization.by_name(params[:organization_name])
 
     redirect "/organization/#{viewed_organization.name}" unless @user.is_admin_of?(viewed_organization)
 
@@ -86,8 +86,8 @@ class Organization < Sinatra::Application
   post "/organization/:organization_name/add/:username/" do
     redirect '/login' unless @user
 
-    organization = Organization.fetch_by(:name => params[:organization_name])
-    user         = User.fetch_by(:name => params[:username])
+    organization = Organization.by_name(params[:organization_name])
+    user         = User.by_name(params[:username])
 
     if !user.is_admin_of?(organization) and user.is_member_of?(organization)
       organization.add_admin(user)
@@ -101,8 +101,8 @@ class Organization < Sinatra::Application
   post "/organization/:organization_name/remove/:username/" do
     redirect '/login' unless @user
 
-    organization = Organization.fetch_by(:name => params[:organization_name])
-    user         = User.fetch_by(:name => params[:username])
+    organization = Organization.by_name(params[:organization_name])
+    user         = User.by_name(params[:username])
 
     if user.is_admin_of?(organization)
       organization.remove_admin(user)
@@ -121,14 +121,14 @@ class Organization < Sinatra::Application
 
     viewed_organization = params[:org_name]
     org_desc = params[:org_desc]
-    organization = Organization.fetch_by(:name => viewed_organization)
+    organization = Organization.by_name(viewed_organization)
     organization.description = org_desc
 
     member_put = params[:member]
     member_rem = params[:rem]
 
-    member_put.each {|username| organization.add_member(User.fetch_by(:name => username))} unless member_put.nil?
-    member_rem.each {|username| organization.remove_member(User.fetch_by(:name => username))} unless member_put.nil?
+    member_put.each {|username| organization.add_member(User.by_name(username))} unless member_put.nil?
+    member_rem.each {|username| organization.remove_member(User.by_name(username))} unless member_put.nil?
 
     redirect "/organization/#{organization.name}"
   end
@@ -137,7 +137,7 @@ class Organization < Sinatra::Application
   post '/organization/:name/pic_upload' do
     redirect '/login' unless @user
 
-    viewed_organization = Store::Organization.fetch_by(:name => params[:name])
+    viewed_organization = Store::Organization.by_name(params[:name])
     file = params[:file_upload]
     redirect to("/organization/#{viewed_organization.name}") unless file
 
@@ -154,7 +154,7 @@ class Organization < Sinatra::Application
     redirect '/login' unless @user
 
     org_name = params[:org_name]
-    org = Organization.fetch_by(:name => org_name)
+    org = Organization.by_name(org_name)
 
     fail unless @user.is_admin_of?(org)
     redirect "/error/wrong_transfer_amount" unless (StringChecker.is_numeric?(params[:gift_amount]) && Integer(params[:gift_amount]) >= 0)
