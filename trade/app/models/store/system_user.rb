@@ -10,7 +10,7 @@ module Store
     attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
 
     @@last_id = 0
-    REDUCE_RATE = 0.05
+    CREDIT_REDUCE_RATE = 0.05
 
     def initialize
       @@last_id += 1
@@ -23,15 +23,18 @@ module Store
       self.image_path = "/images/no_image.gif"
     end
 
-    #overrides name setter to avoid scripts.
-    def name=(name)
-      @name = Security::StringChecker.destroy_script(name)
-    end
-
     # fetches SystemUser object, args must contain key :name or :id
     def self.fetch_by(args = {})
       return Store::User.fetch_by(args) if Store::User.exists?(args)
       return Store::Organization.fetch_by(args) if Store::Organization.exists?(args)
+    end
+
+    def self.by_id(id)
+      return self.fetch_by(:id => id.to_i)
+    end
+
+    def self.by_name(name)
+      return self.fetch_by(:name => name)
     end
 
     # return all system users
@@ -49,7 +52,7 @@ module Store
     end
 
     def reduce_credits
-      self.credits -= Integer(self.credits * REDUCE_RATE)
+      self.credits -= Integer(self.credits * CREDIT_REDUCE_RATE)
     end
 
     def propose_item(name, price, description = "", log = true)
@@ -149,6 +152,24 @@ module Store
 
     def is_organization?
       false
+    end
+
+    def send_money(amount)
+      fail unless amount >= 0
+      self.credits += amount
+    end
+
+    # sends a certain amount of money from the user to a certain organization
+    def send_money_to(receiver, amount)
+      fail if receiver.nil?
+      return false unless self.credits >= amount
+
+      self.credits -= amount
+      receiver.send_money(amount)
+
+      fail if self.credits < 0
+
+      return true
     end
   end
 end

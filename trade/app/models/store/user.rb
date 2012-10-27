@@ -8,6 +8,7 @@ require_relative '../store/system_user'
 module Store
   class User < SystemUser
     @@users = RBTree.new
+    # map that maps unique usernames to IDs, for future use
     @@name_id_rel = {}
 
     attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations
@@ -19,6 +20,14 @@ module Store
       self.pwd_salt = ""
       self.on_behalf_of = self
       self.organizations = []
+    end
+
+    def self.by_name(name)
+      return self.fetch_by(:name => name)
+    end
+
+    def self.by_id(id)
+      return self.fetch_by(:id => id)
     end
 
     def self.fetch_by(args = {})
@@ -50,22 +59,14 @@ module Store
       fail if @@users .has_key?(self.id)
     end
 
-    def self.named(name)
+    def self.named(name, options = {})
       user = User.new
       user.name = name
 
       user.pwd_salt = BCrypt::Engine.generate_salt
-      user.pwd_hash = BCrypt::Engine.hash_secret(name, user.pwd_salt)
+      user.pwd_hash = BCrypt::Engine.hash_secret(options[:password] || name, user.pwd_salt)
 
-      return user
-    end
-
-    def self.named_with_pwd(name, password)
-      user = User.new
-      user.name = name
-
-      user.pwd_salt = BCrypt::Engine.generate_salt
-      user.pwd_hash = BCrypt::Engine.hash_secret(password, user.pwd_salt)
+      user.description = options[:description] || ""
 
       return user
     end
@@ -81,18 +82,6 @@ module Store
       self.pwd_hash = BCrypt::Engine.hash_secret(password, self.pwd_salt)
     end
 
-    def self.named_pwd_description(name, password, description)
-      user = User.new
-      user.name = name
-
-      user.pwd_salt = BCrypt::Engine.generate_salt
-      user.pwd_hash = BCrypt::Engine.hash_secret(password, user.pwd_salt)
-
-      user.description = description
-
-      return user
-    end
-
     # log in the user
     def login
       Analytics::UserLoginActivity.with_username(name).log
@@ -102,22 +91,11 @@ module Store
       Analytics::UserLogoutActivity.with_username(name).log
     end
 
-    def send_money(amount)
-      fail unless amount >= 0
-      self.credits += amount
-    end
-
     # sends a certain amount of money from the user to a certain organization
     def send_money_to(organization, amount)
       fail if organization.nil?
-      return false unless self.credits >= amount
-
-      self.credits -= amount
-      organization.send_money(amount)
-
-      fail if self.credits < 0
-
-      return true
+      fail unless self.is_member_of?(organization)
+      super(organization, amount)
     end
 
     # tell user to work on behalf of an organization
@@ -158,6 +136,10 @@ module Store
     # returns whether user is an admin of an organization
     def is_admin_of?(organization)
       return organization.has_admin?(self)
+    end
+
+    def take_item_snapshot
+      self.open_item_page_time = Time.now
     end
   end
 end

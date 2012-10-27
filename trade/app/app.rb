@@ -17,7 +17,7 @@ require_relative('controllers/activity_logger_ctrl')
 require_relative('controllers/organization_ctrl')
 
 class App < Sinatra::Base
-  CREDIT_REDUCE_TIME = 3
+  CREDIT_REDUCE_TIME = 3*60 # 3 Minutes
 
   use Rack::Flash
 
@@ -49,11 +49,11 @@ class App < Sinatra::Base
     (bender = umbrella_corp.propose_item("Bender", 110)).activate
 
     #add default organization
-   (organization_Mordor_inc = Store::Organization.named("Mordor Inc.")).save
-    organization_Mordor_inc.add_member(user_ese)
-    organization_Mordor_inc.add_member(peter_griffin)
-    organization_Mordor_inc.add_admin(user_ese)
-    organization_Mordor_inc.send_money(200)
+   (organization_mordor_inc = Store::Organization.named("Mordor Inc.")).save
+    organization_mordor_inc.add_member(user_ese)
+    organization_mordor_inc.add_member(peter_griffin)
+    organization_mordor_inc.add_admin(user_ese)
+    organization_mordor_inc.send_money(200)
 
     @last_refresh = Time.now
   end

@@ -32,5 +32,9 @@ module Security
       string=string.gsub(/\A(\s)*/,"")
       string.gsub(/(\s)*\z/,"")
     end
+
+    def self.is_numeric?(string)
+      return !(!!(string =~ /^[-+]?[1-9]([0-9]*)?$/)).nil?
+    end
   end
 end

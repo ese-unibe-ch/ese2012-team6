@@ -3,9 +3,11 @@ require_relative('../models/store/user')
 require_relative('../models/store/item')
 
 class Main < Sinatra::Application
+  include Store
+  include Analytics
 
   before do
-    @user = Store::User.fetch_by(:name => session[:name])
+    @user = User.fetch_by(:name => session[:name])
   end
 
   # Default page handler, shows store page
@@ -14,7 +16,7 @@ class Main < Sinatra::Application
 
     @user.open_item_page_time = Time.now
 
-    most_recent_purchases = Analytics::ActivityLogger.get_most_recent_purchases(10)
+    most_recent_purchases = ActivityLogger.get_most_recent_purchases(10)
 
     haml :store, :locals => { :users => Store::User.all,
                               :most_recent_purchases => most_recent_purchases
@@ -37,8 +39,10 @@ class Main < Sinatra::Application
         error_message = "Item does not belong to anybody"
       when "not_enough_credits"
         error_message = "Buyer does not have enough credits"
+        should_refresh = true
       when "buy_inactive_item"
         error_message = "Trying to buy inactive item"
+        should_refresh = true
       when "seller_not_own_item"
         error_message = "Seller does not own item to buy"
       when "user_no_exists"

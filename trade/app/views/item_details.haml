@@ -1,14 +1,14 @@
 %h2
   Item Details
 %div.action_buttons.float_right
-  -if @user.can_activate?(item) or @user.name == "admin"
+  -if @user.can_activate?(item)
     -if item.active?
-      %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
+      %form{:action => "/item/#{item.id}/update_status?activate=false", :method => "POST"}
         %input.styled-button{:type => "submit", :value => "Deactivate", :text => "deacBtn"}
     -else
-      %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
+      %form{:action => "/item/#{item.id}/update_status?activate=true", :method => "POST"}
         %input.styled-button{:type => "submit", :value => "Activate", :text => "deacBtn"}
-  -if @user.can_edit?(item) or @user.name == "admin"
+  -if @user.can_edit?(item)
     %a.styled-button{:href => "/item/#{item.id}/edit"} Edit
   -if @user.can_delete?(item)
     %form{:action => "/item/#{item.id}", :method => "POST"}

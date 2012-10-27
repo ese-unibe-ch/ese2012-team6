@@ -77,10 +77,10 @@
             %div.action_buttons
               -if @user.can_activate?(item)
                 -if item.active?
-                  %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
+                  %form{:action => "/item/#{item.id}/update_status?activate=false", :method => "POST"}
                     %input.styled-button.small.float_left{:type => "submit", :value => "Deactivate"}
                 -else
-                  %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
+                  %form{:action => "/item/#{item.id}/update_status?activate=true", :method => "POST"}
                     %input.styled-button.small{:type => "submit", :value => "Activate"}
               -if @user.can_edit?(item)
                 %a.styled-button.small{:href => "/item/#{item.id}/edit"} Edit
