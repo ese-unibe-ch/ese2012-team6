@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #superclass for user and organization
 require 'bcrypt'
 require 'rbtree'
@@ -11,6 +12,7 @@ module Store
 
     @@last_id = 0
     CREDIT_REDUCE_RATE = 0.05
+	SELL_BONUS = 0.05
 
     def initialize
       @@last_id += 1
@@ -113,7 +115,7 @@ module Store
       end
 
       seller.release_item(item)
-      seller.credits += item.price + item.price * SELL_BONUS
+      seller.credits += item.price + Integer(item.price * SELL_BONUS)
 
       item.deactivate
 
