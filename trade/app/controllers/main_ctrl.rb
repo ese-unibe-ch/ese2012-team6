@@ -55,6 +55,8 @@ class Main < Sinatra::Application
         error_message = "Passwords do not match. Please try again"
       when "no_user_name"
         error_message = "You must choose a user name"
+      when "no_email"
+        error_message = "You must enter a valid e-mail address"
       when "pwd_unsafe"
         error_message = "Your password is unsafe. It must be at least 8 characters long and contain
                         at least one upper case letter and at least one number"

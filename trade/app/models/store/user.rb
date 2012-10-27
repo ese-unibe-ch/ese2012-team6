@@ -18,6 +18,7 @@ module Store
       self.credits = 100
       self.pwd_hash = ""
       self.pwd_salt = ""
+      self.email = ""
       self.on_behalf_of = self
       self.organizations = []
     end
@@ -67,6 +68,7 @@ module Store
       user.pwd_hash = BCrypt::Engine.hash_secret(options[:password] || name, user.pwd_salt)
 
       user.description = options[:description] || ""
+	  user.email = options[:email] || ""
 
       return user
     end
