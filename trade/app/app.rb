@@ -18,7 +18,6 @@ require_relative('controllers/organization_ctrl')
 
 class App < Sinatra::Base
   CREDIT_REDUCE_TIME = 3*60 # 3 Minutes
-
   use Rack::Flash
 
   # Controllers
@@ -30,16 +29,17 @@ class App < Sinatra::Base
   use ActivityLogger
   use Organization
 
+  include Store
   enable :sessions
   set :public_folder, 'app/public'
 
   configure :development do
     #add default users
-    (user_admin = Store::User.named("admin")).save
-    (user_ese = Store::User.named("ese")).save
-    (user_ese2 = Store::User.named("ese2")).save
-    (umbrella_corp = Store::User.named("umbrellacorp")).save
-    (peter_griffin = Store::User.named("petergriffin")).save
+    (user_admin = User.named("admin")).save
+    (user_ese = User.named("ese")).save
+    (user_ese2 = User.named("ese2")).save
+    (umbrella_corp = User.named("umbrellacorp")).save
+    (peter_griffin = User.named("petergriffin")).save
 
     #add default items
     (liver = user_ese.propose_item("Liver", 40)).activate
@@ -49,7 +49,7 @@ class App < Sinatra::Base
     (bender = umbrella_corp.propose_item("Bender", 110)).activate
 
     #add default organization
-   (organization_mordor_inc = Store::Organization.named("Mordor Inc.")).save
+   (organization_mordor_inc = Organization.named("Mordor Inc.")).save
     organization_mordor_inc.add_member(user_ese)
     organization_mordor_inc.add_member(peter_griffin)
     organization_mordor_inc.add_admin(user_ese)
@@ -62,7 +62,7 @@ class App < Sinatra::Base
     Thread.new do
       loop do
         if Time.now - @last_refresh >= CREDIT_REDUCE_TIME
-          Store::SystemUser.reduce_credits
+          SystemUser.reduce_credits
           @last_refresh = Time.now
         end
         sleep 1
