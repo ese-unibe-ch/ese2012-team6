@@ -1,10 +1,11 @@
-#superclass for user and organization
 require 'bcrypt'
 require 'rbtree'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 
+# superclass for user and organization
+# responsible for all actions concerning user and organization objects
 module Store
   class SystemUser
     attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
@@ -30,23 +31,27 @@ module Store
       return Store::Organization.fetch_by(args) if Store::Organization.exists?(args)
     end
 
+    # returns the system user found by id
     def self.by_id(id)
       return self.fetch_by(:id => id.to_i)
     end
 
+    # returns the system user found by name
     def self.by_name(name)
       return self.fetch_by(:name => name)
     end
 
-    # return all system users
+    # returns all system users
     def self.all
       return Store::User.all.concat(Store::Organization.all)
     end
 
+    # returns true if the system includes a certain user or organization object
     def self.exists?(args = {})
       return Store::User.exists?(args) || Store::Organization.exists?(args)
     end
 
+    # all credits get reduced in a special time interval
     def self.reduce_credits
       all_users = self.all
       all_users.each{|user| user.reduce_credits }
@@ -59,9 +64,7 @@ module Store
     def propose_item(name, price, description = "", log = true)
       item = Item.named_priced_with_owner(name, price, self, description)
       item.save
-
       self.attach_item(item)
-
       Analytics::ItemAddActivity.with_creator_item(self, item).log if log
 
       return item
@@ -69,7 +72,6 @@ module Store
 
     def get_active_items
       active_items = self.items.select {|i| i.active?}
-
       return active_items
     end
 
