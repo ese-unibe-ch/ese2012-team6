@@ -13,6 +13,12 @@ module Store
     CREDIT_REDUCE_RATE = 0.05
 	  SELL_BONUS = 0.05
 
+    def self.clear_all
+      @@last_id = 0
+      User.clear_all
+      Organization.clear_all
+    end
+
     def initialize
       @@last_id += 1
       self.id = @@last_id
@@ -24,10 +30,20 @@ module Store
       self.image_path = "/images/no_image.gif"
     end
 
+    def self.named(name, options = {})
+      system_user = SystemUser.new
+
+      system_user.name = name
+      system_user.description = options[:description] || ""
+      system_user.credits = options[:credits] || 0
+
+      return system_user
+    end
+
     # fetches SystemUser object, args must contain key :name or :id
     def self.fetch_by(args = {})
-      return Store::User.fetch_by(args) if Store::User.exists?(args)
-      return Store::Organization.fetch_by(args) if Store::Organization.exists?(args)
+      return User.fetch_by(args) if User.exists?(args)
+      return Organization.fetch_by(args) if Organization.exists?(args)
     end
 
     def self.by_id(id)
@@ -40,11 +56,11 @@ module Store
 
     # return all system users
     def self.all
-      return Store::User.all.concat(Store::Organization.all)
+      return User.all.concat(Organization.all)
     end
 
     def self.exists?(args = {})
-      return Store::User.exists?(args) || Store::Organization.exists?(args)
+      return User.exists?(args) || Organization.exists?(args)
     end
 
     def self.reduce_credits
@@ -86,7 +102,7 @@ module Store
     end
 
     def delete_item(item_id, log = true)
-      item = Store::Item.by_id(item_id)
+      item = Item.by_id(item_id)
       fail if item.nil?
       fail unless self.can_delete?(item)
 

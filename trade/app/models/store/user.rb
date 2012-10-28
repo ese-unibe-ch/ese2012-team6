@@ -23,6 +23,11 @@ module Store
       self.organizations = []
     end
 
+    def self.clear_all
+      @@users.clear
+      @@name_id_rel.clear
+    end
+
     def self.by_name(name)
       return self.fetch_by(:name => name)
     end
