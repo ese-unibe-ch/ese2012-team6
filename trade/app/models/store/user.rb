@@ -155,10 +155,5 @@ module Store
     def is_admin_of?(organization)
       return organization.has_admin?(self)
     end
-
-    # save time for item page
-    def take_item_snapshot
-      self.open_item_page_time = Time.now
-    end
   end
 end

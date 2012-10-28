@@ -198,4 +198,39 @@ class SystemUserTest < Test::Unit::TestCase
     assert_equal(50, user1.credits)
     assert_equal(150, user2.credits)
   end
+
+  def test_notice_item_change_fail
+    seller = Store::User.named("seller")
+    buyer = Store::User.named("buyer")
+    item = seller.propose_item("item", 2);
+
+    buyer.take_item_snapshot
+
+    # change item while buyer is not looking
+    item.deactivate
+    item.update("newName", 3, "aölsdfjaldf", false)
+    item.activate
+
+    assert_equal(false, buyer.knows_item_properties?(item))
+    assert_equal([false, "item_changed_details"] , buyer.buy_item(item, false))
+  end
+
+  def test_notice_item_change_success
+    seller = Store::User.named("seller")
+    buyer = Store::User.named("buyer")
+    item = seller.propose_item("item", 2);
+
+    buyer.take_item_snapshot
+
+    # change item while buyer is not looking
+    item.deactivate
+    item.update("newName", 3, "aölsdfjaldf", false)
+    item.activate
+
+    # buyer looks at item
+    buyer.take_item_snapshot
+
+    assert_equal(true, buyer.knows_item_properties?(item))
+    assert_equal(true , buyer.buy_item(item, false)[0])
+  end
 end

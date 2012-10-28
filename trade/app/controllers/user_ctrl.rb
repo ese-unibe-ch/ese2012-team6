@@ -68,8 +68,7 @@ class User < Sinatra::Application
     item_id = params[:item_id].to_i
     item = Item.by_id(item_id)
 
-    changed_item_details =  @user.open_item_page_time < item.edit_time
-    redirect url("/error/item_changed_details") if changed_item_details
+    redirect url("/error/item_changed_details") unless @user.knows_item_properties?(item)
 
     buy_success, buy_message = @user.on_behalf_of.buy_item(item)
 
@@ -101,6 +100,7 @@ class User < Sinatra::Application
     redirect to("/user/#{params[:name]}")
   end
 
+  # handles credit transfer request from user to organization
   post '/user/send_money/:org_name' do
     redirect '/login' unless @user
 

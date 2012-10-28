@@ -2,6 +2,7 @@ require 'haml'
 require_relative('../models/store/user')
 require_relative('../models/store/item')
 
+# Handles all requests
 class Main < Sinatra::Application
   include Store
   include Analytics
@@ -14,7 +15,7 @@ class Main < Sinatra::Application
   get "/" do
     redirect '/login' unless @user
 
-    @user.open_item_page_time = Time.now
+    @user.take_item_snapshot
 
     most_recent_purchases = ActivityLogger.get_most_recent_purchases(10)
 

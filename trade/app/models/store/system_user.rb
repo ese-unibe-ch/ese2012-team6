@@ -138,6 +138,8 @@ module Store
       elsif !seller.items.include?(item)
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "seller_not_own_item" #Seller does not own item to buy
+      elsif !self.knows_item_properties?(item)
+        return false, "item_changed_details" #Buyer is not aware of latest changes to item's properties
       end
 
       seller.release_item(item)
@@ -204,6 +206,16 @@ module Store
     def send_money(amount)
       fail unless amount >= 0
       self.credits += amount
+    end
+
+    # save time for item page
+    def take_item_snapshot
+      self.open_item_page_time = Time.now
+    end
+
+    # returns true when user is aware of latest changes to item, false otherwise
+    def knows_item_properties?(item)
+      return !(self.open_item_page_time < item.edit_time)
     end
   end
 end
