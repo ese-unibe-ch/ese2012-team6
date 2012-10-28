@@ -57,10 +57,12 @@ module Store
       all_users.each{|user| user.reduce_credits }
     end
 
+    # reduce credit of each user
     def reduce_credits
       self.credits -= Integer(self.credits * CREDIT_REDUCE_RATE)
     end
 
+    # propose a new item
     def propose_item(name, price, description = "", log = true)
       item = Item.named_priced_with_owner(name, price, self, description)
       item.save
@@ -70,6 +72,7 @@ module Store
       return item
     end
 
+    # returns all active items of an user
     def get_active_items
       active_items = self.items.select {|i| i.active?}
       return active_items
@@ -87,6 +90,7 @@ module Store
       end
     end
 
+    # delete chosen item
     def delete_item(item_id, log = true)
       item = Store::Item.by_id(item_id)
       fail if item.nil?
