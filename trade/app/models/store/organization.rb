@@ -14,6 +14,16 @@ module Store
       self.admins = []
     end
 
+    def self.named(name, options = {})
+      organization = Organization.new
+      organization.name = name
+      organization.description = options[:description] || ""
+      organization.add_admin(options[:admin]) if options[:admin]
+      organization.add_member(options[:admin]) if options[:admin]
+
+      return organization
+    end
+
     def self.fetch_by(args = {})
       return  @@organizations[args[:id]] unless args[:id].nil?
       return  @@organizations[@@name_id_rel[args[:name]]] unless (args[:name].nil? || @@name_id_rel[args[:name]].nil?)
@@ -34,16 +44,6 @@ module Store
     def add_member(member)
       member.enter_organization(self)
       members.push(member)
-    end
-
-    def self.named(name, options = {})
-      organization = Organization.new
-      organization.name = name
-      organization.description = options[:description] || ""
-      organization.add_admin(options[:admin]) if options[:admin]
-      organization.add_member(options[:admin]) if options[:admin]
-
-      return organization
     end
 
     def remove_member(member)
