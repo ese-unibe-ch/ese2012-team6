@@ -68,7 +68,7 @@ module Store
       user.pwd_hash = BCrypt::Engine.hash_secret(options[:password] || name, user.pwd_salt)
 
       user.description = options[:description] || ""
-	  user.email = options[:email] || ""
+	    user.email = options[:email] || ""
 
       return user
     end

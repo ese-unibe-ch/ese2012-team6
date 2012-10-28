@@ -5,7 +5,6 @@ require_relative '../app/models/store/item'
 require_relative '../app/models/store/user'
 require_relative '../app/models/store/organization'
 require_relative '../app/models/security/string_checker'
-require_relative '../app/models/store/system_user'
 
 class UserTest < Test::Unit::TestCase
   def test_check_organization_name
