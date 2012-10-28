@@ -1,4 +1,6 @@
 module Analytics
+
+  # a module containing a predefined set of Activity Types
   module ActivityType
     if not defined? ITEM_BUY
       ITEM_BUY = "ItemBuy"
@@ -12,6 +14,7 @@ module Analytics
     end
   end
 
+  # Provides the skeleton for all derived activities, stores information about when it was created or what type this activity is made of
   class Activity
     attr_accessor :id, :type, :timestamp
     @@last_id = 0
@@ -23,15 +26,18 @@ module Analytics
       self.timestamp = Time.now
     end
 
+    # Returns a string stating what this activity has stored
     def what_happened?
       return "Nothing"
     end
 
+    # Saves this activity to a location using the ActivityLogger class
     def log
       ActivityLogger.log(self)
     end
   end
 
+  # Activity that provides the skeleton for all activities concerning items, and actions on or from items
   class ItemActivity < Activity
     attr_accessor :actor_name, :item_id, :item_name
 
@@ -47,6 +53,7 @@ module Analytics
     end
   end
 
+  # Activity that provides the skeleton for all activities concerning users, and actions on or from users
   class UserActivity < Activity
     attr_accessor :user_name
 
@@ -60,6 +67,7 @@ module Analytics
     end
   end
 
+  # Activity that stores information about buy actions
   class ItemBuyActivity < ItemActivity
     attr_accessor :price, :success
 
@@ -70,6 +78,7 @@ module Analytics
       self.success = false
     end
 
+    # creates a new ItemBuyActivity, with a buyer, item, and whether the buy process was successful
     def self.with_buyer_item_price_success(buyer, item, success = true)
       buy_activity = ItemBuyActivity.new
 
@@ -91,6 +100,7 @@ module Analytics
     end
   end
 
+  # Activity that stores information about item edit actions
   class ItemEditActivity < ItemActivity
     attr_accessor :old_values, :new_values
 
@@ -101,6 +111,7 @@ module Analytics
       self.new_values = {}
     end
 
+    # creates a new ItemEditActivity, with an editor, item, and both old and new edit values
     def self.with_editor_item_old_new_vals(editor, item, old_vals, new_vals)
       edit_activity = ItemEditActivity.new
 
@@ -119,7 +130,7 @@ module Analytics
     end
   end
 
-
+  # Activity that stores information about Item creation
   class ItemAddActivity < ItemActivity
 
     def initialize
@@ -127,6 +138,7 @@ module Analytics
       self.type = ActivityType::ITEM_ADD
     end
 
+    # creates a new ItemAddActivity with the creator of the created item and the item itself
     def self.with_creator_item(creator, item)
       add_activity = ItemAddActivity.new
 
@@ -142,6 +154,7 @@ module Analytics
     end
   end
 
+  # Activity that stores information about the status change of an item
   class ItemStatusChangeActivity < ItemActivity
     attr_accessor :new_status
 
@@ -151,6 +164,7 @@ module Analytics
       self.new_status = nil
     end
 
+    # Creates new ItemStatusChangeActivity with the user that initiated the status change, the item itself and the new status of the item
     def self.with_editor_item_status(editor, item, new_status)
       status_change_activity = ItemStatusChangeActivity.new
 
@@ -168,12 +182,14 @@ module Analytics
     end
   end
 
+  # Activity that stores information about item deletion
   class ItemDeleteActivity < ItemActivity
     def initialize
       super
       self.type = ActivityType::ITEM_DELETE
     end
 
+    # Creates new ItemDeleteActivity with the remover of the item, and the item itself
     def self.with_remover_item(remover, item)
       delete_activity = ItemDeleteActivity.new
 
@@ -189,12 +205,14 @@ module Analytics
     end
   end
 
+  # Activity that stores information about user login
   class UserLoginActivity < UserActivity
     def initialize
       super
       self.type = ActivityType::USER_LOGIN
     end
 
+    # Creates new UserLoginActivity with the newly logged in user
     def self.with_username(user_name)
       login_act = UserLoginActivity.new
       login_act.user_name = user_name
@@ -206,12 +224,14 @@ module Analytics
     end
   end
 
+  # Activity that stores information about user logout
   class UserLogoutActivity < UserActivity
     def initialize
       super
       self.type = ActivityType::USER_LOGOUT
     end
 
+    # Creates new UserLoginActivity with the newly logged out user
     def self.with_username(user_name)
       logout_act = UserLogoutActivity.new
       logout_act.user_name = user_name
