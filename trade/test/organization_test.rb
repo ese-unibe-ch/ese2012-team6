@@ -71,6 +71,4 @@ class UserTest < Test::Unit::TestCase
 
     assert(organization.credits == amount)
   end
-
-  # Only add tests that really test functionality of Oranization, not SystemUser!
 end
