@@ -5,11 +5,12 @@ require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../store/system_user'
 
+# user class inherits the super class system_user
+# is responsible for user's handling
 module Store
   class User < SystemUser
     @@users = RBTree.new
-    # map that maps unique usernames to IDs, for future use
-    @@name_id_rel = {}
+    @@name_id_rel = {}  # map that maps unique user names to IDs, for future use
 
     attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email
 
@@ -23,29 +24,35 @@ module Store
       self.organizations = []
     end
 
+    # fetches the user object by its name
     def self.by_name(name)
       return self.fetch_by(:name => name)
     end
 
+    # fetches the user object by its id
     def self.by_id(id)
       return self.fetch_by(:id => id)
     end
 
+    # returns the user object which matches with the id or name
     def self.fetch_by(args = {})
       return  @@users[args[:id]] unless args[:id].nil?
       return  @@users[@@name_id_rel[args[:name]]] unless (args[:name].nil? || @@name_id_rel[args[:name]].nil?)
       return nil
     end
 
+    # returns true if a user object exists with the id or name
     def self.exists?(args = {})
       return @@users .has_key?(args[:id]) unless args[:id].nil?
       return @@name_id_rel.has_key?(args[:name])
     end
 
+    # returns all users in the system
     def self.all
       return @@users.values.dup
     end
 
+    # saves an user object to the system
     def save
       fail if @@users .has_key?(self.id)
       @@users[self.id] = self
@@ -53,6 +60,7 @@ module Store
       fail unless @@users .has_key?(self.id)
     end
 
+    # deletes an user object from the system
     def delete
       fail unless  @@users .has_key?(self.id)
       @@users .delete(self.id)
@@ -60,6 +68,7 @@ module Store
       fail if @@users .has_key?(self.id)
     end
 
+    # creates a user object with typed attributes
     def self.named(name, options = {})
       user = User.new
       user.name = name
@@ -88,6 +97,7 @@ module Store
     def login
       Analytics::UserLoginActivity.with_username(name).log
     end
+
     # log out the user
     def logout
       Analytics::UserLogoutActivity.with_username(name).log
@@ -140,6 +150,7 @@ module Store
       return organization.has_admin?(self)
     end
 
+    # save time for item page
     def take_item_snapshot
       self.open_item_page_time = Time.now
     end
