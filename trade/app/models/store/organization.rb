@@ -14,13 +14,18 @@ module Store
       self.admins = []
     end
 
+    def self.clear_all
+      @@organizations.clear
+      @@name_id_rel.clear
+    end
+
     def self.named(name, options = {})
       organization = Organization.new
       organization.name = name
       organization.description = options[:description] || ""
       organization.add_admin(options[:admin]) if options[:admin]
       organization.add_member(options[:admin]) if options[:admin]
-
+      organization.credits = options[:credits] if options[:credits]
       return organization
     end
 

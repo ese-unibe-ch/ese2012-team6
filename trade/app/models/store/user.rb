@@ -10,7 +10,8 @@ require_relative '../store/system_user'
 module Store
   class User < SystemUser
     @@users = RBTree.new
-    @@name_id_rel = {}  # map that maps unique user names to IDs, for future use
+    # map that maps unique usernames to IDs, for future use
+    @@name_id_rel = {}
 
     attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email
 
@@ -24,7 +25,13 @@ module Store
       self.organizations = []
     end
 
-    # fetches the user object by its name
+	# clears all users from system
+    def self.clear_all
+      @@users.clear
+      @@name_id_rel.clear
+    end
+
+	# fetches the user object by its name
     def self.by_name(name)
       return self.fetch_by(:name => name)
     end

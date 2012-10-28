@@ -1,21 +1,97 @@
 require 'test/unit'
 require 'rubygems'
 require 'require_relative'
-require_relative '../app/models/store/item'
 require_relative '../app/models/store/user'
-require_relative '../app/models/security/string_checker'
+require_relative '../app/models/store/system_user'
+require_relative '../app/models/store/organization'
+require_relative '../app/models/store/item'
 
-class UserTest < Test::Unit::TestCase
+class SystemUserTest < Test::Unit::TestCase
+  include Store
+
+  def teardown
+    SystemUser.clear_all
+  end
+
+  def test_creation_default
+    user = SystemUser.named("Hans")
+    assert_equal(0, user.credits)
+    assert_equal("", user.description)
+    assert_equal(0, user.items.size)
+    assert_equal("/images/no_image.gif", user.image_path)
+  end
+
+  def test_creation_with_credits
+    user = SystemUser.named("Hans", :credits => 100)
+    assert_equal(100, user.credits)
+  end
+
+  def test_creation_with_description
+    user = SystemUser.named("Hans", :description => "New description")
+    assert_equal("New description", user.description)
+  end
+
   def test_user_proposes_item
-    user = Store::User.named("User")
+    user = SystemUser.named("User")
     item = user.propose_item("TestItem", 100)
 
     assert_equal(false, item.active, "Newly created items must be inactive!")
     assert_equal(user, item.owner , "Item with no assigned owner created!")
   end
 
+  def test_fetch_by_name
+    (user = User.named("User1")).save
+    (org = Organization.named("Org1")).save
+
+    assert_equal(user, SystemUser.fetch_by(:name => "User1"))
+    assert_equal(org, SystemUser.fetch_by(:name => "Org1"))
+  end
+
+  def test_fetch_by_id
+    (user = User.named("User1")).save
+    (org = Organization.named("Org1")).save
+
+    assert_equal(user, SystemUser.fetch_by(:id => 1))
+    assert_equal(org, SystemUser.fetch_by(:id => 2))
+  end
+
+  def test_fetch_all
+    (user = User.named("User1")).save
+    (org = Organization.named("Org1")).save
+
+    assert_equal([user, org], SystemUser.all)
+  end
+
+  def test_by_name_and_id
+    (user = User.named("User1")).save
+    (org = Organization.named("Org1")).save
+
+    assert_equal(user, SystemUser.by_name("User1"))
+    assert_equal(org, SystemUser.by_name("Org1"))
+  end
+
+  def test_exists_by_name
+    (user = User.named("User1")).save
+    (org = Organization.named("Org1")).save
+
+    assert_equal(true, SystemUser.exists?(:name => "User1"))
+    assert_equal(true, SystemUser.exists?(:name => "Org1"))
+    assert_equal(false, SystemUser.exists?(:name => "User2"))
+    assert_equal(false, SystemUser.exists?(:name => "Org2"))
+  end
+
+  def test_exists_by_id
+    (user = User.named("User1")).save
+    (org = Organization.named("Org1")).save
+
+    assert_equal(true, SystemUser.exists?(:id => 1))
+    assert_equal(true, SystemUser.exists?(:id => 2))
+    assert_equal(false, SystemUser.exists?(:id => 3))
+    assert_equal(false, SystemUser.exists?(:id => 4))
+  end
+
   def test_user_active_items_list
-    user = Store::User.named("User")
+    user = SystemUser.named("User")
 
     user.propose_item("TestItem1", 1)
     item2 = user.propose_item("TestItem2", 2)
@@ -33,8 +109,8 @@ class UserTest < Test::Unit::TestCase
   end
 
   def test_user_buy_success
-    buyer = Store::User.named("Buyer")
-    seller = Store::User.named("Seller")
+    buyer = SystemUser.named("Buyer", :credits => 100)
+    seller = SystemUser.named("Seller", :credits => 100)
 
     item = seller.propose_item("piece of crap", 100)
     item.activate
@@ -53,8 +129,8 @@ class UserTest < Test::Unit::TestCase
   end
 
   def test_user_buy_inactive_item
-    buyer = Store::User.named("Buyer")
-    seller = Store::User.named("Seller")
+    buyer = SystemUser.named("Buyer", :credits => 100)
+    seller = SystemUser.named("Seller", :credits => 100)
 
     item = seller.propose_item("piece of crap", 100)
 
@@ -74,8 +150,8 @@ class UserTest < Test::Unit::TestCase
   end
 
   def test_user_buy_too_expensive
-    buyer = Store::User.named("Buyer")
-    seller = Store::User.named("Seller")
+    buyer = SystemUser.named("Buyer", :credits => 100)
+    seller = SystemUser.named("Seller", :credits => 100)
 
     item = seller.propose_item("big piece of crap", 9001) #item price is over 9000!
     item.activate
@@ -93,5 +169,33 @@ class UserTest < Test::Unit::TestCase
     assert(seller.items.include?(item), "Seller does not own the item it wants to sell")
     assert(!buyer.items.include?(item), "Buyer bought the item when it should not have been able to do so")
     assert_equal(seller, item.owner, "Item has the wrong owner")
+  end
+
+  def test_reduce_credits
+    user = SystemUser.named("User", :credits => 200)
+
+    user.reduce_credits
+
+    assert(200 - Integer(SystemUser::CREDIT_REDUCE_RATE * 200), user.credits)
+  end
+
+  def test_reduce_credits_all
+    (user = User.named("User1")).save
+    (org = Organization.named("Org1", :credits => 200)).save
+
+    SystemUser.reduce_credits
+
+    assert_equal(100 - Integer(SystemUser::CREDIT_REDUCE_RATE * 100), user.credits)
+    assert_equal(200 - Integer(SystemUser::CREDIT_REDUCE_RATE * 200), org.credits)
+  end
+
+  def test_send_money_to
+    user1 = SystemUser.named("User1", :credits => 100)
+    user2 = SystemUser.named("User2", :credits => 100)
+
+    user1.send_money_to(user2, 50)
+
+    assert_equal(50, user1.credits)
+    assert_equal(150, user2.credits)
   end
 end
