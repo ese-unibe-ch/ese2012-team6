@@ -10,8 +10,7 @@ require_relative '../store/system_user'
 module Store
   class User < SystemUser
     @@users = RBTree.new
-    # map that maps unique usernames to IDs, for future use
-    @@name_id_rel = {}
+    @@name_id_rel = {}  # map that maps unique user names to IDs, for future use
 
     attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email
 

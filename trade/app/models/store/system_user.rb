@@ -14,12 +14,6 @@ module Store
     CREDIT_REDUCE_RATE = 0.05
 	  SELL_BONUS = 0.05
 
-    def self.clear_all
-      @@last_id = 0
-      User.clear_all
-      Organization.clear_all
-    end
-
     def initialize
       @@last_id += 1
       self.id = @@last_id
@@ -31,6 +25,7 @@ module Store
       self.image_path = "/images/no_image.gif"
     end
 
+    # creates a new system user object
     def self.named(name, options = {})
       system_user = SystemUser.new
 
@@ -41,7 +36,14 @@ module Store
       return system_user
     end
 
-    # fetches SystemUser object, args must contain key :name or :id
+    # deletes all users and organizations from the system
+    def self.clear_all
+      @@last_id = 0
+      User.clear_all
+      Organization.clear_all
+    end
+
+    # fetches system user object, args must contain key :name or :id
     def self.fetch_by(args = {})
       return User.fetch_by(args) if User.exists?(args)
       return Organization.fetch_by(args) if Organization.exists?(args)
@@ -94,11 +96,13 @@ module Store
       return active_items
     end
 
+    # attaches a newly created or bought item
     def attach_item(item)
       self.items << item
       item.owner = self
     end
 
+    # deletes the owner of an item to release it
     def release_item(item)
       if self.items.include?(item)
         item.owner = nil
@@ -106,7 +110,7 @@ module Store
       end
     end
 
-    # delete chosen item
+    # deletes chosen item
     def delete_item(item_id, log = true)
       item = Item.by_id(item_id)
       fail if item.nil?
@@ -118,6 +122,7 @@ module Store
       Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
     end
 
+    # handles the shop of an item
     def buy_item(item, log = true)
       seller = item.owner
 
@@ -150,35 +155,36 @@ module Store
       return true, "Transaction successful"
     end
 
+    # returns true if an user is allowed to edit
     def can_edit?(item)
       return item.editable_by?(self)
     end
 
     alias :can_delete? :can_edit?
 
+    # returns true if user is allowed to buy
     def can_buy?(item)
       return ((item.owner != self.on_behalf_of) && item.active?)
     end
 
+    # returns true if user is allowed to activate an item
     def can_activate?(item)
       return item.activatable_by?(self)
     end
 
+    # returns the system user as a string
     def to_s
       return "#{self.name}, #{self.credits}"
     end
 
+    # finds an image by id and path
     def self.id_image_to_filename(id, path)
       "#{id}_#{path}"
     end
 
+    # returns false when a system user object calls this method
     def is_organization?
       false
-    end
-
-    def send_money(amount)
-      fail unless amount >= 0
-      self.credits += amount
     end
 
     # sends a certain amount of money from the user to a certain organization
@@ -192,6 +198,12 @@ module Store
       fail if self.credits < 0
 
       return true
+    end
+
+    # making the transfer of credit
+    def send_money(amount)
+      fail unless amount >= 0
+      self.credits += amount
     end
   end
 end

@@ -1,6 +1,8 @@
 require 'rbtree'
 require_relative '../store/system_user'
 
+# organization class inherits the super class system_user
+# is responsible for handling with organizations
 module Store
   class Organization < SystemUser
     attr_accessor :members, :admins
@@ -14,11 +16,13 @@ module Store
       self.admins = []
     end
 
+    # deletes all organizations in the system
     def self.clear_all
       @@organizations.clear
       @@name_id_rel.clear
     end
 
+    # creates a new organization with certain options
     def self.named(name, options = {})
       organization = Organization.new
       organization.name = name
@@ -29,6 +33,7 @@ module Store
       return organization
     end
 
+    # fetches the organization object by its name or id
     def self.fetch_by(args = {})
       return  @@organizations[args[:id]] unless args[:id].nil?
       return  @@organizations[@@name_id_rel[args[:name]]] unless (args[:name].nil? || @@name_id_rel[args[:name]].nil?)
@@ -36,38 +41,45 @@ module Store
       return nil
     end
 
+    # returns true if an organization object exists with the id or name
     def self.exists?(args = {})
       return @@organizations .has_key?(args[:id]) unless args[:id].nil?
       return @@name_id_rel.has_key?(args[:name])
     end
 
+    # returns all saved organizations
     def self.all
       return  @@organizations.values.dup
     end
 
-    # @param [User] member
+    # adds a member to an organization
     def add_member(member)
       member.enter_organization(self)
       members.push(member)
     end
 
+    # removes a member from an organization
     def remove_member(member)
       members.delete(member)
       member.leave_organization(self)
     end
 
+    # adds an admin to the organization
     def add_admin(member)
       admins.push(member)
     end
 
+    # removes the admin from the organization
     def remove_admin(member)
       admins.delete(member)
     end
 
+    # returns always true if called with an organization object
     def is_organization?
       true
     end
 
+    # saves the organization to the system
     def save
       fail if  @@organizations.has_key?(self.id)
       @@organizations[self.id] = self
@@ -75,6 +87,7 @@ module Store
       fail unless  @@organizations .has_key?(self.id)
     end
 
+    # deletes the organization from the system
     def delete
       fail unless @@organizations .has_key?(self.id)
       @@organizations.delete(self.id)

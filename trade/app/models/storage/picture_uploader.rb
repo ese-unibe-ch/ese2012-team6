@@ -1,5 +1,5 @@
+# this class is responsible for all picture uploads
 module Storage
-
   class PictureUploader
     attr_accessor :root_path
 
@@ -7,6 +7,7 @@ module Storage
       self.root_path = ""
     end
 
+    # returns an uploader object to find the picture path
     def self.with_path(path)
       uploader = PictureUploader.new
       uploader.root_path = path

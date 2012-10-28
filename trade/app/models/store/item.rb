@@ -2,6 +2,7 @@ require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../security/string_checker'
 
+# this class is responsible for the item handling
 module Store
   class Item
     attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments
@@ -18,6 +19,7 @@ module Store
       self.comments = []
     end
 
+    # deletes all items of an user
     def self.clear_all
       @@items.clear
     end
@@ -36,10 +38,12 @@ module Store
       fail if @@items.has_key?(self.id)
     end
 
+    # updates newly created comments
     def update_comments(comment)
       comments << comment
     end
 
+    # deletes a certain comment
     def delete_comment(comment)
       comments.delete(comment)
     end
