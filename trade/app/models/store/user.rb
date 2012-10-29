@@ -63,6 +63,7 @@ module Store
       user.pwd_hash = BCrypt::Engine.hash_secret(password, user.pwd_salt)
 
       user.description = description
+      user.email = email
 
       return user
     end
@@ -133,5 +134,12 @@ module Store
     def is_admin_of?(organization)
       return organization.has_admin?(self)
     end
+
+    def reset_password()
+      new_password= Security::PasswordGenerator.generate_new_password(self)
+      Security::Mail_client.send_mail(email,new_password)
+      new_password="you won't get this"
+    end
+
   end
 end

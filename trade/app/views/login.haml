@@ -12,10 +12,10 @@
         %label Password
       %td
         %input.textbox8{:type => "password", :name => "password"}
-      %td
-        %input.styled-button{:type => "submit", :text => "submit", :value => "I forgot my password"}
     %tr
       %td
       %td{:align => "right"}
         %input.styled-button{:type => "submit", :text => "submit", :value => "Login"}
       %td
+%form{:action => "/login/passwordReset/", :method => "POST"}
+  %input.styled-button{:type=>"submit", :text => "submit", :value =>"Reset Password"}

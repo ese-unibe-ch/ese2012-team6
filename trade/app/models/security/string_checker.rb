@@ -34,11 +34,9 @@ module Security
     end
 
     def self.is_email?(email)
-      is_email = false
-      if email. == /^((\w)*\.?)*\@((\w)*\.)*(\w){2,3}/.match(email)
-        is_email = true
-      end
-      is_email
+
+       /^((\w)*\.?)*\@((\w)*\.)*(\w){2,3}/.match(email)
+
     end
   end
 end
