@@ -41,6 +41,7 @@ module Store
     # deletes a certain comment
     def delete_comment(comment)
       comments.delete(comment)
+      comment.delete(comment)
     end
 
     # create a new item object with a name, price and owner
