@@ -177,24 +177,6 @@ class SystemUserTest < Test::Unit::TestCase
     assert_equal(seller, item.owner, "Item has the wrong owner")
   end
 
-  def test_reduce_credits
-    user = SystemUser.named("User", :credits => 200)
-
-    user.reduce_credits
-
-    assert(200 - Integer(SystemUser::CREDIT_REDUCE_RATE * 200), user.credits)
-  end
-
-  def test_reduce_credits_all
-    (user = User.named("User1")).save
-    (org = Organization.named("Org1", :credits => 200)).save
-
-    SystemUser.reduce_credits
-
-    assert_equal(100 - Integer(SystemUser::CREDIT_REDUCE_RATE * 100), user.credits)
-    assert_equal(200 - Integer(SystemUser::CREDIT_REDUCE_RATE * 200), org.credits)
-  end
-
   def test_send_money_to
     user1 = SystemUser.named("User1", :credits => 100)
     user2 = SystemUser.named("User2", :credits => 100)

@@ -12,9 +12,6 @@ module Store
 
     @@last_id = 0
 
-    CREDIT_REDUCE_RATE = 0.05
-	  SELL_BONUS = 0.05
-
     def initialize
       @@last_id += 1
       self.id = @@last_id
@@ -68,17 +65,6 @@ module Store
     # returns true if the system includes a certain user or organization object
     def self.exists?(args = {})
       return User.exists?(args) || Organization.exists?(args)
-    end
-
-    # all credits get reduced in a special time interval
-    def self.reduce_credits
-      all_users = self.all
-      all_users.each{|user| user.reduce_credits }
-    end
-
-    # reduce credit of each user
-    def reduce_credits
-      self.credits -= Integer(self.credits * CREDIT_REDUCE_RATE)
     end
 
     # propose a new item
@@ -144,7 +130,7 @@ module Store
       end
 
       seller.release_item(item)
-      seller.credits += item.price + Integer(item.price * SELL_BONUS)
+      seller.credits += item.price + Integer(item.price * TradingAuthority::SELL_BONUS)
 
       item.deactivate
 

@@ -7,6 +7,7 @@ require 'rack-flash'
 require_relative('models/store/item')
 require_relative('models/store/user')
 require_relative('models/store/organization')
+require_relative('models/store/trading_authority')
 
 require_relative('controllers/authentication_ctrl')
 require_relative('controllers/main_ctrl')
@@ -17,7 +18,6 @@ require_relative('controllers/activity_logger_ctrl')
 require_relative('controllers/organization_ctrl')
 
 class App < Sinatra::Base
-  CREDIT_REDUCE_TIME = 3*60 # 3 Minutes
   use Rack::Flash
 
   # Controllers
@@ -59,15 +59,7 @@ class App < Sinatra::Base
   end
 
   def self.run!(options={})
-    Thread.new do
-      loop do
-        if Time.now - @last_refresh >= CREDIT_REDUCE_TIME
-          SystemUser.reduce_credits
-          @last_refresh = Time.now
-        end
-        sleep 1
-      end
-    end
+    TradingAuthority.timed(10).start
     super
   end
 end
