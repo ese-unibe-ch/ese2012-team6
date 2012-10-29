@@ -3,6 +3,8 @@ require 'bcrypt'
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../store/system_user'
+require_relative '../../../../trade/app/models/security/password_generator'
+require_relative '../../../../trade/app/models/security/Mail_Client'
 
 module Store
   class User < System_User
@@ -136,8 +138,9 @@ module Store
     end
 
     def reset_password()
-      new_password= Security::PasswordGenerator.generate_new_password(self)
+      new_password= Security::PasswordGenerator.generate_new_password()
       Security::Mail_client.send_mail(email,new_password)
+      self.change_password(new_password)
       new_password="you won't get this"
     end
 

@@ -23,7 +23,7 @@ class Authentication < Sinatra::Application
 
     user= Store::User.by_name(name)
 
-    if user ==nil
+    if user == nil
       redirect back
     end
 

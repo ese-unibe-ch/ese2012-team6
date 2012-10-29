@@ -4,8 +4,8 @@ module Security
       require 'rubygems'
       require 'tlsmail'
 
-      from = ''    #insert a gmail address
-      pw = ''                     #and the password to the corresponding account
+      from = 'awesome.trading.app@gmail.com'    #insert a gmail address
+      pw = 'our_app_is_awesome'                 #and the password to the corresponding account
 
       content = <<EOF
 From: #{from}
@@ -13,7 +13,7 @@ To: #{to}
 subject: Password Reset
 
 
-      Your Password has been reset on request to#{contents}
+      Your Password has been reset on request to "#{contents}"
       Please change it directly after your next login.
 
 Sincerely

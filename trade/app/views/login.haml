@@ -17,5 +17,18 @@
       %td{:align => "right"}
         %input.styled-button{:type => "submit", :text => "submit", :value => "Login"}
       %td
-%form{:action => "/login/passwordReset/", :method => "POST"}
-  %input.styled-button{:type=>"submit", :text => "submit", :value =>"Reset Password"}
+%h3
+  Forgot your Password?
+%form{:action => "/login/passwordReset/", :method => "POST", }
+  %table
+    %tr
+      %td
+        %label Username
+      %td
+        %input.textbox8{:type => "text", :name => "username"}
+      %td
+    %tr
+      %td
+      %td{:align => "right"}
+        %input.styled-button{:type => "submit", :text => "submit", :value => "Reset Password"}
+      %td
