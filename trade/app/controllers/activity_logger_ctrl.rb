@@ -9,6 +9,7 @@ class ActivityLogger < Sinatra::Application
     @user = User.by_name(session[:name])
   end
 
+  # show list of all stored activities
   get '/activities' do
     redirect '/login' unless @user
 
@@ -19,6 +20,7 @@ class ActivityLogger < Sinatra::Application
     }
   end
 
+  # show details page of an activity, not yet used!
   get "/activity/:act_id" do
     redirect '/login' unless @user
 

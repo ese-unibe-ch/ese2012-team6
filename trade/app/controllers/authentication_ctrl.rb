@@ -18,6 +18,7 @@ class Authentication < Sinatra::Application
     haml :login
   end
 
+  # handle user change password request
   post "/login/passwordReset/"do
     name = (params[:username])
 

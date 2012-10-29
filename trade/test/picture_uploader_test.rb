@@ -23,7 +23,6 @@ class Picture_Uploader_Test < Test::Unit::TestCase
 
     assert_equal(filename, "X_mh.jpg")
     #assert_equal(user.image_path, "/images/users/X_mh.jpg")
-
   end
 
 end

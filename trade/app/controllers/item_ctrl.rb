@@ -3,6 +3,7 @@ require 'rdiscount'
 require_relative '../models/storage/picture_uploader'
 require_relative '../models/security/string_checker'
 require_relative '../models/store/comment'
+
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
   include Store
@@ -166,6 +167,7 @@ class Item < Sinatra::Application
     redirect back
   end
 
+  # handles item creation via quick add form
   put "/item/quick_add" do
     redirect '/login' unless @user
     redirect back if params[:item_name] == "" or params[:item_price] == ""

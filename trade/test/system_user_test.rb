@@ -143,7 +143,6 @@ class SystemUserTest < Test::Unit::TestCase
     assert(!item.active?)
 
     transaction_result, transaction_message = buyer.buy_item(item)
-    puts transaction_message
 
     assert(transaction_result == false,"Transaction should have failed but it did not")
 
@@ -165,7 +164,6 @@ class SystemUserTest < Test::Unit::TestCase
     assert(item.active?)
 
     transaction_result, transaction_message = buyer.buy_item(item)
-    puts transaction_message
 
     assert(transaction_result == false,"Transaction should have failed but it did not")
 
@@ -220,5 +218,38 @@ class SystemUserTest < Test::Unit::TestCase
 
     assert_equal(true, buyer.knows_item_properties?(item))
     assert_equal(true , buyer.buy_item(item, false)[0])
+  end
+
+  def test_user_can_buy_own_item
+    user = Store::User.named("Hans")
+    item = user.propose_item("TestItem", 100, "", false)
+    assert_equal(false, user.can_buy?(item), "Should not be able to buy own items")
+  end
+
+  def test_user_can_buy_other_item
+    user = Store::User.named("Hans")
+    other = Store::User.named("Herbert")
+
+    item = other.propose_item("TestItem", 100, "", false)
+    assert_equal(false, user.can_buy?(item))
+    item.activate
+    assert_equal(true, user.can_buy?(item))
+  end
+
+  def test_can_edit_own_item
+    user = Store::User.named("Hans")
+    item = user.propose_item("TestItem", 100, "", false)
+    assert_equal(true, user.can_edit?(item))
+    item.activate
+    assert_equal(false, user.can_edit?(item))
+  end
+
+  def test_can_edit_other_item
+    user = Store::User.named("Hans")
+    other = Store::User.named("Herbert")
+    item = other.propose_item("TestItem", 100, "", false)
+    assert_equal(false, user.can_edit?(item))
+    item.activate
+    assert_equal(false, user.can_edit?(item))
   end
 end

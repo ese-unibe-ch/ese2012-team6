@@ -3,6 +3,7 @@ require 'rbtree'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
+require_relative '../store/trading_authority'
 
 # superclass for user and organization
 # responsible for all actions concerning user and organization objects
@@ -32,39 +33,6 @@ module Store
       system_user.credits = options[:credits] || 0
 
       return system_user
-    end
-
-    # deletes all users and organizations from the system
-    def self.clear_all
-      @@last_id = 0
-      User.clear_all
-      Organization.clear_all
-    end
-
-    # fetches system user object, args must contain key :name or :id
-    def self.fetch_by(args = {})
-      return User.fetch_by(args) if User.exists?(args)
-      return Organization.fetch_by(args) if Organization.exists?(args)
-    end
-
-    # returns the system user found by id
-    def self.by_id(id)
-      return self.fetch_by(:id => id.to_i)
-    end
-
-    # returns the system user found by name
-    def self.by_name(name)
-      return self.fetch_by(:name => name)
-    end
-
-    # returns all system users
-    def self.all
-      return User.all.concat(Organization.all)
-    end
-
-    # returns true if the system includes a certain user or organization object
-    def self.exists?(args = {})
-      return User.exists?(args) || Organization.exists?(args)
     end
 
     # propose a new item
@@ -203,6 +171,42 @@ module Store
     # returns true when user is aware of latest changes to item, false otherwise
     def knows_item_properties?(item)
       return !(self.open_item_page_time < item.edit_time)
+    end
+
+    # class methods
+    class << self
+      # deletes all users and organizations from the system
+      def clear_all
+        @@last_id = 0
+        User.clear_all
+        Organization.clear_all
+      end
+
+      # fetches system user object, args must contain key :name or :id
+      def fetch_by(args = {})
+        return User.fetch_by(args) if User.exists?(args)
+        return Organization.fetch_by(args) if Organization.exists?(args)
+      end
+
+      # returns the system user found by id
+      def by_id(id)
+        return fetch_by(:id => id.to_i)
+      end
+
+      # returns the system user found by name
+      def by_name(name)
+        return fetch_by(:name => name)
+      end
+
+      # returns all system users
+      def all
+        return User.all.concat(Organization.all)
+      end
+
+      # returns true if the system includes a certain user or organization object
+      def exists?(args = {})
+        return User.exists?(args) || Organization.exists?(args)
+      end
     end
   end
 end

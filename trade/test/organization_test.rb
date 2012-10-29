@@ -26,6 +26,13 @@ class UserTest < Test::Unit::TestCase
     assert(Store::Organization.fetch_by(:id=>org1.id), "also removed org1")
   end
 
+  def test_org_creation_with_admin
+    user = Store::User.named("admin")
+    org = Store::Organization.named("Org", :admin => user)
+    assert(org.has_admin?(user))
+    assert(org.has_member?(user))
+  end
+
   def test_add_and_remove_admin
     user1 = Store::User.named("admin")
     user2 = Store::User.named("user")

@@ -19,11 +19,6 @@ module Store
       self.comments = []
     end
 
-    # deletes all items of an user
-    def self.clear_all
-      @@items.clear
-    end
-
     # save item to system
     def save
       fail if @@items.has_key?(self.id)
@@ -48,16 +43,6 @@ module Store
       comments.delete(comment)
     end
 
-    # retrieve item object by id from system
-    def self.by_id(id)
-      return @@items[id]
-    end
-
-    # get all stored items
-    def self.all
-      return @@items.values.dup
-    end
-
     # create a new item object with a name, price and owner
     def self.named_priced_with_owner(name, price, owner, description = "")
       item = Item.new
@@ -66,16 +51,6 @@ module Store
       item.owner = owner
       item.description = description
       return item
-    end
-
-    # determines whether a string is a valid price for an item
-    def self.valid_price?(price)
-      return (!!(price =~ /^[-+]?[0-9]([0-9]*)?$/)) && price.to_i >= 0
-    end
-
-    # extends the id of an item to a filename
-    def self.id_image_to_filename(id, path)
-      "#{id}_#{path}"
     end
 
     def to_s
@@ -152,6 +127,34 @@ module Store
     # tell the item its properties have been changed
     def notify_change
       self.edit_time = Time.now
+    end
+
+    # class methods
+    class << self
+      # deletes all items of an user
+      def clear_all
+        @@items.clear
+      end
+
+      # retrieve item object by id from system
+      def by_id(id)
+        return @@items[id]
+      end
+
+      # get all stored items
+      def all
+        return @@items.values.dup
+      end
+
+      # determines whether a string is a valid price for an item
+      def valid_price?(price)
+        return (!!(price =~ /^[-+]?[0-9]([0-9]*)?$/)) && price.to_i >= 0
+      end
+
+      # extends the id of an item to a filename
+      def id_image_to_filename(id, path)
+        "#{id}_#{path}"
+      end
     end
   end
 end

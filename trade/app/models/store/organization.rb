@@ -17,7 +17,7 @@ module Store
       self.admins = []
     end
 
-    # creates a new organization with certain options
+    # creates a new organization with certain options (:admin, :description, :credits)
     def self.named(name, options = {})
       organization = Organization.new
       organization.name = name
@@ -55,12 +55,6 @@ module Store
       true
     end
 
-    # sends a certain amount of money from the organization to an admin
-    def send_money_to(admin, amount)
-      return false unless self.has_admin?(admin)
-      super(admin, amount)
-    end
-
     # determine whether a user is a member of this organization
     def has_member?(user)
       fail if user.nil?
@@ -87,29 +81,32 @@ module Store
       @@organizations_by_name.delete(self.name)
     end
 
-    # deletes all organizations in the system
-    def self.clear_all
-      @@organizations_by_name.clear
-      @@organizations_by_id.clear
-    end
+    # class methods
+    class << self
+      # deletes all organizations in the system
+      def clear_all
+        @@organizations_by_name.clear
+        @@organizations_by_id.clear
+      end
 
-    # fetches the organization object by its name or id
-    def self.fetch_by(args = {})
-      return  @@organizations_by_id[args[:id]] unless args[:id].nil?
-      return  @@organizations_by_name[args[:name]] unless args[:name].nil?
+      # fetches the organization object by its name or id
+      def fetch_by(args = {})
+        return  @@organizations_by_id[args[:id]] unless args[:id].nil?
+        return  @@organizations_by_name[args[:name]] unless args[:name].nil?
 
-      return nil
-    end
+        return nil
+      end
 
-    # returns true if an organization object exists with the id or name
-    def self.exists?(args = {})
-      return @@organizations_by_id.has_key?(args[:id]) unless args[:id].nil?
-      return @@organizations_by_name.has_key?(args[:name])
-    end
+      # returns true if an organization object exists with the id or name
+      def exists?(args = {})
+        return @@organizations_by_id.has_key?(args[:id]) unless args[:id].nil?
+        return @@organizations_by_name.has_key?(args[:name])
+      end
 
-    # returns all saved organizations
-    def self.all
-      return @@organizations_by_id.values.dup
+      # returns all saved organizations
+      def all
+        return @@organizations_by_id.values.dup
+      end
     end
   end
 end

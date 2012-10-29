@@ -26,21 +26,6 @@ class UserTest < Test::Unit::TestCase
     assert_equal(Store::User.by_name(user1.name), Store::User.fetch_by(:name=>user1.name), "methods are not the same")
   end
 
-  def test_default_credits_amount
-    default_amount = 100
-    user = Store::User.new
-
-    assert_equal(default_amount, user.credits)
-  end
-
-  def test_custom_credits_amount
-    amount = 123
-    user = Store::User.new
-    user.credits = amount
-
-    assert_equal(amount, user.credits)
-  end
-
   def test_user_organization_creating
     (user = Store::User.named("me")).save
     (member = Store::User.named("you")).save
@@ -55,7 +40,6 @@ class UserTest < Test::Unit::TestCase
     org2.add_member(member)
     assert(member.is_member_of?(org1), "failed adding member")
     assert_equal(member.organizations, [org1, org2], "is in wrong organization")
-
   end
 
   def test_work_as
@@ -68,5 +52,34 @@ class UserTest < Test::Unit::TestCase
     user.work_on_behalf_of(org)
     assert(user.working_on_behalf_of?(org), "is not working on behalf of this org")
     assert(!user.working_as_self?, "is still working on behalf of himself")
+  end
+
+  def test_password_matches_default_password
+    user = Store::User.named("user")
+    assert(!user.password_matches?("blabla"))
+    assert(user.password_matches?("user"))
+  end
+
+  def test_password_matches_custom_password
+    user = Store::User.named("user", :password => "verysecret")
+    assert(!user.password_matches?("user"))
+    assert(user.password_matches?("verysecret"))
+  end
+
+  def test_change_password
+    user = Store::User.named("user")
+    assert(user.password_matches?("user"))
+
+    user.change_password("newpass")
+    assert(!user.password_matches?("user"))
+    assert(user.password_matches?("newpass"))
+  end
+
+  def test_reset_password
+    user = Store::User.named("user")
+    assert(user.password_matches?("user"))
+
+    user.reset_password(false)
+    assert(!user.password_matches?("user"))
   end
 end

@@ -62,13 +62,6 @@ module Store
       Analytics::UserLogoutActivity.with_username(name).log
     end
 
-    # sends a certain amount of money from the user to a certain organization
-    def send_money_to(organization, amount)
-      fail if organization.nil?
-      fail unless self.is_member_of?(organization)
-      super(organization, amount)
-    end
-
     # tell user to work on behalf of an organization
     def work_on_behalf_of(organization)
       self.on_behalf_of = organization.nil? ? self : organization
@@ -118,44 +111,47 @@ module Store
       @@users_by_name.delete(self.name)
     end
 
-    # clears all users from system
-    def self.clear_all
-      @@users_by_id.clear
-      @@users_by_name.clear
-    end
-
-    # fetches the user object by its name
-    def self.by_name(name)
-      return self.fetch_by(:name => name)
-    end
-
-    # fetches the user object by its id
-    def self.by_id(id)
-      return self.fetch_by(:id => id)
-    end
-
-    # returns the user object which matches with the id or name
-    def self.fetch_by(args = {})
-      return  @@users_by_id[args[:id]] unless args[:id].nil?
-      return  @@users_by_name[args[:name]] unless args[:name].nil?
-      return nil
-    end
-
-    # returns true if a user object exists with the id or name
-    def self.exists?(args = {})
-      return @@users_by_id.has_key?(args[:id]) unless args[:id].nil?
-      return @@users_by_name.has_key?(args[:name])
-    end
-
-    # returns all users in the system
-    def self.all
-      return @@users_by_id.values.dup
-    end
-
-    def reset_password()
+    # reset a user's password and send email with new password if desired
+    def reset_password(sendMail = true)
       new_password = Security::PasswordGenerator.generate_new_password()
       self.change_password(new_password)
-      Security::MailClient.send_mail(self.email, new_password)
+      Security::MailClient.send_mail(self.email, new_password) if sendMail
+    end
+
+    class << self
+      # clears all users from system
+      def clear_all
+        @@users_by_id.clear
+        @@users_by_name.clear
+      end
+
+      # fetches the user object by its name
+      def by_name(name)
+        return fetch_by(:name => name)
+      end
+
+      # fetches the user object by its id
+      def by_id(id)
+        return fetch_by(:id => id)
+      end
+
+      # returns the user object which matches with the id or name
+      def fetch_by(args = {})
+        return  @@users_by_id[args[:id]] unless args[:id].nil?
+        return  @@users_by_name[args[:name]] unless args[:name].nil?
+        return nil
+      end
+
+      # returns true if a user object exists with the id or name
+      def exists?(args = {})
+        return @@users_by_id.has_key?(args[:id]) unless args[:id].nil?
+        return @@users_by_name.has_key?(args[:name])
+      end
+
+      # returns all users in the system
+      def all
+        return @@users_by_id.values.dup
+      end
     end
   end
 end
