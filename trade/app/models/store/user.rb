@@ -4,6 +4,8 @@ require 'rbtree'
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../store/system_user'
+require_relative '../security/password_generator'
+require_relative '../security/mail_client'
 
 # user class inherits the super class system_user
 # is responsible for user's handling
@@ -151,9 +153,9 @@ module Store
     end
 
     def reset_password()
-      new_password= Security::PasswordGenerator.generate_new_password(self)
-      Security::Mail_client.send_mail(email,new_password)
-      new_password="you won't get this"
+      new_password = Security::PasswordGenerator.generate_new_password()
+      self.change_password(new_password)
+      Security::MailClient.send_mail(self.email, new_password)
     end
   end
 end

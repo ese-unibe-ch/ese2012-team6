@@ -20,9 +20,10 @@ class Authentication < Sinatra::Application
 
   post "/login/passwordReset/"do
     name = (params[:username])
-    puts name
 
-    user= Store::User.by_name(name)
+    redirect '/error/user_no_exists' unless User.exists?(:name => name)
+
+    user = Store::User.by_name(name)
 
     redirect back if user.nil?
     user.reset_password

@@ -1,10 +1,10 @@
 require 'test/unit'
 require 'require_relative'
-require_relative('../../trade/app/models/security/Mail_Client')
+require_relative '../app/models/security/mail_client'
 
-class Mail_Client_Test  < Test::Unit::TestCase
+class MailClientTest < Test::Unit::TestCase
   def test_send_mail
-    Security::Mail_client.send_mail('jonas.vonfelten@students.unibe.ch','aöhdf454')
+    #Security::MailClient.send_mail('awesome.trading.app@gmail.com','aöhdf454')
   end
 end
 
