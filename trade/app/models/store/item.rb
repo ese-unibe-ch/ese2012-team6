@@ -46,6 +46,7 @@ module Store
     # deletes a certain comment
     def delete_comment(comment)
       comments.delete(comment)
+      comment.delete(comment)
     end
 
     # retrieve item object by id from system

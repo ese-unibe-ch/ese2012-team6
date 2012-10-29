@@ -27,6 +27,11 @@ module Store
       return @@comments[id]
     end
 
+    # deletes a comment
+    def delete(comment)
+      @@comments.delete(comment)
+    end
+
     # handles smileys and the format of a comment
     def format_description
       formatted_desc = description.gsub(':)', '![alternative text](/images/smileys/smile.gif)').gsub(':D', '![alternative text](/images/smileys/laugh.gif)').
