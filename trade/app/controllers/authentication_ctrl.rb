@@ -22,14 +22,10 @@ class Authentication < Sinatra::Application
     name = (params[:username])
     puts name
 
-
     user= Store::User.by_name(name)
 
-    if user ==nil
-      redirect back
-    end
-
-    user.reset_password;
+    redirect back if user.nil?
+    user.reset_password
 
     redirect back
   end
