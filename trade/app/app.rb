@@ -49,11 +49,8 @@ class App < Sinatra::Base
     (bender = umbrella_corp.propose_item("Bender", 110)).activate
 
     #add default organization
-   (organization_mordor_inc = Organization.named("Mordor Inc.")).save
-    organization_mordor_inc.add_member(user_ese)
+   (organization_mordor_inc = Organization.named("MordorInc", :credits => 200, :admin => user_ese)).save
     organization_mordor_inc.add_member(peter_griffin)
-    organization_mordor_inc.add_admin(user_ese)
-    organization_mordor_inc.send_money(200)
 
     @last_refresh = Time.now
   end

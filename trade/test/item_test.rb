@@ -144,19 +144,21 @@ class ItemTest < Test::Unit::TestCase
   end
 
   def test_add_comment
-    mock_comment = {:id => 3, :owner => nil, :timestamp => Time.now, :description => "New Comment"}
+    comment = Store::Comment.new_comment("newComment", nil)
 
     item = Item.named_priced_with_owner("NewItem", 100, nil)
-    item.update_comments(mock_comment)
+    item.update_comments(comment)
 
-    assert_equal(true, item.comments.include?(mock_comment))
+    assert_equal(true, item.comments.include?(comment))
   end
 
   def test_delete_comment
-    mock_comment = {:id => 3, :owner => nil, :timestamp => Time.now, :description => "New Comment"}
+    comment = Store::Comment.new_comment("newComment", nil)
+
     item = Item.named_priced_with_owner("NewItem", 100, nil)
-    item.comments << mock_comment
-    item.delete_comment(mock_comment)
-    assert_equal(false, item.comments.include?(mock_comment))
+    item.comments << comment
+    item.delete_comment(comment)
+    assert_equal(false, item.comments.include?(comment))
+    assert_equal(nil, Store::Comment.by_id(comment))
   end
 end

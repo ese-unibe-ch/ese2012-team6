@@ -67,7 +67,7 @@ class Item < Sinatra::Application
     item = Item.by_id(item_id)
     comment_description = params[:item_comment]
 
-    comment = Comment.new_comment(comment_description, @user.on_behalf_of, Time.now.asctime)
+    comment = Comment.new_comment(comment_description, @user.on_behalf_of)
 
     item.update_comments(comment)
 

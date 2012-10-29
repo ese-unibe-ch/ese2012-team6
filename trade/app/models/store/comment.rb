@@ -12,11 +12,11 @@ module Store
     end
 
     # creates a new comment to an item
-    def self.new_comment(description, owner, time_stamp)
+    def self.new_comment(description, owner)
       comment = Comment.new
       comment.description = description
       comment.owner = owner
-      comment.time_stamp= time_stamp
+      comment.time_stamp = Time.now.asctime
       fail if @@comments.has_key?(comment.id)
       @@comments[comment.id] = comment
       return comment
@@ -28,8 +28,8 @@ module Store
     end
 
     # deletes a comment
-    def delete(comment)
-      @@comments.delete(comment)
+    def delete
+      @@comments.delete(self.id)
     end
 
     # handles smileys and the format of a comment

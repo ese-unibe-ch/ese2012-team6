@@ -1,6 +1,7 @@
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../security/string_checker'
+require_relative '../store/comment'
 
 # this class is responsible for the item handling
 module Store
@@ -35,13 +36,13 @@ module Store
 
     # updates newly created comments
     def update_comments(comment)
-      comments << comment
+      self.comments << comment
     end
 
     # deletes a certain comment
     def delete_comment(comment)
-      comments.delete(comment)
-      comment.delete(comment)
+      self.comments.delete(comment)
+      comment.delete
     end
 
     # create a new item object with a name, price and owner
