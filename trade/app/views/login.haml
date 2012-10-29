@@ -17,5 +17,5 @@
       %td{:align => "left"}
         %input.styled-button{:type => "submit", :text => "submit", :value => "Login"}
       %td
-      %td{:align => "left"}
-        %input.styled-button{:type => "submit", :text => "submit", :value => "I forgot my password"}
+%form{:action => "/login/passwordReset/", :method => "POST"}
+  %input.styled-button{:type=>"submit", :text => "submit", :value =>"Reset Password"}

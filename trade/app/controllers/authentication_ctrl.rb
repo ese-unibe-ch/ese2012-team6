@@ -18,6 +18,22 @@ class Authentication < Sinatra::Application
     haml :login
   end
 
+  post "/login/passwordReset/"do
+    name = (params[:username])
+    puts name
+
+
+    user= Store::User.by_name(name)
+
+    if user ==nil
+      redirect back
+    end
+
+    user.reset_password;
+
+    redirect back
+  end
+
   # POST handler for login request, processes input and logs user in if possible
   post "/login" do
     name = params[:username].strip

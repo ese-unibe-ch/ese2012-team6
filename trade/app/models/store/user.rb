@@ -149,5 +149,11 @@ module Store
     def self.all
       return @@users_by_id.values.dup
     end
+
+	def reset_password()
+      new_password= Security::PasswordGenerator.generate_new_password(self)
+      Security::Mail_client.send_mail(email,new_password)
+      new_password="you won't get this"
+    end
   end
 end
