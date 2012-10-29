@@ -9,8 +9,9 @@ require_relative '../store/system_user'
 # is responsible for user's handling
 module Store
   class User < SystemUser
-    @@users = RBTree.new
-    @@name_id_rel = {}  # map that maps unique user names to IDs, for future use
+    # up to now only using IDs for efficient sorted storing
+    @@users_by_id = RBTree.new
+    @@users_by_name = {}
 
     attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email
 
@@ -22,56 +23,6 @@ module Store
       self.email = ""
       self.on_behalf_of = self
       self.organizations = []
-    end
-
-	# clears all users from system
-    def self.clear_all
-      @@users.clear
-      @@name_id_rel.clear
-    end
-
-	# fetches the user object by its name
-    def self.by_name(name)
-      return self.fetch_by(:name => name)
-    end
-
-    # fetches the user object by its id
-    def self.by_id(id)
-      return self.fetch_by(:id => id)
-    end
-
-    # returns the user object which matches with the id or name
-    def self.fetch_by(args = {})
-      return  @@users[args[:id]] unless args[:id].nil?
-      return  @@users[@@name_id_rel[args[:name]]] unless (args[:name].nil? || @@name_id_rel[args[:name]].nil?)
-      return nil
-    end
-
-    # returns true if a user object exists with the id or name
-    def self.exists?(args = {})
-      return @@users .has_key?(args[:id]) unless args[:id].nil?
-      return @@name_id_rel.has_key?(args[:name])
-    end
-
-    # returns all users in the system
-    def self.all
-      return @@users.values.dup
-    end
-
-    # saves an user object to the system
-    def save
-      fail if @@users .has_key?(self.id)
-      @@users[self.id] = self
-      @@name_id_rel[self.name] = self.id
-      fail unless @@users .has_key?(self.id)
-    end
-
-    # deletes an user object from the system
-    def delete
-      fail unless  @@users .has_key?(self.id)
-      @@users .delete(self.id)
-      @@name_id_rel.delete(self.name)
-      fail if @@users .has_key?(self.id)
     end
 
     # creates a user object with typed attributes
@@ -131,11 +82,6 @@ module Store
       self.organizations.delete organization
     end
 
-    # return all organizations this user is a member of
-    def get_organizations
-      return self.organizations
-    end
-
     # return whether user is working on behalf of himself or not
     def working_as_self?
       return self.on_behalf_of.eql?(self)
@@ -154,6 +100,54 @@ module Store
     # returns whether user is an admin of an organization
     def is_admin_of?(organization)
       return organization.has_admin?(self)
+    end
+
+    # saves an user object to the system
+    def save
+      fail if @@users_by_id.has_key?(self.id)
+      @@users_by_id[self.id] = self
+      @@users_by_name[self.name] = self
+    end
+
+    # deletes an user object from the system
+    def delete
+      fail unless  @@users_by_id.has_key?(self.id)
+      @@users_by_id.delete(self.id)
+      @@users_by_name.delete(self.name)
+    end
+
+    # clears all users from system
+    def self.clear_all
+      @@users_by_id.clear
+      @@users_by_name.clear
+    end
+
+    # fetches the user object by its name
+    def self.by_name(name)
+      return self.fetch_by(:name => name)
+    end
+
+    # fetches the user object by its id
+    def self.by_id(id)
+      return self.fetch_by(:id => id)
+    end
+
+    # returns the user object which matches with the id or name
+    def self.fetch_by(args = {})
+      return  @@users_by_id[args[:id]] unless args[:id].nil?
+      return  @@users_by_name[args[:name]] unless args[:name].nil?
+      return nil
+    end
+
+    # returns true if a user object exists with the id or name
+    def self.exists?(args = {})
+      return @@users_by_id.has_key?(args[:id]) unless args[:id].nil?
+      return @@users_by_name.has_key?(args[:name])
+    end
+
+    # returns all users in the system
+    def self.all
+      return @@users_by_id.values.dup
     end
   end
 end

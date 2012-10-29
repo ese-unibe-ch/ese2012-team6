@@ -11,6 +11,7 @@ module Store
     attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
 
     @@last_id = 0
+
     CREDIT_REDUCE_RATE = 0.05
 	  SELL_BONUS = 0.05
 
@@ -209,7 +210,7 @@ module Store
     end
 
     # save time for item page
-    def take_item_snapshot
+    def acknowledge_item_properties!
       self.open_item_page_time = Time.now
     end
 

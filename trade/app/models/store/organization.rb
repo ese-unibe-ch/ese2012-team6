@@ -7,19 +7,14 @@ module Store
   class Organization < SystemUser
     attr_accessor :members, :admins
 
-    @@organizations = RBTree.new
-    @@name_id_rel = {}
+    # up to now only using IDs for efficient sorted storing
+    @@organizations_by_id = RBTree.new
+    @@organizations_by_name = {}
 
     def initialize
       super
       self.members = []
       self.admins = []
-    end
-
-    # deletes all organizations in the system
-    def self.clear_all
-      @@organizations.clear
-      @@name_id_rel.clear
     end
 
     # creates a new organization with certain options
@@ -31,25 +26,6 @@ module Store
       organization.add_member(options[:admin]) if options[:admin]
       organization.credits = options[:credits] if options[:credits]
       return organization
-    end
-
-    # fetches the organization object by its name or id
-    def self.fetch_by(args = {})
-      return  @@organizations[args[:id]] unless args[:id].nil?
-      return  @@organizations[@@name_id_rel[args[:name]]] unless (args[:name].nil? || @@name_id_rel[args[:name]].nil?)
-
-      return nil
-    end
-
-    # returns true if an organization object exists with the id or name
-    def self.exists?(args = {})
-      return @@organizations .has_key?(args[:id]) unless args[:id].nil?
-      return @@name_id_rel.has_key?(args[:name])
-    end
-
-    # returns all saved organizations
-    def self.all
-      return  @@organizations.values.dup
     end
 
     # adds a member to an organization
@@ -79,22 +55,6 @@ module Store
       true
     end
 
-    # saves the organization to the system
-    def save
-      fail if  @@organizations.has_key?(self.id)
-      @@organizations[self.id] = self
-      @@name_id_rel[self.name] = self.id
-      fail unless  @@organizations .has_key?(self.id)
-    end
-
-    # deletes the organization from the system
-    def delete
-      fail unless @@organizations .has_key?(self.id)
-      @@organizations.delete(self.id)
-      @@name_id_rel.delete(self.name)
-      fail if @@organizations .has_key?(self.id)
-    end
-
     # sends a certain amount of money from the organization to an admin
     def send_money_to(admin, amount)
       return false unless self.has_admin?(admin)
@@ -111,6 +71,45 @@ module Store
     def has_admin?(user)
       fail if user.nil?
       return self.admins.include?(user)
+    end
+
+    # saves the organization to the system
+    def save
+      fail if @@organizations_by_id.has_key?(self.id)
+      @@organizations_by_id[self.id] = self
+      @@organizations_by_name[self.name] = self
+    end
+
+    # deletes the organization from the system
+    def delete
+      fail unless @@organizations_by_id .has_key?(self.id)
+      @@organizations_by_id.delete(self.id)
+      @@organizations_by_name.delete(self.name)
+    end
+
+    # deletes all organizations in the system
+    def self.clear_all
+      @@organizations_by_name.clear
+      @@organizations_by_id.clear
+    end
+
+    # fetches the organization object by its name or id
+    def self.fetch_by(args = {})
+      return  @@organizations_by_id[args[:id]] unless args[:id].nil?
+      return  @@organizations_by_name[args[:name]] unless args[:name].nil?
+
+      return nil
+    end
+
+    # returns true if an organization object exists with the id or name
+    def self.exists?(args = {})
+      return @@organizations_by_id.has_key?(args[:id]) unless args[:id].nil?
+      return @@organizations_by_name.has_key?(args[:name])
+    end
+
+    # returns all saved organizations
+    def self.all
+      return @@organizations_by_id.values.dup
     end
   end
 end

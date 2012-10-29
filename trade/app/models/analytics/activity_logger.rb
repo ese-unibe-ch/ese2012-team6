@@ -1,7 +1,13 @@
 module Analytics
   # Responsible for storing activities and performing operations (e.g sorting) on said activities
   class ActivityLogger
+
     @@activities = {}
+
+    # clear all logged activities
+    def self.clear
+      @@activities.clear
+    end
 
     # log an activity
     def self.log(activity)

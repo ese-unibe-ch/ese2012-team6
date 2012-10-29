@@ -9,6 +9,10 @@ require_relative '../app/models/store/item'
 class SystemUserTest < Test::Unit::TestCase
   include Store
 
+  def setup
+    SystemUser.clear_all
+  end
+
   def teardown
     SystemUser.clear_all
   end
@@ -115,6 +119,8 @@ class SystemUserTest < Test::Unit::TestCase
     item = seller.propose_item("piece of crap", 100)
     item.activate
 
+    buyer.acknowledge_item_properties!
+
     transaction_result, transaction_message = buyer.buy_item(item)
     assert(transaction_result, "Transaction failed when it should have succeeded\nReason: #{transaction_message}")
 
@@ -133,7 +139,7 @@ class SystemUserTest < Test::Unit::TestCase
     seller = SystemUser.named("Seller", :credits => 100)
 
     item = seller.propose_item("piece of crap", 100)
-
+    buyer.acknowledge_item_properties!
     assert(!item.active?)
 
     transaction_result, transaction_message = buyer.buy_item(item)
@@ -155,7 +161,7 @@ class SystemUserTest < Test::Unit::TestCase
 
     item = seller.propose_item("big piece of crap", 9001) #item price is over 9000!
     item.activate
-
+    buyer.acknowledge_item_properties!
     assert(item.active?)
 
     transaction_result, transaction_message = buyer.buy_item(item)
@@ -204,7 +210,7 @@ class SystemUserTest < Test::Unit::TestCase
     buyer = Store::User.named("buyer")
     item = seller.propose_item("item", 2);
 
-    buyer.take_item_snapshot
+    buyer.acknowledge_item_properties!
 
     # change item while buyer is not looking
     item.deactivate
@@ -220,7 +226,7 @@ class SystemUserTest < Test::Unit::TestCase
     buyer = Store::User.named("buyer")
     item = seller.propose_item("item", 2);
 
-    buyer.take_item_snapshot
+    buyer.acknowledge_item_properties!
 
     # change item while buyer is not looking
     item.deactivate
@@ -228,7 +234,7 @@ class SystemUserTest < Test::Unit::TestCase
     item.activate
 
     # buyer looks at item
-    buyer.take_item_snapshot
+    buyer.acknowledge_item_properties!
 
     assert_equal(true, buyer.knows_item_properties?(item))
     assert_equal(true , buyer.buy_item(item, false)[0])

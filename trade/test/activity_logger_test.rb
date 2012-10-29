@@ -6,6 +6,16 @@ require_relative '../app/models/store/user'
 require_relative '../app/models/store/item'
 
 class ActivityLoggerTest < Test::Unit::TestCase
+  include Analytics
+
+  def setup
+    ActivityLogger.clear
+  end
+
+  def teardown
+    ActivityLogger.clear
+  end
+
   def test_log_activity
     user = Store::User.named("Hans")
     item = user.propose_item("Test", 100, "", false) #don't log item creation
@@ -61,6 +71,8 @@ class ActivityLoggerTest < Test::Unit::TestCase
 
     item.activate
     item2.activate
+
+    [user, user2].each{ |usr| usr.acknowledge_item_properties! }
 
     user.buy_item(item2)
     user2.buy_item(item)

@@ -54,7 +54,7 @@ class UserTest < Test::Unit::TestCase
     org1.add_member(member)
     org2.add_member(member)
     assert(member.is_member_of?(org1), "failed adding member")
-    assert_equal(member.get_organizations, [org1, org2], "is in wrong organization")
+    assert_equal(member.organizations, [org1, org2], "is in wrong organization")
 
   end
 

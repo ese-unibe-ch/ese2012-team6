@@ -30,7 +30,7 @@ class Item < Sinatra::Application
   get "/item/:item_id" do
     redirect '/login' unless @user
 
-    @user.take_item_snapshot
+    @user.acknowledge_item_properties!
     item = Item.by_id(params[:item_id].to_i)
 
     redirect "/user/#{@user.name}" if item.nil?

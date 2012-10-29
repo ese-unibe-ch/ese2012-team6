@@ -15,7 +15,7 @@ class Main < Sinatra::Application
   get "/" do
     redirect '/login' unless @user
 
-    @user.take_item_snapshot
+    @user.acknowledge_item_properties!
 
     most_recent_purchases = ActivityLogger.get_most_recent_purchases(10)
 

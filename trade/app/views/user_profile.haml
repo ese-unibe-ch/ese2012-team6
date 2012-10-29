@@ -73,12 +73,12 @@
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
 %h3
   Member of Organizations
--if viewed_user.get_organizations.empty?
+-if viewed_user.organizations.empty?
   %p
     None
 -else
   %ul
-    -for org in viewed_user.get_organizations
+    -for org in viewed_user.organizations
       %li
         :escaped
           #{org.name}
