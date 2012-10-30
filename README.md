@@ -18,11 +18,16 @@ __Linux__
 You need to have a working version of Ruby 1.8.7 installed on your system. Please refer to your distribution's user forums
 on how to install Ruby 1.8.7 on your system. You also have to be able to install third-party gems. (see http://rubygems.org/pages/download)
 
-We are using some additional gems. Please run <code>sudo bundle install</code> and type in your password to install all the gems automatically and you should be all set.
+* open terminal
+* Download bundler gem: <code>sudo gem install bundler</code>
+* Navigate to project root folder
+* Install gems: <code>sudo bundle install</code>
+
+(<code>sudo</code> may or may not be necessary on your system
 
 __Mac OSX__
 
-Ruby 1.8.7 is already pre-installed on OSX. Just run <code>sudo bundle install</code> and type in your admin password to install the required gems.
+Ruby 1.8.7 is already pre-installed on OSX. Install bundler gem (see __Linux__) and just run <code>sudo bundle install</code> and type in your admin password to install the required gems.
 
 Running
 -------
