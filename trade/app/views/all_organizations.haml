@@ -8,6 +8,7 @@
 %table.table-minimalistic
   %thead
     %tr
+      %th Pic
       %th Name
       %th Credits
       %th # Members
@@ -15,6 +16,8 @@
   %tbody
     -for organization in Store::Organization.all
       %tr
+        %td
+          %img{:src => organization.image_path, :height => "40px"}
         %td
           %a{:href => "/organization/#{organization.name}"}
             :escaped
