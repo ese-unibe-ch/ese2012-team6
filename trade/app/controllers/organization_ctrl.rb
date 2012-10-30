@@ -45,7 +45,7 @@ class Organization < Sinatra::Application
     members = params[:member] || []
     members.each { |member| organization.add_member(User.by_name(member)) }
 
-    redirect "/organizations"
+    redirect '/organizations'
   end
 
   # Get information about organization
@@ -85,7 +85,7 @@ class Organization < Sinatra::Application
   end
 
   # handles a user add request to organization and determines whether the user is able to become admin of said organization
-  post "/organization/:organization_name/add/:username/" do
+  post '/organization/:organization_name/add/:username/' do
     redirect '/login' unless @user
 
     organization = Organization.by_name(params[:organization_name])
@@ -96,13 +96,13 @@ class Organization < Sinatra::Application
     else
       organization.add_member(user)
     end
-    #redirect "/organization/#{params[:organization_name]}"
-    redirect (back + "#manage_admins")
+
+    redirect (back + '#manage_admins')
   end
 
   # handles a user remove request from organization and determines whether the user can resign as admin or not,
   # THERE MUST ALWAYS BE AN ADMIN!
-  post "/organization/:organization_name/remove/:username/" do
+  post '/organization/:organization_name/remove/:username/' do
     redirect '/login' unless @user
 
     organization = Organization.by_name(params[:organization_name])
@@ -117,8 +117,7 @@ class Organization < Sinatra::Application
     # fail if org has no admin
     fail if organization.admins.size == 0
 
-    #redirect "/organization/#{params[:organization_name]}"
-    redirect (back + "#manage_admins")
+    redirect (back + '#manage_admins')
   end
 
   # Handles changing organization
@@ -147,7 +146,7 @@ class Organization < Sinatra::Application
     file = params[:file_upload]
     redirect to("/organization/#{viewed_organization.name}") unless file
 
-    redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
+    redirect '/error/wrong_size' if file[:tempfile].size > 400*1024
 
     uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/organizations")
     viewed_organization.image_path = uploader.upload(file, viewed_organization.id)
@@ -163,12 +162,12 @@ class Organization < Sinatra::Application
     org = Organization.by_name(org_name)
 
     fail unless @user.is_admin_of?(org)
-    redirect "/error/wrong_transfer_amount" unless (StringChecker.is_numeric?(params[:gift_amount]) && Integer(params[:gift_amount]) >= 0)
+    redirect '/error/wrong_transfer_amount' unless (StringChecker.is_numeric?(params[:gift_amount]) && Integer(params[:gift_amount]) >= 0)
 
     amount = params[:gift_amount].to_i
     success = org.send_money_to(@user, amount)
 
-    redirect "/error/organization_credit_transfer_failed" unless success
+    redirect '/error/organization_credit_transfer_failed' unless success
     redirect back
   end
 end
