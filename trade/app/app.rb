@@ -17,8 +17,6 @@ require_relative('controllers/activity_logger_ctrl')
 require_relative('controllers/organization_ctrl')
 
 class App < Sinatra::Base
-  CREDIT_REDUCE_TIME = 3*60 # 3 Minutes
-  use Rack::Flash
 
   # Controllers
   use Authentication
@@ -62,4 +60,5 @@ end
 
 # Now, run it
 App.run!
+
 
