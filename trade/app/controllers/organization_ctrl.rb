@@ -149,7 +149,7 @@ class Organization < Sinatra::Application
 
     redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
 
-    uploader = PictureUploader.with_path("/images/organizations")
+    uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/organizations")
     viewed_organization.image_path = uploader.upload(file, viewed_organization.id)
 
     redirect back
