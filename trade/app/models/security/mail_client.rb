@@ -17,10 +17,10 @@ subject: Password Reset
 
 
       Your Password has been reset on request to "#{contents}"
-      Please change it directly after your next login.
+      Please change it immediately after your next login.
 
-Sincerely
-Awesome Traiding App
+Sincerely,
+Awesome Trading App
 EOF
 
       Net::SMTP.enable_tls(OpenSSL::SSL::VERIFY_NONE)

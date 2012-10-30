@@ -18,7 +18,7 @@ class Authentication < Sinatra::Application
   end
 
   # handle user change password request
-  post '/login/passwordReset/'do
+  post '/login/passwordReset/' do
     name = params[:username]
 
     redirect '/error/trying forget pd for pre saved users' if ["admin", "umbrellacorp", "ese", "ese2", "petergriffin"].include?(name)
@@ -27,6 +27,10 @@ class Authentication < Sinatra::Application
     user = Store::User.by_name(name)
     user.reset_password
 
+    user = Store::User.by_name(name)
+    redirect back if user.nil?
+
+    user.reset_password
     redirect back
   end
 
