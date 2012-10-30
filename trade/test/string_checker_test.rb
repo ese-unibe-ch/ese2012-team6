@@ -65,5 +65,6 @@ class Password_Handler_Test < Test::Unit::TestCase
     assert(!StringChecker.is_email?("happy@com"))
     assert(!StringChecker.is_email?("happy-.,.@email.com"))
     assert(StringChecker.is_email?("happy@student.email.com"))
+    assert(!StringChecker.is_email?(""))
   end
 end

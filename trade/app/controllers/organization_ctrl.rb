@@ -84,6 +84,7 @@ class Organization < Sinatra::Application
                                           }
   end
 
+  # handles a user add request to organization and determines whether the user is able to become admin of said organization
   post "/organization/:organization_name/add/:username/" do
     redirect '/login' unless @user
 
@@ -97,8 +98,10 @@ class Organization < Sinatra::Application
     end
     #redirect "/organization/#{params[:organization_name]}"
     redirect (back + "#manage_admins")
- end
+  end
 
+  # handles a user remove request from organization and determines whether the user can resign as admin or not,
+  # THERE MUST ALWAYS BE AN ADMIN!
   post "/organization/:organization_name/remove/:username/" do
     redirect '/login' unless @user
 
@@ -111,9 +114,11 @@ class Organization < Sinatra::Application
       organization.remove_member(user)
     end
 
+    # fail if org has no admin
+    fail if organization.admins.size == 0
+
     #redirect "/organization/#{params[:organization_name]}"
     redirect (back + "#manage_admins")
-
   end
 
   # Handles changing organization
@@ -144,13 +149,13 @@ class Organization < Sinatra::Application
 
     redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
 
-    filename = Organization.id_image_to_filename(viewed_organization, file[:filename])
     uploader = PictureUploader.with_path("/images/organizations")
-    viewed_organization.image_path = uploader.upload(file, filename)
+    viewed_organization.image_path = uploader.upload(file, viewed_organization.id)
 
     redirect back
   end
 
+  # handles credit transfer request from user to organization
   post '/organization/:org_name/send_money' do
     redirect '/login' unless @user
 

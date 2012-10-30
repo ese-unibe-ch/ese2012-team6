@@ -1,5 +1,7 @@
 require 'haml'
 require_relative '../models/analytics/activity_logger'
+require_relative '../models/store/user'
+require_relative '../models/store/item'
 
 class ActivityLogger < Sinatra::Application
   include Store
@@ -9,6 +11,7 @@ class ActivityLogger < Sinatra::Application
     @user = User.by_name(session[:name])
   end
 
+  # show list of all stored activities
   get '/activities' do
     redirect '/login' unless @user
 
@@ -19,6 +22,7 @@ class ActivityLogger < Sinatra::Application
     }
   end
 
+  # show details page of an activity, not yet used!
   get "/activity/:act_id" do
     redirect '/login' unless @user
 

@@ -68,8 +68,7 @@ class User < Sinatra::Application
     item_id = params[:item_id].to_i
     item = Item.by_id(item_id)
 
-    changed_item_details =  @user.open_item_page_time < item.edit_time
-    redirect url("/error/item_changed_details") if changed_item_details
+    redirect url("/error/item_changed_details") unless @user.knows_item_properties?(item)
 
     buy_success, buy_message = @user.on_behalf_of.buy_item(item)
 
@@ -90,17 +89,17 @@ class User < Sinatra::Application
 
     file = params[:file_upload]
     redirect to("/user/#{params[:name]}") unless file
-
+    puts file[:tempfile].path
+    puts file[:filename]
     redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
 
-    filename = User.id_image_to_filename(@user.name, file[:filename])
-
     uploader = PictureUploader.with_path("/images/users")
-    @user.image_path = uploader.upload(file, filename)
+    @user.image_path = uploader.upload(file, @user.id)
 
     redirect to("/user/#{params[:name]}")
   end
 
+  # handles credit transfer request from user to organization
   post '/user/send_money/:org_name' do
     redirect '/login' unless @user
 

@@ -3,6 +3,7 @@ require 'rdiscount'
 require_relative '../models/storage/picture_uploader'
 require_relative '../models/security/string_checker'
 require_relative '../models/store/comment'
+
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
   include Store
@@ -30,7 +31,7 @@ class Item < Sinatra::Application
   get "/item/:item_id" do
     redirect '/login' unless @user
 
-    @user.take_item_snapshot
+    @user.acknowledge_item_properties!
     item = Item.by_id(params[:item_id].to_i)
 
     redirect "/user/#{@user.name}" if item.nil?
@@ -66,7 +67,7 @@ class Item < Sinatra::Application
     item = Item.by_id(item_id)
     comment_description = params[:item_comment]
 
-    comment = Comment.new_comment(comment_description, @user.on_behalf_of, Time.now.asctime)
+    comment = Comment.new_comment(comment_description, @user.on_behalf_of)
 
     item.update_comments(comment)
 
@@ -89,8 +90,9 @@ class Item < Sinatra::Application
   # handles item editing, updates model in database
   post "/item/:item_id/edit" do
     redirect '/login' unless @user
-    file = params[:file_upload]
+
     redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
+    file = params[:file_upload]
     redirect "/error/wrong_size" if file && file[:tempfile].size > 400*1024
 
     item_id = params[:item_id].to_i
@@ -103,12 +105,8 @@ class Item < Sinatra::Application
     # UG: necessary because this handler can also be called by scripts
     redirect "/item/#{item_id}" unless @user.can_edit?(item)
 
-    if file
-      file_name = Item.id_image_to_filename(item.id, file[:filename])
-
-      uploader = PictureUploader.with_path("/images/items")
-      item.image_path = uploader.upload(file, file_name)
-    end
+    uploader = PictureUploader.with_path("/images/items")
+    item.image_path = uploader.upload(file, item.id)
 
     item.update(item_name, item_price, item_description)
 
@@ -166,6 +164,7 @@ class Item < Sinatra::Application
     redirect back
   end
 
+  # handles item creation via quick add form
   put "/item/quick_add" do
     redirect '/login' unless @user
     redirect back if params[:item_name] == "" or params[:item_price] == ""

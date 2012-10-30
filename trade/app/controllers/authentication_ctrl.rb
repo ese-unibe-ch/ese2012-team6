@@ -1,5 +1,4 @@
 require 'haml'
-require_relative('../models/store/item')
 require_relative('../models/store/user')
 
 # Handles all requests concerning User Authentication, namely Login and Logout
@@ -16,6 +15,20 @@ class Authentication < Sinatra::Application
     redirect '/' if @user
 
     haml :login
+  end
+
+  # handle user change password request
+  post "/login/passwordReset/"do
+    name = (params[:username])
+
+    redirect '/error/user_no_exists' unless User.exists?(:name => name)
+
+    user = Store::User.by_name(name)
+
+    redirect back if user.nil?
+    user.reset_password
+
+    redirect back
   end
 
   # POST handler for login request, processes input and logs user in if possible

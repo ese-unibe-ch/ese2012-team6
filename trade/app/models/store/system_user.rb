@@ -3,6 +3,7 @@ require 'rbtree'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
+require_relative '../store/trading_authority'
 
 # superclass for user and organization
 # responsible for all actions concerning user and organization objects
@@ -11,8 +12,6 @@ module Store
     attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
 
     @@last_id = 0
-    CREDIT_REDUCE_RATE = 0.05
-	  SELL_BONUS = 0.05
 
     def initialize
       @@last_id += 1
@@ -34,50 +33,6 @@ module Store
       system_user.credits = options[:credits] || 0
 
       return system_user
-    end
-
-    # deletes all users and organizations from the system
-    def self.clear_all
-      @@last_id = 0
-      User.clear_all
-      Organization.clear_all
-    end
-
-    # fetches system user object, args must contain key :name or :id
-    def self.fetch_by(args = {})
-      return User.fetch_by(args) if User.exists?(args)
-      return Organization.fetch_by(args) if Organization.exists?(args)
-    end
-
-    # returns the system user found by id
-    def self.by_id(id)
-      return self.fetch_by(:id => id.to_i)
-    end
-
-    # returns the system user found by name
-    def self.by_name(name)
-      return self.fetch_by(:name => name)
-    end
-
-    # returns all system users
-    def self.all
-      return User.all.concat(Organization.all)
-    end
-
-    # returns true if the system includes a certain user or organization object
-    def self.exists?(args = {})
-      return User.exists?(args) || Organization.exists?(args)
-    end
-
-    # all credits get reduced in a special time interval
-    def self.reduce_credits
-      all_users = self.all
-      all_users.each{|user| user.reduce_credits }
-    end
-
-    # reduce credit of each user
-    def reduce_credits
-      self.credits -= Integer(self.credits * CREDIT_REDUCE_RATE)
     end
 
     # propose a new item
@@ -138,10 +93,12 @@ module Store
       elsif !seller.items.include?(item)
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "seller_not_own_item" #Seller does not own item to buy
+      elsif !self.knows_item_properties?(item)
+        return false, "item_changed_details" #Buyer is not aware of latest changes to item's properties
       end
 
       seller.release_item(item)
-      seller.credits += item.price + Integer(item.price * SELL_BONUS)
+      seller.credits += item.price + Integer(item.price * TradingAuthority::SELL_BONUS)
 
       item.deactivate
 
@@ -177,11 +134,6 @@ module Store
       return "#{self.name}, #{self.credits}"
     end
 
-    # finds an image by id and path
-    def self.id_image_to_filename(id, path)
-      "#{id}_#{path}"
-    end
-
     # returns false when a system user object calls this method
     def is_organization?
       false
@@ -204,6 +156,52 @@ module Store
     def send_money(amount)
       fail unless amount >= 0
       self.credits += amount
+    end
+
+    # save time for item page
+    def acknowledge_item_properties!
+      self.open_item_page_time = Time.now
+    end
+
+    # returns true when user is aware of latest changes to item, false otherwise
+    def knows_item_properties?(item)
+      return !(self.open_item_page_time < item.edit_time)
+    end
+
+    # class methods
+    class << self
+      # deletes all users and organizations from the system
+      def clear_all
+        @@last_id = 0
+        User.clear_all
+        Organization.clear_all
+      end
+
+      # fetches system user object, args must contain key :name or :id
+      def fetch_by(args = {})
+        return User.fetch_by(args) if User.exists?(args)
+        return Organization.fetch_by(args) if Organization.exists?(args)
+      end
+
+      # returns the system user found by id
+      def by_id(id)
+        return fetch_by(:id => id.to_i)
+      end
+
+      # returns the system user found by name
+      def by_name(name)
+        return fetch_by(:name => name)
+      end
+
+      # returns all system users
+      def all
+        return User.all.concat(Organization.all)
+      end
+
+      # returns true if the system includes a certain user or organization object
+      def exists?(args = {})
+        return User.exists?(args) || Organization.exists?(args)
+      end
     end
   end
 end

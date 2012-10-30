@@ -9,6 +9,10 @@ require_relative '../app/models/store/item'
 class SystemUserTest < Test::Unit::TestCase
   include Store
 
+  def setup
+    SystemUser.clear_all
+  end
+
   def teardown
     SystemUser.clear_all
   end
@@ -115,6 +119,8 @@ class SystemUserTest < Test::Unit::TestCase
     item = seller.propose_item("piece of crap", 100)
     item.activate
 
+    buyer.acknowledge_item_properties!
+
     transaction_result, transaction_message = buyer.buy_item(item)
     assert(transaction_result, "Transaction failed when it should have succeeded\nReason: #{transaction_message}")
 
@@ -133,11 +139,10 @@ class SystemUserTest < Test::Unit::TestCase
     seller = SystemUser.named("Seller", :credits => 100)
 
     item = seller.propose_item("piece of crap", 100)
-
+    buyer.acknowledge_item_properties!
     assert(!item.active?)
 
     transaction_result, transaction_message = buyer.buy_item(item)
-    puts transaction_message
 
     assert(transaction_result == false,"Transaction should have failed but it did not")
 
@@ -155,11 +160,10 @@ class SystemUserTest < Test::Unit::TestCase
 
     item = seller.propose_item("big piece of crap", 9001) #item price is over 9000!
     item.activate
-
+    buyer.acknowledge_item_properties!
     assert(item.active?)
 
     transaction_result, transaction_message = buyer.buy_item(item)
-    puts transaction_message
 
     assert(transaction_result == false,"Transaction should have failed but it did not")
 
@@ -171,24 +175,6 @@ class SystemUserTest < Test::Unit::TestCase
     assert_equal(seller, item.owner, "Item has the wrong owner")
   end
 
-  def test_reduce_credits
-    user = SystemUser.named("User", :credits => 200)
-
-    user.reduce_credits
-
-    assert(200 - Integer(SystemUser::CREDIT_REDUCE_RATE * 200), user.credits)
-  end
-
-  def test_reduce_credits_all
-    (user = User.named("User1")).save
-    (org = Organization.named("Org1", :credits => 200)).save
-
-    SystemUser.reduce_credits
-
-    assert_equal(100 - Integer(SystemUser::CREDIT_REDUCE_RATE * 100), user.credits)
-    assert_equal(200 - Integer(SystemUser::CREDIT_REDUCE_RATE * 200), org.credits)
-  end
-
   def test_send_money_to
     user1 = SystemUser.named("User1", :credits => 100)
     user2 = SystemUser.named("User2", :credits => 100)
@@ -197,5 +183,73 @@ class SystemUserTest < Test::Unit::TestCase
 
     assert_equal(50, user1.credits)
     assert_equal(150, user2.credits)
+  end
+
+  def test_notice_item_change_fail
+    seller = Store::User.named("seller")
+    buyer = Store::User.named("buyer")
+    item = seller.propose_item("item", 2);
+
+    buyer.acknowledge_item_properties!
+
+    # change item while buyer is not looking
+    item.deactivate
+    item.update("newName", 3, "aölsdfjaldf", false)
+    item.activate
+
+    assert_equal(false, buyer.knows_item_properties?(item))
+    assert_equal([false, "item_changed_details"] , buyer.buy_item(item, false))
+  end
+
+  def test_notice_item_change_success
+    seller = Store::User.named("seller")
+    buyer = Store::User.named("buyer")
+    item = seller.propose_item("item", 2);
+
+    buyer.acknowledge_item_properties!
+
+    # change item while buyer is not looking
+    item.deactivate
+    item.update("newName", 3, "aölsdfjaldf", false)
+    item.activate
+
+    # buyer looks at item
+    buyer.acknowledge_item_properties!
+
+    assert_equal(true, buyer.knows_item_properties?(item))
+    assert_equal(true , buyer.buy_item(item, false)[0])
+  end
+
+  def test_user_can_buy_own_item
+    user = Store::User.named("Hans")
+    item = user.propose_item("TestItem", 100, "", false)
+    assert_equal(false, user.can_buy?(item), "Should not be able to buy own items")
+  end
+
+  def test_user_can_buy_other_item
+    user = Store::User.named("Hans")
+    other = Store::User.named("Herbert")
+
+    item = other.propose_item("TestItem", 100, "", false)
+    assert_equal(false, user.can_buy?(item))
+    item.activate
+    assert_equal(true, user.can_buy?(item))
+  end
+
+  def test_can_edit_own_item
+    user = Store::User.named("Hans")
+    item = user.propose_item("TestItem", 100, "", false)
+    assert_equal(true, user.can_edit?(item))
+    item.activate
+    assert_equal(false, user.can_edit?(item))
+  end
+
+  def test_can_edit_other_item
+    user = Store::User.named("Hans")
+    other = Store::User.named("Herbert")
+    item = other.propose_item("TestItem", 100, "", false)
+    assert_equal(false, user.can_edit?(item))
+    item.activate
+    assert_equal(false, user.can_edit?(item))
   end
 end

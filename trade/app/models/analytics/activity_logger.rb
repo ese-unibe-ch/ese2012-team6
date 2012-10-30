@@ -1,14 +1,20 @@
 module Analytics
-  # Responsible for storing activities and performing calculations on said activities
+  # Responsible for storing activities and performing operations (e.g sorting) on said activities
   class ActivityLogger
+
     @@activities = {}
+
+    # clear all logged activities
+    def self.clear
+      @@activities.clear
+    end
 
     # log an activity
     def self.log(activity)
       @@activities[activity.id] = activity
     end
 
-    # get all stored activities in descending order by timestamp
+    # get all stored activities in descending order by timestamp (more recent come first)
     def self.get_all_activities
       return @@activities.values.sort! {|a,b| b.timestamp <=> a.timestamp}
     end

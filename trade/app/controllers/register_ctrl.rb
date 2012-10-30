@@ -17,12 +17,11 @@ class Register < Sinatra::Application
     user_name = params[:username].strip
     user_pwd = params[:password].strip
     user_repeated_pwd = params[:rep_password].strip
-	  user_email = params[:email]
+	  user_email = params[:email].strip
     user_description = params[:description].strip
 
     redirect 'error/no_user_name' if user_name == ""
     redirect 'error/invalid_username' unless StringChecker.is_valid_username?(user_name)
-	  redirect 'error/no_email' if user_email == ""
     redirect 'error/no_email' unless StringChecker.is_email?(user_email)
     redirect 'error/user_already_exists' if User.exists?(:name => user_name)
     redirect 'error/pwd_unsafe' unless StringChecker.is_safe_pw?(user_pwd)
