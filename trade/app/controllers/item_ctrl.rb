@@ -1,3 +1,4 @@
+require 'haml'
 require 'rdiscount'
 
 require_relative '../models/storage/picture_uploader'
@@ -105,8 +106,10 @@ class Item < Sinatra::Application
     # UG: necessary because this handler can also be called by scripts
     redirect "/item/#{item_id}" unless @user.can_edit?(item)
 
-    uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/items")
-    item.image_path = uploader.upload(file, item.id)
+    if file
+      uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/items")
+      item.image_path = uploader.upload(file, item.id)
+    end
 
     item.update(item_name, item_price, item_description)
 
@@ -154,7 +157,7 @@ class Item < Sinatra::Application
     item = item_owner.propose_item(item_name, item_price, item_description)
 
     uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/items")
-    item.image_path = uploader.upload(file, file_name)
+    item.image_path = uploader.upload(file, item.id)
 
     redirect "/item/#{item.id}" if back == url("/item/new")
     redirect back
