@@ -33,7 +33,7 @@ module Store
       system_user.description = options[:description] || ""
       system_user.credits = options[:credits] || 0
 
-      return system_user
+      system_user
     end
 
     # propose a new item
@@ -43,13 +43,12 @@ module Store
       self.attach_item(item)
       Analytics::ItemAddActivity.with_creator_item(self, item).log if log
 
-      return item
+      item
     end
 
-    # returns all active items of an user
+    # s all active items of an user
     def get_active_items
-      active_items = self.items.select {|i| i.active?}
-      return active_items
+      self.items.select { |i| i.active? }
     end
 
     # attaches a newly created or bought item
@@ -114,24 +113,24 @@ module Store
 
     # returns true if an user is allowed to edit
     def can_edit?(item)
-      return item.editable_by?(self)
+      item.editable_by?(self)
     end
 
     alias :can_delete? :can_edit?
 
     # returns true if user is allowed to buy
     def can_buy?(item)
-      return ((item.owner != self.on_behalf_of) && item.active?)
+      ((item.owner != self.on_behalf_of) && item.active?)
     end
 
     # returns true if user is allowed to activate an item
     def can_activate?(item)
-      return item.activatable_by?(self)
+      item.activatable_by?(self)
     end
 
     # returns the system user as a string
     def to_s
-      return "#{self.name}, #{self.credits}"
+      "#{self.name}, #{self.credits}"
     end
 
     # returns false when a system user object calls this method
@@ -149,7 +148,7 @@ module Store
 
       fail if self.credits < 0
 
-      return true
+      true
     end
 
     # making the transfer of credit
@@ -165,7 +164,7 @@ module Store
 
     # returns true when user is aware of latest changes to item, false otherwise
     def knows_item_properties?(item)
-      return !(self.open_item_page_time < item.edit_time)
+      !(self.open_item_page_time < item.edit_time)
     end
 
     # class methods
@@ -179,28 +178,28 @@ module Store
 
       # fetches system user object, args must contain key :name or :id
       def fetch_by(args = {})
-        return User.fetch_by(args) if User.exists?(args)
-        return Organization.fetch_by(args) if Organization.exists?(args)
+        User.fetch_by(args) if User.exists?(args)
+        Organization.fetch_by(args) if Organization.exists?(args)
       end
 
       # returns the system user found by id
       def by_id(id)
-        return fetch_by(:id => id.to_i)
+        fetch_by(:id => id.to_i)
       end
 
       # returns the system user found by name
       def by_name(name)
-        return fetch_by(:name => name)
+        fetch_by(:name => name)
       end
 
       # returns all system users
       def all
-        return User.all.concat(Organization.all)
+        User.all.concat(Organization.all)
       end
 
       # returns true if the system includes a certain user or organization object
       def exists?(args = {})
-        return User.exists?(args) || Organization.exists?(args)
+        User.exists?(args) || Organization.exists?(args)
       end
     end
   end

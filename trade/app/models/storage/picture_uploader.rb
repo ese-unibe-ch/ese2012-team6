@@ -12,7 +12,7 @@ module Storage
     def self.with_path(path)
       uploader = PictureUploader.new
       uploader.root_path = path
-      return uploader
+      uploader
     end
 
     # uploads a file and returns path to saved file, disable copy only for testing
@@ -26,9 +26,9 @@ module Storage
           FileUtils::cp(file[:tempfile].path, File.join(full_path, filename))
         end
 
-        return File.join(self.root_path, filename)
+        File.join(self.root_path, filename)
       else
-        return "/images/no_image.gif"
+        "/images/no_image.gif"
       end
     end
   end

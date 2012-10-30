@@ -18,7 +18,7 @@ module Store
     def self.timed(time)
       ta = TradingAuthority.new
       ta.credit_reduce_time = time
-      return ta
+      ta
     end
 
     def start
@@ -47,7 +47,7 @@ module Store
       # all credits get reduced in a special time interval
       def swing_hammer_of_doom
         all_users = SystemUser.all
-        all_users.each{|user| self.reduce_credits(user) }
+        all_users.each { |user| self.reduce_credits(user) }
         puts "Swung hammer of doom"
       end
 
