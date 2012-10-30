@@ -2,7 +2,9 @@ require 'rubygems'
 require 'tlsmail'
 
 module Security
+  # provides service to send mails to recipients
   class MailClient
+    # send a mail with content to recipient
     def self.send_mail(to,contents)
 
       from = 'awesome.trading.app@gmail.com'    #insert a gmail address

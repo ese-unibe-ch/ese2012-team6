@@ -1,5 +1,6 @@
 # this class is responsible for all picture uploads
 module Storage
+  # provides services for uploading images
   class PictureUploader
     attr_accessor :root_path
 

@@ -116,6 +116,7 @@ module Store
       new_password = Security::PasswordGenerator.generate_new_password()
       self.change_password(new_password)
       Security::MailClient.send_mail(self.email, new_password) if sendMail
+      return new_password
     end
 
     class << self

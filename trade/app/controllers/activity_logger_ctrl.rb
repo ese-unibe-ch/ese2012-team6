@@ -3,6 +3,7 @@ require_relative '../models/analytics/activity_logger'
 require_relative '../models/store/user'
 require_relative '../models/store/item'
 
+# handles requests concerning activities and activity logging
 class ActivityLogger < Sinatra::Application
   include Store
   include Analytics

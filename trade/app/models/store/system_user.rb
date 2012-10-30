@@ -4,6 +4,7 @@ require 'rbtree'
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../store/trading_authority'
+require_relative '../store/item'
 
 # superclass for user and organization
 # responsible for all actions concerning user and organization objects
@@ -98,12 +99,11 @@ module Store
       end
 
       seller.release_item(item)
-      seller.credits += item.price + Integer(item.price * TradingAuthority::SELL_BONUS)
+
+      TradingAuthority.settle_item_purchase(seller, self, item)
 
       item.deactivate
-
       self.attach_item(item)
-      self.credits -= item.price
 
       item.notify_change
 
