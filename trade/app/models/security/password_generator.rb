@@ -6,7 +6,8 @@ module Security
   class PasswordGenerator
     # generate a new save password which is 8 characters long
     def self.generate_new_password
-      random_string = Rand62.safe(8)
+      length=10
+      rand(36**length).to_s(36)
     end
   end
 end

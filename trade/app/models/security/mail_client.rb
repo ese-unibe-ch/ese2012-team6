@@ -19,7 +19,7 @@ subject: Password Reset
       Your Password has been reset on request to "#{contents}"
       Please change it immediately after your next login.
 
-Sincerely
+Sincerely,
 Awesome Trading App
 EOF
 
