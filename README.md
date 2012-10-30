@@ -16,7 +16,7 @@ __Windows__
 __Linux__
 
 You need to have a working version of Ruby 1.8.7 installed on your system. Please refer to your distribution's user forums
-on how to install Ruby 1.8.7 on your system.
+on how to install Ruby 1.8.7 on your system. You also have to be able to install third-party gems. (see http://rubygems.org/pages/download)
 
 We are using some additional gems. Please run <code>sudo bundle install</code> and type in your password to install all the gems automatically and you should be all set.
 
