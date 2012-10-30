@@ -1,3 +1,4 @@
+require 'haml'
 require 'rdiscount'
 
 require_relative '../models/storage/picture_uploader'
