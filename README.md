@@ -16,4 +16,12 @@ cd ese2012-team6
 ruby /trade/app/app.rb
 </code>
 
-
+Running the app on windowsNew Page Edit Page Page History
+---------------------------------------------------------
+After you've installed rubymine, download Ruby 1.8.7-p330 Binary
+In Rubymine: Open the properties and choose the Ruby 1.8.7 as SDK.(Usually located at C:Ruby187)
+Add the path of this folder to the environment variables of the System. (Systemsteuerung\System und Sicherheit\System => Rechtsklick-Eigenschaften => Umgebungsvariablen => Path: C:\Ruby187\bin)
+Install the Devkit
+Console: gem install bundler
+Console: checkout this project, then use the following command: bundle install
+To start the app use: ruby app/app.rb
