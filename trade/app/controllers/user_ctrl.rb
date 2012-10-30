@@ -45,17 +45,20 @@ class User < Sinatra::Application
 
   # Handles user profile edit request
   post "/user/:user_name/edit" do
+    redirect '/login' unless @user
 
     old_pwd = params[:password_old]
     new_pwd = params[:password_new]
     new_pwd_rep = params[:rep_password]
     new_desc = params[:description]
 
-    redirect 'error/pwd_rep_no_match' if new_pwd != new_pwd_rep
     redirect "/error/wrong_password" unless @user.password_matches?(old_pwd)
+    @user.description = new_desc
+    redirect "/user/#{@user.name}" if new_pwd == ""
+
+    redirect 'error/pwd_rep_no_match' if new_pwd != new_pwd_rep
     redirect "/error/pwd_unsafe" unless StringChecker.is_safe_pw?(new_pwd)
 
-    @user.description = new_desc
     @user.change_password(new_pwd)
 
     redirect "/user/#{@user.name}"
