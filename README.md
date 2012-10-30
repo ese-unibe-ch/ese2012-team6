@@ -22,6 +22,6 @@ Running the app on windows
 -In Rubymine: Open the properties and choose the Ruby 1.8.7 as SDK.(Usually located at C:Ruby187)  
 -Add the path of this folder to the environment variables of the System. (Systemsteuerung\System und \nSicherheit\System => Rechtsklick-Eigenschaften => Umgebungsvariablen => Path: C:\Ruby187\bin)  
 -Install the Devkit  
--Console: <code>gem install bundler</code> 
--Console: checkout this project, then use <code>bundle install</code>
--To start the app use: ruby app/app.rb
+-Console: <code>gem install bundler</code>  
+-Console: checkout this project, then use <code>bundle install</code>  
+-To start the app use <code>ruby app/app.rb</code>
