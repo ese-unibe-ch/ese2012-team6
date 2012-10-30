@@ -75,7 +75,7 @@
                 #{user.name}
           %td
             %div.action_buttons
-              -if !user.is_member_of?(viewed_organization)
+              -unless user.is_member_of?(viewed_organization)
                 %form{:action => "/organization/#{viewed_organization.name}/add/#{user.name}/", :method => "POST" }
                   %input.styled-button.small{:type => "submit", :value => "Invite"}
               -if user.is_member_of?(viewed_organization) and !user.is_admin_of?(viewed_organization)

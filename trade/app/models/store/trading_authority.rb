@@ -56,6 +56,7 @@ module Store
         user.credits -= Integer(user.credits * CREDIT_REDUCE_RATE)
       end
 
+      # update seller's and buyer's credits according to item pricing and sell bonus
       def settle_item_purchase(seller, buyer, item)
         seller.credits += item.price + Integer((item.price * SELL_BONUS).ceil)
         buyer.credits -= item.price

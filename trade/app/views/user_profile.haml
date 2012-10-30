@@ -80,8 +80,9 @@
   %ul
     -for org in viewed_user.organizations
       %li
-        :escaped
-          #{org.name}
+        %a{:href => "/organization/#{org.name}"}
+          :escaped
+            #{org.name}
 %h3
   #{is_my_profile ? "Your Description" : "Description of " + viewed_user.name}:
 -if viewed_user.description == ""

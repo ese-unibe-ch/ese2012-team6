@@ -177,8 +177,9 @@ module Store
       end
 
       # fetches system user object, args must contain key :name or :id
+      # returns nil if not found
       def fetch_by(args = {})
-        User.fetch_by(args) if User.exists?(args)
+        return User.fetch_by(args) if User.exists?(args)
         Organization.fetch_by(args) if Organization.exists?(args)
       end
 
