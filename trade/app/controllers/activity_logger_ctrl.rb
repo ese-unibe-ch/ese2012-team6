@@ -24,7 +24,7 @@ class ActivityLogger < Sinatra::Application
   end
 
   # show details page of an activity, not yet used!
-  get "/activity/:act_id" do
+  get '/activity/:act_id' do
     redirect '/login' unless @user
 
     activity_id = params[:act_id]

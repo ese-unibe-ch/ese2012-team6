@@ -11,22 +11,14 @@ class Authentication < Sinatra::Application
   end
 
   # GET handler for login request, shows login form
-  get "/login" do
+  get '/login' do
     redirect '/' if @user
 
     haml :login
   end
 
   # handle user change password request
-  post "/login/passwordReset/"do
-<<<<<<< HEAD
-    name = (params[:username])
-    redirect '/error/user_no_exists' unless User.exists?(:name => name)
-
-    if name == "admin" || name == "ese" || name == "ese2" || name == "petergriffin" || name == "umbrellacorp"
-      redirect '/error/trying forget pd for pre saved users'
-    end
-=======
+  post '/login/passwordReset/' do
     name = params[:username]
 
     redirect '/error/trying forget pd for pre saved users' if ["admin", "umbrellacorp", "ese", "ese2", "petergriffin"].include?(name)
@@ -34,7 +26,6 @@ class Authentication < Sinatra::Application
 
     user = Store::User.by_name(name)
     user.reset_password
->>>>>>> 58116885c1f711ec6d3941d825207183936b5860
 
     user = Store::User.by_name(name)
     redirect back if user.nil?
@@ -44,7 +35,7 @@ class Authentication < Sinatra::Application
   end
 
   # POST handler for login request, processes input and logs user in if possible
-  post "/login" do
+  post '/login' do
     name = params[:username].strip
     password = params[:password].strip
 
@@ -62,7 +53,7 @@ class Authentication < Sinatra::Application
 
   # GET handler for logout request, logs out the user
   # UG: TODO: Should be POST
-  get "/logout" do
+  get '/logout' do
     redirect '/' unless @user
 
     @user.logout

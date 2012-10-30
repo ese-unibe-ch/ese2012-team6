@@ -8,12 +8,12 @@ class Register < Sinatra::Application
   include Store
 
   # Shows registration form
-  get "/register" do
+  get '/register' do
     haml :register
   end
 
   # Handles registration inputs and creates new user in database
-  post "/register" do
+  post '/register' do
     user_name = params[:username].strip
     user_pwd = params[:password].strip
     user_repeated_pwd = params[:rep_password].strip

@@ -12,7 +12,7 @@ class Main < Sinatra::Application
   end
 
   # Default page handler, shows store page
-  get "/" do
+  get '/' do
     redirect '/login' unless @user
 
     @user.acknowledge_item_properties!
@@ -25,7 +25,7 @@ class Main < Sinatra::Application
   end
 
   # Error handler, shows error message
-  get "/error/:error_msg" do
+  get '/error/:error_msg' do
 
     should_refresh = false
 
