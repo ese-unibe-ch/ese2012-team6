@@ -156,7 +156,7 @@ class Item < Sinatra::Application
     item = item_owner.propose_item(item_name, item_price, item_description)
 
     uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/items")
-    item.image_path = uploader.upload(file, file_name)
+    item.image_path = uploader.upload(file, item.id)
 
     redirect "/item/#{item.id}" if back == url("/item/new")
     redirect back
