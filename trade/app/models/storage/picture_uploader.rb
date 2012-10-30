@@ -14,7 +14,7 @@ module Storage
       return uploader
     end
 
-    # uploads a file and returns path to saved file
+    # uploads a file and returns path to saved file, disable copy only for testing
     def upload(file, identifier, copy = true)
       if file != nil
         filename = "#{identifier.to_s}_#{file[:filename]}"
