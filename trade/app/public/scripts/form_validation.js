@@ -70,7 +70,7 @@ function goBack() {
 function validate_profile_edit(form) {
     if (form.password_old.value == "") {
         form.password_old.style.backgroundColor = "rgba(245, 106, 82, 0.41)";
-        document.getElementById('error_message').innerHTML = "You must enter your old password";
+        document.getElementById('error_message').innerHTML = "You must enter your old password to apply changes" ;
         return false;
     }
 
