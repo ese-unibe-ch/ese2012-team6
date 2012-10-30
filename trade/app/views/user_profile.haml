@@ -58,14 +58,14 @@
               %input{:type => "checkbox", :disabled => "disabled"}
           %td
             %div.action_buttons
-              -if @user.can_activate?(item) or @user.name == "admin"
+              -if @user.can_activate?(item)
                 -if item.active?
-                  %form{:action => "/item/#{item.id}/act_deact/false", :method => "POST"}
+                  %form{:action => "/item/#{item.id}/update_status?activate=false", :method => "POST"}
                     %input.styled-button.small.float_left{:type => "submit", :value => "Deactivate"}
                 -else
-                  %form{:action => "/item/#{item.id}/act_deact/true", :method => "POST"}
+                  %form{:action => "/item/#{item.id}/update_status?activate=true", :method => "POST"}
                     %input.styled-button.small{:type => "submit", :value => "Activate"}
-              -if @user.can_edit?(item) or @user.name == "admin"
+              -if @user.can_edit?(item)
                 %a.styled-button.small{:href => "/item/#{item.id}/edit"} Edit
               -if @user.can_delete?(item)
                 %form{:action => "/item/#{item.id}", :method => "POST"}
@@ -73,15 +73,16 @@
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
 %h3
   Member of Organizations
--if viewed_user.get_organizations.empty?
+-if viewed_user.organizations.empty?
   %p
     None
 -else
   %ul
-    -for org in viewed_user.get_organizations
+    -for org in viewed_user.organizations
       %li
-        :escaped
-          #{org.name}
+        %a{:href => "/organization/#{org.name}"}
+          :escaped
+            #{org.name}
 %h3
   #{is_my_profile ? "Your Description" : "Description of " + viewed_user.name}:
 -if viewed_user.description == ""

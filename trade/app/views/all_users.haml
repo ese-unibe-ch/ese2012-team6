@@ -5,12 +5,15 @@
 %table.table-minimalistic
   %thead
     %tr
+      %th Pic
       %th Name
       %th Credits
       %th No. of items
   %tbody
     -for user in Store::User.all
       %tr
+        %td
+          %img{:src => user.image_path, :height => "40px"}
         %td
           %a{:href => url("/user/#{user.name}")}
             :escaped

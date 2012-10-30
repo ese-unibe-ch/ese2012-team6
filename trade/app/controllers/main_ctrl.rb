@@ -2,19 +2,22 @@ require 'haml'
 require_relative('../models/store/user')
 require_relative('../models/store/item')
 
+# Handles all requests
 class Main < Sinatra::Application
+  include Store
+  include Analytics
 
   before do
-    @user = Store::User.by_name(session[:name])
+    @user = User.by_name(session[:name])
   end
 
   # Default page handler, shows store page
-  get "/" do
+  get '/' do
     redirect '/login' unless @user
 
-    @user.open_item_page_time = Time.now
+    @user.acknowledge_item_properties!
 
-    most_recent_purchases = Analytics::ActivityLogger.get_most_recent_purchases(10)
+    most_recent_purchases = ActivityLogger.get_most_recent_purchases(10)
 
     haml :store, :locals => { :users => Store::User.all,
                               :most_recent_purchases => most_recent_purchases
@@ -22,7 +25,7 @@ class Main < Sinatra::Application
   end
 
   # Error handler, shows error message
-  get "/error/:error_msg" do
+  get '/error/:error_msg' do
 
     should_refresh = false
 
@@ -37,8 +40,10 @@ class Main < Sinatra::Application
         error_message = "Item does not belong to anybody"
       when "not_enough_credits"
         error_message = "Buyer does not have enough credits"
+        should_refresh = true
       when "buy_inactive_item"
         error_message = "Trying to buy inactive item"
+        should_refresh = true
       when "seller_not_own_item"
         error_message = "Seller does not own item to buy"
       when "user_no_exists"
@@ -51,6 +56,8 @@ class Main < Sinatra::Application
         error_message = "Passwords do not match. Please try again"
       when "no_user_name"
         error_message = "You must choose a user name"
+      when "no_email"
+        error_message = "You must enter a valid e-mail address"
       when "pwd_unsafe"
         error_message = "Your password is unsafe. It must be at least 8 characters long and contain
                         at least one upper case letter and at least one number"
@@ -64,10 +71,16 @@ class Main < Sinatra::Application
         error_message = "Type a name for your Organization"
       when "user_credit_transfer_failed"
         error_message = "You do not have enough credits to transfer"
+        should_refresh = true
       when "organization_credit_transfer_failed"
         error_message = "Organization does not have enough credits to transfer"
+        should_refresh = true
       when "wrong_transfer_amount"
         error_message = "You must transfer a positive integral amount of credits"
+      when "invalid_username"
+        error_message = "Your user name must only contain word characters"
+      when "trying forget pd for pre saved users"
+        error_message = "This user was created for fast program testing, thus it hasn't got an email address"
     end
 
     last_page = back

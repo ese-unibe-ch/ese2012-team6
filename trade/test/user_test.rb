@@ -1,10 +1,22 @@
 require 'test/unit'
+require 'rubygems'
 require 'require_relative'
 require_relative '../app/models/store/item'
 require_relative '../app/models/store/user'
+require_relative '../app/models/store/organization'
 require_relative '../app/models/security/string_checker'
 
 class UserTest < Test::Unit::TestCase
+  include Store
+
+  def setup
+    SystemUser.clear_all
+  end
+
+  def teardown
+    SystemUser.clear_all
+  end
+
   def test_check_user_name
     name = "HansliCaramell"
     user = Store::User.named(name)
@@ -13,107 +25,72 @@ class UserTest < Test::Unit::TestCase
     assert_equal(name,user.name, "Wrong User name")
   end
 
-  def test_default_credits_amount
-    default_amount = 100
-    user = Store::User.new
+  def test_user_handling
+    (user1 = Store::User.named("me")).save
+    (user2 = Store::User.named("you")).save
+    assert(Store::User.exists?(:name=>user1.name), "user doesn't exist")
+    assert_equal(Store::User.all, [user1, user2], "users not in list")
 
-    assert(user.credits == default_amount)
+    user2.delete
+    assert(!Store::User.exists?(:name=>user2.name), "user doesn't exist")
+    assert_equal(Store::User.by_name(user1.name), Store::User.fetch_by(:name=>user1.name), "methods are not the same")
   end
 
-  def test_custom_credits_amount
-    amount = 123
-    user = Store::User.new
-    user.credits = amount
+  def test_user_organization_creating
+    (user = Store::User.named("me")).save
+    (member = Store::User.named("you")).save
+    (org1 = Store::Organization.named("org1")).save
+    (org2 = Store::Organization.named("org2")).save
 
-    assert(user.credits == amount)
+    org1.add_admin(user)
+    assert(user.is_admin_of?(org1), "failed adding admin")
+    assert(!user.is_admin_of?(org2), "admin in wrong organization")
+
+    org1.add_member(member)
+    org2.add_member(member)
+    assert(member.is_member_of?(org1), "failed adding member")
+    assert_equal(member.organizations, [org1, org2], "is in wrong organization")
   end
 
-  def test_user_proposes_item
-    user = Store::User.named("User")
-    item = user.propose_item("TestItem", 100)
+  def test_work_as
+    (user = Store::User.named("user")).save
+    (org = Store::Organization.named("org")).save
 
-    assert(item.active == false, "Newly created items must be inactive!")
-    assert(item.owner == user, "Item with no assigned owner created!")
+    assert(user.working_as_self?, "is not working on behalf of himself")
+    assert(!user.working_on_behalf_of?(org), "is working on behalf of this org")
+
+    user.work_on_behalf_of(org)
+    assert(user.working_on_behalf_of?(org), "is not working on behalf of this org")
+    assert(!user.working_as_self?, "is still working on behalf of himself")
   end
 
-  def test_user_active_items_list
-    user = Store::User.named("User")
-
-    user.propose_item("TestItem1", 1)
-    item2 = user.propose_item("TestItem2", 2)
-    user.propose_item("TestItem3", 3)
-    item4 = user.propose_item("TestItem4", 4)
-
-    item2.activate
-    item4.activate
-
-    active_items = [item2, item4]
-    active_items_user = user.get_active_items
-
-    # '==' operator of Array class tests for equal length and matching elements, does not compare references!
-    assert(active_items == active_items_user, "Item lists do not match!")
+  def test_password_matches_default_password
+    user = Store::User.named("user")
+    assert(!user.password_matches?("blabla"))
+    assert(user.password_matches?("user"))
   end
 
-  def test_user_buy_success
-    buyer = Store::User.named("Buyer")
-    seller = Store::User.named("Seller")
-
-    item = seller.propose_item("piece of crap", 100)
-    item.activate
-
-    transaction_result, transaction_message = buyer.buy_item(item)
-    assert(transaction_result == true, "Transaction failed when it should have succeeded\nReason: #{transaction_message}")
-
-    assert(buyer.credits == 0, "Buyer has too many credits left")
-    assert(seller.credits == 200, "Seller has too few credits")
-
-    assert(!seller.items.include?(item), "Seller still owns the sold item")
-    assert(buyer.items.include?(item), "Buyer doesn't have the item")
-    assert(item.owner == buyer, "Item has the wrong owner")
-
-    assert(!item.active?, "Item is still active")
+  def test_password_matches_custom_password
+    user = Store::User.named("user", :password => "verysecret")
+    assert(!user.password_matches?("user"))
+    assert(user.password_matches?("verysecret"))
   end
 
-  def test_user_buy_inactive_item
-    buyer = Store::User.named("Buyer")
-    seller = Store::User.named("Seller")
+  def test_change_password
+    user = Store::User.named("user")
+    assert(user.password_matches?("user"))
 
-    item = seller.propose_item("piece of crap", 100)
-
-    assert(!item.active?)
-
-    transaction_result, transaction_message = buyer.buy_item(item)
-    puts transaction_message
-
-    assert(transaction_result == false,"Transaction should have failed but it did not")
-
-    assert(buyer.credits == 100, "Buyer's credits changed when they should not have")
-    assert(seller.credits == 100, "Seller's credits changed when they should not have")
-
-    assert(seller.items.include?(item), "Seller does not own the item it wants to sell")
-    assert(!buyer.items.include?(item), "Buyer bought the item when it should not have been able to do so")
-    assert(item.owner == seller, "Item has the wrong owner")
+    user.change_password("newpass")
+    assert(!user.password_matches?("user"))
+    assert(user.password_matches?("newpass"))
   end
 
-  def test_user_buy_too_expensive
-    buyer = Store::User.named("Buyer")
-    seller = Store::User.named("Seller")
+  def test_reset_password
+    user = Store::User.named("user")
+    assert(user.password_matches?("user"))
 
-    item = seller.propose_item("big piece of crap", 9001) #item price is over 9000!
-    item.activate
-
-    assert(item.active?)
-
-    transaction_result, transaction_message = buyer.buy_item(item)
-    puts transaction_message
-
-    assert(transaction_result == false,"Transaction should have failed but it did not")
-
-    assert(buyer.credits == 100, "Buyer has wrong amount of credits")
-    assert(seller.credits == 100, "Seller has wrong amount of credits")
-
-    assert(seller.items.include?(item), "Seller does not own the item it wants to sell")
-    assert(!buyer.items.include?(item), "Buyer bought the item when it should not have been able to do so")
-    assert(item.owner == seller, "Item has the wrong owner")
+    new_password = user.reset_password(false)
+    assert(!user.password_matches?("user"))
+    assert(user.password_matches?(new_password))
   end
 end

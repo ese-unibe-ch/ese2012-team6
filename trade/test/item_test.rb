@@ -1,10 +1,13 @@
 require 'test/unit'
+require 'rubygems'
 require 'require_relative'
 require_relative '../app/models/store/item'
 require_relative '../app/models/store/user'
 require_relative '../app/models/security/string_checker'
 
 class ItemTest < Test::Unit::TestCase
+  include Store
+
   def test_item_name
     item_name = "TestItem"
     item = Store::Item.named_priced_with_owner(item_name, 0, nil)
@@ -38,7 +41,7 @@ class ItemTest < Test::Unit::TestCase
 
     assert(Store::Item.valid_price?(p1), "20 is a valid price")
     assert(Store::Item.valid_price?(p2), "+20 is a valid price")
-    assert(!Store::Item.valid_price?(p3), "020 is an invalid price")
+    assert(Store::Item.valid_price?(p3), "020 is a valid price")
     assert(!Store::Item.valid_price?(p4), "-20 is an invalid price")
     assert(!Store::Item.valid_price?(p5), "empty is an invalid price")
   end
@@ -127,5 +130,35 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(true, item.activatable_by?(user))
     item.activate
     assert_equal(true, item.activatable_by?(user))
+  end
+
+  def test_activatable_by_other
+    user = Store::User.named("Hans")
+    other = Store::User.named("Herbert")
+    item = user.propose_item("TestItem", 100, "", false)
+    assert_equal(true, item.activatable_by?(user))
+    assert_equal(false, item.activatable_by?(other))
+    item.activate
+    assert_equal(true, item.activatable_by?(user))
+    assert_equal(false, item.activatable_by?(other))
+  end
+
+  def test_add_comment
+    comment = Store::Comment.new_comment("newComment", nil)
+
+    item = Item.named_priced_with_owner("NewItem", 100, nil)
+    item.update_comments(comment)
+
+    assert_equal(true, item.comments.include?(comment))
+  end
+
+  def test_delete_comment
+    comment = Store::Comment.new_comment("newComment", nil)
+
+    item = Item.named_priced_with_owner("NewItem", 100, nil)
+    item.comments << comment
+    item.delete_comment(comment)
+    assert_equal(false, item.comments.include?(comment))
+    assert_equal(nil, Store::Comment.by_id(comment))
   end
 end

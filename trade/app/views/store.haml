@@ -1,22 +1,21 @@
 %h2
   Store
 %h3
-  Your credits:
-%span
-  $#{@user.credits}
-%h3
   Items currently in store:
 %table.table-minimalistic
   %thead
     %tr
+      %th Pic
       %th Item
       %th Price
       %th Owner
       %th
   %tbody
-    -for user in users.concat(Store::Organization.all)
+    -for user in Store::SystemUser.all
       -for item in user.get_active_items
         %tr
+          %td
+            %img{:src => item.image_path, :height => "40px"}
           %td
             %a{:href => url("/item/#{item.id}")}
               :escaped

@@ -5,6 +5,7 @@
 %table.table-minimalistic
   %thead
     %tr
+      %th Pic
       %th Name
       %th Price
       %th Owner
@@ -13,6 +14,8 @@
   %tbody
     -for item in Store::Item.all
       %tr
+        %td
+          %img{:src => item.image_path, :height => "40px"}
         %td
           %a{:href => url("/item/#{item.id}")}
             :escaped
