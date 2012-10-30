@@ -13,7 +13,7 @@
     -for activity in activities
       %tr
         %td
-          =activity.timestamp.to_s
+          =activity.timestamp.asctime.to_s
         %td
           =activity.type
         %td

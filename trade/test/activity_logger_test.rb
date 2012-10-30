@@ -1,10 +1,21 @@
 require 'test/unit'
+require 'rubygems'
 require 'require_relative'
 require_relative '../app/models/analytics/activity'
 require_relative '../app/models/store/user'
 require_relative '../app/models/store/item'
 
 class ActivityLoggerTest < Test::Unit::TestCase
+  include Analytics
+
+  def setup
+    ActivityLogger.clear
+  end
+
+  def teardown
+    ActivityLogger.clear
+  end
+
   def test_log_activity
     user = Store::User.named("Hans")
     item = user.propose_item("Test", 100, "", false) #don't log item creation
@@ -61,12 +72,14 @@ class ActivityLoggerTest < Test::Unit::TestCase
     item.activate
     item2.activate
 
+    [user, user2].each{ |usr| usr.acknowledge_item_properties! }
+
     user.buy_item(item2)
     user2.buy_item(item)
 
     recent_purchases = Analytics::ActivityLogger.get_most_recent_purchases(2)
 
-    assert_equal(recent_purchases.size, 2)
+    assert_equal(2, recent_purchases.size)
 
     assert_equal("Hansli", recent_purchases[1].actor_name)
     assert_equal(item2.id, recent_purchases[1].item_id)

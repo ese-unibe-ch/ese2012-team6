@@ -4,6 +4,7 @@ ese2012-team6
 Installation
 ------------
 We are using some additional gems. Please run <code>bundle install</code> to install the gems automatically.
+For OSX use a keyword in addition, so run <code>sudo bundle install</code> to install the gems.
 
 Running
 -------

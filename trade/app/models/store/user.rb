@@ -1,44 +1,42 @@
 require 'bcrypt'
+require 'rbtree'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../store/system_user'
+require_relative '../security/password_generator'
+require_relative '../security/mail_client'
 
+# user class inherits the super class system_user
+# is responsible for user's handling
 module Store
-  class User < System_User
-    @@users = {}
+  class User < SystemUser
+    # up to now only using IDs for efficient sorted storing
+    @@users_by_id = RBTree.new
+    @@users_by_name = {}
 
-    attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations
+    attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email
 
     def initialize
-      self.name = ""
+      super
       self.credits = 100
-      self.items = []
       self.pwd_hash = ""
       self.pwd_salt = ""
-      self.description = ""
-      self.open_item_page_time = Time.now
-	    self.image_path = "/images/no_image.gif"
+      self.email = ""
       self.on_behalf_of = self
       self.organizations = []
     end
 
-    def self.named(name)
+    # creates a user object with typed attributes
+    def self.named(name, options = {})
       user = User.new
       user.name = name
 
       user.pwd_salt = BCrypt::Engine.generate_salt
-      user.pwd_hash = BCrypt::Engine.hash_secret(name, user.pwd_salt)
+      user.pwd_hash = BCrypt::Engine.hash_secret(options[:password] || name, user.pwd_salt)
 
-      return user
-    end
-
-    def self.named_with_pwd(name, password)
-      user = User.new
-      user.name = name
-
-      user.pwd_salt = BCrypt::Engine.generate_salt
-      user.pwd_hash = BCrypt::Engine.hash_secret(password, user.pwd_salt)
+      user.description = options[:description] || ""
+	    user.email = options[:email] || ""
 
       return user
     end
@@ -54,43 +52,14 @@ module Store
       self.pwd_hash = BCrypt::Engine.hash_secret(password, self.pwd_salt)
     end
 
-    def self.named_pwd_description(name, password, description)
-      user = User.new
-      user.name = name
-
-      user.pwd_salt = BCrypt::Engine.generate_salt
-      user.pwd_hash = BCrypt::Engine.hash_secret(password, user.pwd_salt)
-
-      user.description = description
-
-      return user
-    end
-
     # log in the user
     def login
       Analytics::UserLoginActivity.with_username(name).log
     end
+
     # log out the user
     def logout
       Analytics::UserLogoutActivity.with_username(name).log
-    end
-
-    def send_money(amount)
-      fail unless amount >= 0
-      self.credits += amount
-    end
-
-    # sends a certain amount of money from the user to a certain organization
-    def send_money_to(organization, amount)
-      fail if organization.nil?
-      return false unless self.credits >= amount
-
-      self.credits -= amount
-      organization.send_money(amount)
-
-      fail if self.credits < 0
-
-      return true
     end
 
     # tell user to work on behalf of an organization
@@ -106,11 +75,6 @@ module Store
     # resign as a member of an organization
     def leave_organization(organization)
       self.organizations.delete organization
-    end
-
-    # return all organizations this user is a member of
-    def get_organizations
-      return self.organizations
     end
 
     # return whether user is working on behalf of himself or not
@@ -131,6 +95,63 @@ module Store
     # returns whether user is an admin of an organization
     def is_admin_of?(organization)
       return organization.has_admin?(self)
+    end
+
+    # saves an user object to the system
+    def save
+      fail if @@users_by_id.has_key?(self.id)
+      @@users_by_id[self.id] = self
+      @@users_by_name[self.name] = self
+    end
+
+    # deletes an user object from the system
+    def delete
+      fail unless  @@users_by_id.has_key?(self.id)
+      @@users_by_id.delete(self.id)
+      @@users_by_name.delete(self.name)
+    end
+
+    # reset a user's password and send email with new password if desired
+    def reset_password(sendMail = true)
+      new_password = Security::PasswordGenerator.generate_new_password()
+      self.change_password(new_password)
+      Security::MailClient.send_mail(self.email, new_password) if sendMail
+    end
+
+    class << self
+      # clears all users from system
+      def clear_all
+        @@users_by_id.clear
+        @@users_by_name.clear
+      end
+
+      # fetches the user object by its name
+      def by_name(name)
+        return fetch_by(:name => name)
+      end
+
+      # fetches the user object by its id
+      def by_id(id)
+        return fetch_by(:id => id)
+      end
+
+      # returns the user object which matches with the id or name
+      def fetch_by(args = {})
+        return  @@users_by_id[args[:id]] unless args[:id].nil?
+        return  @@users_by_name[args[:name]] unless args[:name].nil?
+        return nil
+      end
+
+      # returns true if a user object exists with the id or name
+      def exists?(args = {})
+        return @@users_by_id.has_key?(args[:id]) unless args[:id].nil?
+        return @@users_by_name.has_key?(args[:name])
+      end
+
+      # returns all users in the system
+      def all
+        return @@users_by_id.values.dup
+      end
     end
   end
 end

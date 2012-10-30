@@ -16,7 +16,7 @@
           %option{:value => @user.name, :selected => "true"} Myself
         - else
           %option{:value => @user.name} Myself
-        - for org in @user.get_organizations
+        - for org in @user.organizations
           - if @user.on_behalf_of == org
             %option{:value => org.name, :selected => "true"}
               =org.name

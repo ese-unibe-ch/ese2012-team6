@@ -3,11 +3,15 @@ require 'rdiscount'
 require_relative '../models/storage/picture_uploader'
 require_relative '../models/security/string_checker'
 require_relative '../models/store/comment'
+
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
+  include Store
+  include Storage
+  include Security
 
   before do
-    @user = Store::User.by_name(session[:name])
+    @user = User.by_name(session[:name])
   end
 
   # shows all items in the system
@@ -27,9 +31,8 @@ class Item < Sinatra::Application
   get "/item/:item_id" do
     redirect '/login' unless @user
 
-    @user.open_item_page_time = Time.now
-    item_id = Integer(params[:item_id])
-    item = Store::Item.by_id(item_id)
+    @user.acknowledge_item_properties!
+    item = Item.by_id(params[:item_id].to_i)
 
     redirect "/user/#{@user.name}" if item.nil?
 
@@ -45,10 +48,10 @@ class Item < Sinatra::Application
   get "/item/:item_id/edit" do
     redirect '/login' unless @user
 
-    item_id = Integer(params[:item_id])
-    item = Store::Item.by_id(item_id)
+    item_id = params[:item_id].to_i
+    item = Item.by_id(item_id)
 
-    redirect "/item/#{params[:item_id]}" unless @user.can_edit?(item)
+    redirect "/item/#{item_id}" unless @user.can_edit?(item)
 
     haml :edit_item, :locals => {
         :item => item,
@@ -60,11 +63,11 @@ class Item < Sinatra::Application
   post "/item/:item_id/add_comment" do
     redirect '/login' unless session[:name]
 
-    item_id = Integer(params[:item_id])
-    item = Store::Item.by_id(item_id)
+    item_id = params[:item_id].to_i
+    item = Item.by_id(item_id)
     comment_description = params[:item_comment]
 
-    comment = Store::Comment.new_comment(comment_description, @user.on_behalf_of, Time.now.asctime)
+    comment = Comment.new_comment(comment_description, @user.on_behalf_of)
 
     item.update_comments(comment)
 
@@ -75,10 +78,10 @@ class Item < Sinatra::Application
   post "/item/:item_id/delete_comment/:comment_id" do
     redirect '/login' unless session[:name]
 
-    item_id = Integer(params[:item_id])
-    item = Store::Item.by_id(item_id)
-    comment_id = Integer(params[:comment_id])
-    comment = Store::Comment.by_id(comment_id)
+    item_id = params[:item_id].to_i
+    item = Item.by_id(item_id)
+    comment_id = params[:comment_id].to_i
+    comment = Comment.by_id(comment_id)
     item.delete_comment(comment)
 
     redirect "/item/#{item_id}#comments"
@@ -88,28 +91,22 @@ class Item < Sinatra::Application
   post "/item/:item_id/edit" do
     redirect '/login' unless @user
 
-    item_id = Integer(params[:item_id])
-    item_name = params[:item_name]
-
     redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
+    file = params[:file_upload]
+    redirect "/error/wrong_size" if file && file[:tempfile].size > 400*1024
 
-    item_price = Integer(params[:item_price])
+    item_id = params[:item_id].to_i
+    item_name = params[:item_name]
+    item_price = params[:item_price].to_i
     item_description = params[:item_description]
 
-    item = Store::Item.by_id(item_id)
+    item = Item.by_id(item_id)
 
     # UG: necessary because this handler can also be called by scripts
     redirect "/item/#{item_id}" unless @user.can_edit?(item)
 
-    file = params[:file_upload]
-
-    if file
-      file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
-      redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
-
-      uploader = Storage::PictureUploader.with_path("/images/items")
-      item.image_path = uploader.upload(file, file_name)
-    end
+    uploader = PictureUploader.with_path("/images/items")
+    item.image_path = uploader.upload(file, item.id)
 
     item.update(item_name, item_price, item_description)
 
@@ -122,11 +119,11 @@ class Item < Sinatra::Application
   end
 
   # handles item activation/deactivation request
-  post "/item/:item_id/act_deact/:activate" do
+  post "/item/:item_id/update_status" do
     redirect '/login' unless @user
 
     activate_str = params[:activate]
-    item = Store::Item.by_id(Integer(params[:item_id]))
+    item = Item.by_id(Integer(params[:item_id]))
 
     changed_owner = @user.open_item_page_time < item.edit_time && !@user.can_activate?(item)
 
@@ -144,25 +141,22 @@ class Item < Sinatra::Application
     redirect back if params[:item_name] == "" or params[:item_price] == ""
 
     file = params[:file_upload]
-    redirect "/error/wrong_size" if file and file[:tempfile].size > 400*1024
+    redirect "/error/wrong_size" if file && file[:tempfile].size > 400*1024
 
-    item_name = Security::StringChecker.destroy_script(params[:item_name])
+    item_name = StringChecker.destroy_script(params[:item_name])
 
     redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
 
-    item_price = Integer(params[:item_price])
+    item_price = params[:item_price].to_i
     item_description = params[:item_description] ? params[:item_description] : ""
 
-    # UG: should be done more nicely
-    item_owner = Store::Organization.by_name(params[:owner])
-    item_owner = @user if item_owner.nil?
-
+    item_owner = SystemUser.by_name(params[:owner])
     item = item_owner.propose_item(item_name, item_price, item_description)
 
     if file
-      file_name = Store::Item.id_image_to_filename(item.id, file[:filename])
+      file_name = Item.id_image_to_filename(item.id, file[:filename])
 
-      uploader = Storage::PictureUploader.with_path("/images/items")
+      uploader = PictureUploader.with_path("/images/items")
       item.image_path = uploader.upload(file, file_name)
     end
 
@@ -170,14 +164,15 @@ class Item < Sinatra::Application
     redirect back
   end
 
+  # handles item creation via quick add form
   put "/item/quick_add" do
     redirect '/login' unless @user
     redirect back if params[:item_name] == "" or params[:item_price] == ""
 
-    item_name = Security::StringChecker.destroy_script(params[:item_name])
+    item_name = StringChecker.destroy_script(params[:item_name])
 
-    redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
-    item_price = Integer(params[:item_price])
+    redirect "/error/invalid_price" unless Item.valid_price?(params[:item_price])
+    item_price = params[:item_price].to_i
 
     @user.on_behalf_of.propose_item(item_name, item_price)
 
@@ -190,7 +185,7 @@ class Item < Sinatra::Application
     redirect '/login' unless @user
     # UG: Check whether user can really delete item
 
-    item_id = Integer(params[:item_id])
+    item_id = params[:item_id].to_i
     @user.delete_item(item_id)
 
     redirect back

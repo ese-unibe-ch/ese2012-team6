@@ -1,30 +1,36 @@
 require 'haml'
 require_relative '../models/analytics/activity_logger'
+require_relative '../models/store/user'
+require_relative '../models/store/item'
 
 class ActivityLogger < Sinatra::Application
+  include Store
+  include Analytics
 
   before do
-    @user = Store::User.by_name(session[:name])
+    @user = User.by_name(session[:name])
   end
 
+  # show list of all stored activities
   get '/activities' do
     redirect '/login' unless @user
 
-    activities = Analytics::ActivityLogger.get_all_activities
+    activities = ActivityLogger.get_all_activities
 
     haml :all_activities, :locals => {
         :activities => activities
     }
   end
 
+  # show details page of an activity, not yet used!
   get "/activity/:act_id" do
     redirect '/login' unless @user
 
     activity_id = params[:act_id]
-    activity = Analytics::ActivityLogger.by_id(Integer(activity_id))
+    activity = ActivityLogger.by_id(Integer(activity_id))
 
-    actor = Store::User.by_name(activity.actor_name)
-    item = Store::Item.by_id(activity.item_id)
+    actor = User.by_id(activity.actor_name)
+    item = Item.by_id(activity.item_id)
 
     actor_still_in_system = !actor.nil?
     item_still_in_system = !item.nil?

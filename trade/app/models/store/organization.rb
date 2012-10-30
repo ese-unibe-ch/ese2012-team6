@@ -1,90 +1,58 @@
+require 'rbtree'
 require_relative '../store/system_user'
+
+# organization class inherits the super class system_user
+# is responsible for handling with organizations
 module Store
-  class Organization < System_User
+  class Organization < SystemUser
     attr_accessor :members, :admins
-    @@organizations = {}
+
+    # up to now only using IDs for efficient sorted storing
+    @@organizations_by_id = RBTree.new
+    @@organizations_by_name = {}
 
     def initialize
-      self.name = ""
-      self.credits = 0
-      self.items = []
-      self.description = ""
-      self.open_item_page_time = Time.now
-      self.image_path = "/images/no_image.gif"
-      self.members =[]
-      self.admins =[]
+      super
+      self.members = []
+      self.admins = []
     end
 
-    # @param [User] member
+    # creates a new organization with certain options (:admin, :description, :credits)
+    def self.named(name, options = {})
+      organization = Organization.new
+      organization.name = name
+      organization.description = options[:description] || ""
+      organization.add_admin(options[:admin]) if options[:admin]
+      organization.add_member(options[:admin]) if options[:admin]
+      organization.credits = options[:credits] if options[:credits]
+      return organization
+    end
+
+    # adds a member to an organization
     def add_member(member)
       member.enter_organization(self)
       members.push(member)
     end
 
-    def self.named(name)
-      organization = Organization.new
-      organization.name = name
-      return organization
-    end
-
+    # removes a member from an organization
     def remove_member(member)
       members.delete(member)
       member.leave_organization(self)
     end
 
+    # adds an admin to the organization
     def add_admin(member)
       admins.push(member)
     end
 
+    # removes the admin from the organization
     def remove_admin(member)
       admins.delete(member)
     end
 
+    # returns always true if called with an organization object
     def is_organization?
       true
-    end
-
-    def save
-      fail if  @@organizations .has_key?(self.name)
-      @@organizations[self.name] = self
-      fail unless  @@organizations .has_key?(self.name)
-    end
-
-    def delete
-      fail unless  @@organizations .has_key?(self.name)
-      @@organizations .delete(self.name)
-      fail if  @@organizations .has_key?(self.name)
-    end
-
-    def self.by_name(name)
-      return  @@organizations[name]
-    end
-
-    def self.all
-      return  @@organizations .values.dup
-    end
-
-    def self.exists?(name)
-      return  @@organizations .has_key?(name)
-    end
-
-    def send_money(amount)
-      fail unless amount >= 0
-      self.credits += amount
-    end
-
-    # sends a certain amount of money from the organization to an admin
-    def send_money_to(admin, amount)
-      fail if admin.nil?
-      return false unless self.credits >= amount
-      return false unless self.has_admin?(admin)
-
-      self.credits -= amount
-      admin.send_money(amount)
-
-      fail if self.credits < 0
-
-      return true
     end
 
     # determine whether a user is a member of this organization
@@ -92,15 +60,53 @@ module Store
       fail if user.nil?
       return self.members.include?(user)
     end
-    
-    def self.id_image_to_filename(id, path)
-      "#{id}_#{path}"
-    end
 
     # determine whether a user is an admin of this organization
     def has_admin?(user)
       fail if user.nil?
       return self.admins.include?(user)
+    end
+
+    # saves the organization to the system
+    def save
+      fail if @@organizations_by_id.has_key?(self.id)
+      @@organizations_by_id[self.id] = self
+      @@organizations_by_name[self.name] = self
+    end
+
+    # deletes the organization from the system
+    def delete
+      fail unless @@organizations_by_id .has_key?(self.id)
+      @@organizations_by_id.delete(self.id)
+      @@organizations_by_name.delete(self.name)
+    end
+
+    # class methods
+    class << self
+      # deletes all organizations in the system
+      def clear_all
+        @@organizations_by_name.clear
+        @@organizations_by_id.clear
+      end
+
+      # fetches the organization object by its name or id
+      def fetch_by(args = {})
+        return  @@organizations_by_id[args[:id]] unless args[:id].nil?
+        return  @@organizations_by_name[args[:name]] unless args[:name].nil?
+
+        return nil
+      end
+
+      # returns true if an organization object exists with the id or name
+      def exists?(args = {})
+        return @@organizations_by_id.has_key?(args[:id]) unless args[:id].nil?
+        return @@organizations_by_name.has_key?(args[:name])
+      end
+
+      # returns all saved organizations
+      def all
+        return @@organizations_by_id.values.dup
+      end
     end
   end
 end

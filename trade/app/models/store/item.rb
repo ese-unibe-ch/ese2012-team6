@@ -1,7 +1,9 @@
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../security/string_checker'
+require_relative '../store/comment'
 
+# this class is responsible for the item handling
 module Store
   class Item
     attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments
@@ -18,10 +20,6 @@ module Store
       self.comments = []
     end
 
-    def self.clear_all
-      @@items.clear
-    end
-
     # save item to system
     def save
       fail if @@items.has_key?(self.id)
@@ -36,45 +34,25 @@ module Store
       fail if @@items.has_key?(self.id)
     end
 
+    # updates newly created comments
     def update_comments(comment)
-      comments << comment
+      self.comments << comment
     end
 
+    # deletes a certain comment
     def delete_comment(comment)
-      comments.delete(comment)
-    end
-
-    # retrieve item object by id from system
-    def self.by_id(id)
-      return @@items[id]
-    end
-
-    # get all stored items
-    def self.all
-      return @@items.values.dup
-    end
-
-    def name=(name)
-      @name = Security::StringChecker.destroy_script(name)
+      self.comments.delete(comment)
+      comment.delete
     end
 
     # create a new item object with a name, price and owner
-    def self.named_priced_with_owner(name, price, owner)
+    def self.named_priced_with_owner(name, price, owner, description = "")
       item = Item.new
       item.name = name
       item.price = price
       item.owner = owner
+      item.description = description
       return item
-    end
-
-    # determines whether a string is a valid price for an item
-    def self.valid_price?(price)
-      return (!!(price =~ /^[-+]?[0-9]([0-9]*)?$/))
-    end
-
-    # extends the id of an item to a filename
-    def self.id_image_to_filename(id, path)
-      "#{id}_#{path}"
     end
 
     def to_s
@@ -151,6 +129,29 @@ module Store
     # tell the item its properties have been changed
     def notify_change
       self.edit_time = Time.now
+    end
+
+    # class methods
+    class << self
+      # deletes all items of an user
+      def clear_all
+        @@items.clear
+      end
+
+      # retrieve item object by id from system
+      def by_id(id)
+        return @@items[id]
+      end
+
+      # get all stored items
+      def all
+        return @@items.values.dup
+      end
+
+      # determines whether a string is a valid price for an item
+      def valid_price?(price)
+        return Security::StringChecker.is_numeric?(price) && price.to_i >= 0
+      end
     end
   end
 end

@@ -1,6 +1,6 @@
 %h2 Register
 %p#reqistry_information
-  Required fields are marked in bold. Leading whitespaces will be ignored and special characters will be removed due to security
+  Required fields are marked in bold. Leading whitespaces will be removed. User names must only contain word characters.
 %form{:action => "/register", :method => "POST", :onsubmit => "return validate_registration(this);"}
   %table
     %tr
@@ -20,6 +20,11 @@
       %td
         %input.textbox8{:type => "password", :name => "rep_password"}
     %tr{:style=> "height: 16px"}
+    %tr
+      %td
+        %label.bold E-mail:
+      %td
+        %input.textbox8{:type => "email", :name => "email"}
     %tr
       %td
         %label About Yourself:
