@@ -79,6 +79,8 @@ class Main < Sinatra::Application
         error_message = "You must transfer a positive integral amount of credits"
       when "invalid_username"
         error_message = "Your user name must only contain word characters"
+      when "trying forget pd for pre saved users"
+        error_message = "This user was created for fast program testing, thus it hasn't got an email address"
     end
 
     last_page = back
