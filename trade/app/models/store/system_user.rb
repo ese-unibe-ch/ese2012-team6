@@ -134,11 +134,6 @@ module Store
       return "#{self.name}, #{self.credits}"
     end
 
-    # finds an image by id and path
-    def self.id_image_to_filename(id, path)
-      "#{id}_#{path}"
-    end
-
     # returns false when a system user object calls this method
     def is_organization?
       false

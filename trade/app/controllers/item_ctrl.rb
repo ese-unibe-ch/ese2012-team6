@@ -90,8 +90,9 @@ class Item < Sinatra::Application
   # handles item editing, updates model in database
   post "/item/:item_id/edit" do
     redirect '/login' unless @user
-    file = params[:file_upload]
+
     redirect "/error/invalid_price" unless Store::Item.valid_price?(params[:item_price])
+    file = params[:file_upload]
     redirect "/error/wrong_size" if file && file[:tempfile].size > 400*1024
 
     item_id = params[:item_id].to_i
@@ -104,12 +105,8 @@ class Item < Sinatra::Application
     # UG: necessary because this handler can also be called by scripts
     redirect "/item/#{item_id}" unless @user.can_edit?(item)
 
-    if file
-      file_name = Item.id_image_to_filename(item.id, file[:filename])
-
-      uploader = PictureUploader.with_path("/images/items")
-      item.image_path = uploader.upload(file, file_name)
-    end
+    uploader = PictureUploader.with_path("/images/items")
+    item.image_path = uploader.upload(file, item.id)
 
     item.update(item_name, item_price, item_description)
 

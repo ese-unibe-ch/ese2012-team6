@@ -150,12 +150,7 @@ module Store
 
       # determines whether a string is a valid price for an item
       def valid_price?(price)
-        return (!!(price =~ /^[-+]?[0-9]([0-9]*)?$/)) && price.to_i >= 0
-      end
-
-      # extends the id of an item to a filename
-      def id_image_to_filename(id, path)
-        "#{id}_#{path}"
+        return Security::StringChecker.is_numeric?(price) && price.to_i >= 0
       end
     end
   end

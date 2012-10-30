@@ -89,13 +89,12 @@ class User < Sinatra::Application
 
     file = params[:file_upload]
     redirect to("/user/#{params[:name]}") unless file
-
+    puts file[:tempfile].path
+    puts file[:filename]
     redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
 
-    filename = User.id_image_to_filename(@user.name, file[:filename])
-
     uploader = PictureUploader.with_path("/images/users")
-    @user.image_path = uploader.upload(file, filename)
+    @user.image_path = uploader.upload(file, @user.id)
 
     redirect to("/user/#{params[:name]}")
   end

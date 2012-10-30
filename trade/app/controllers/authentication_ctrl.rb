@@ -1,5 +1,4 @@
 require 'haml'
-require_relative('../models/store/item')
 require_relative('../models/store/user')
 
 # Handles all requests concerning User Authentication, namely Login and Logout
