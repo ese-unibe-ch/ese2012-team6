@@ -3,8 +3,8 @@ require_relative '../analytics/activity'
 require_relative '../security/string_checker'
 require_relative '../store/comment'
 
-# this class is responsible for the item handling
 module Store
+  # The item is the central trading object within the application. It can be traded in between users for a certain price.
   class Item
     attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments
     @@last_id = 0

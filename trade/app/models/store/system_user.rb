@@ -7,7 +7,7 @@ require_relative '../store/trading_authority'
 require_relative '../store/item'
 
 # superclass for user and organization
-# responsible for all actions concerning user and organization objects
+# A SystemUser is the main actor in the system. The class provides services for trading items between users and creating new items
 module Store
   class SystemUser
     attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path

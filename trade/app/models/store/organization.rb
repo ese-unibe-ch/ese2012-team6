@@ -1,9 +1,9 @@
 require 'rbtree'
 require_relative '../store/system_user'
 
-# organization class inherits the super class system_user
-# is responsible for handling with organizations
 module Store
+  # Organizations offer the ability for users to work on behalf of each other. They behave just like a normal user, but
+  # do not have a login. An organization has users and admins and it keeps track of those
   class Organization < SystemUser
     attr_accessor :members, :admins
 
