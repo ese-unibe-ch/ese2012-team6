@@ -191,7 +191,7 @@ class SystemUserTest < Test::Unit::TestCase
     item = seller.propose_item("item", 2);
 
     buyer.acknowledge_item_properties!
-
+    sleep(0.001)
     # change item while buyer is not looking
     item.deactivate
     item.update("newName", 3, "aölsdfjaldf", false)
@@ -212,7 +212,7 @@ class SystemUserTest < Test::Unit::TestCase
     item.deactivate
     item.update("newName", 3, "aölsdfjaldf", false)
     item.activate
-
+    sleep(0.001)
     # buyer looks at item
     buyer.acknowledge_item_properties!
 
