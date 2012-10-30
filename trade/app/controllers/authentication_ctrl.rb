@@ -20,17 +20,16 @@ class Authentication < Sinatra::Application
   # handle user change password request
   post "/login/passwordReset/"do
     name = (params[:username])
-
     redirect '/error/user_no_exists' unless User.exists?(:name => name)
 
-    user = Store::User.by_name(name)
-
-    redirect back if user.nil?
-    if user == "admin" || "umbrellacorp" || "ese" || "ese2" || "petergriffin"
+    if name == "admin" || name == "ese" || name == "ese2" || name == "petergriffin" || name == "umbrellacorp"
       redirect '/error/trying forget pd for pre saved users'
     end
-    user.reset_password
 
+    user = Store::User.by_name(name)
+    redirect back if user.nil?
+
+    user.reset_password
     redirect back
   end
 
