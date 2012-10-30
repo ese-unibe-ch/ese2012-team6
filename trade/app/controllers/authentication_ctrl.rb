@@ -26,6 +26,9 @@ class Authentication < Sinatra::Application
     user = Store::User.by_name(name)
 
     redirect back if user.nil?
+    if user == "admin" || "umbrellacorp" || "ese" || "ese2" || "petergriffin"
+      redirect '/error/trying forget pd for pre saved users'
+    end
     user.reset_password
 
     redirect back
