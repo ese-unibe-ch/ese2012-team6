@@ -105,7 +105,7 @@ class Item < Sinatra::Application
     # UG: necessary because this handler can also be called by scripts
     redirect "/item/#{item_id}" unless @user.can_edit?(item)
 
-    uploader = PictureUploader.with_path("/images/items")
+    uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/items")
     item.image_path = uploader.upload(file, item.id)
 
     item.update(item_name, item_price, item_description)
@@ -153,12 +153,8 @@ class Item < Sinatra::Application
     item_owner = SystemUser.by_name(params[:owner])
     item = item_owner.propose_item(item_name, item_price, item_description)
 
-    if file
-      file_name = Item.id_image_to_filename(item.id, file[:filename])
-
-      uploader = PictureUploader.with_path("/images/items")
-      item.image_path = uploader.upload(file, file_name)
-    end
+    uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/items")
+    item.image_path = uploader.upload(file, file_name)
 
     redirect "/item/#{item.id}" if back == url("/item/new")
     redirect back
