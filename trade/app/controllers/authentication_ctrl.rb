@@ -27,10 +27,6 @@ class Authentication < Sinatra::Application
     user = Store::User.by_name(name)
     user.reset_password
 
-    user = Store::User.by_name(name)
-    redirect back if user.nil?
-
-    user.reset_password
     redirect back
   end
 
