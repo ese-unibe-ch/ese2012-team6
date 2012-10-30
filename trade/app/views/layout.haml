@@ -13,7 +13,9 @@
       %div#status_bar
         -if not @user.nil?
           %span.credit_status
-            Credits: $#{@user.on_behalf_of.credits} | Items: #{@user.on_behalf_of.items.size}
+            Credits: $#{@user.credits} | Items: #{@user.items.size}
+            -unless @user.working_as_self?
+              || #{@user.on_behalf_of.name}: Credits: $#{@user.on_behalf_of.credits} | Items: #{@user.on_behalf_of.items.size}
           %span.login_status
             Logged in as
             %a{:href => url("/user/#{@user.name}")}

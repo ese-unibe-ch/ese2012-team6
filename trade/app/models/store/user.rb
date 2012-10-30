@@ -15,7 +15,7 @@ module Store
     @@users_by_id = RBTree.new
     @@users_by_name = {}
 
-    attr_accessor  :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email
+    attr_accessor :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email
 
     def initialize
       super
@@ -36,14 +36,14 @@ module Store
       user.pwd_hash = BCrypt::Engine.hash_secret(options[:password] || name, user.pwd_salt)
 
       user.description = options[:description] || ""
-	    user.email = options[:email] || ""
+      user.email = options[:email] || ""
 
-      return user
+      user
     end
 
     # returns whether the password matches the saved password
     def password_matches?(password)
-      return self.pwd_hash == BCrypt::Engine.hash_secret(password, self.pwd_salt)
+      self.pwd_hash == BCrypt::Engine.hash_secret(password, self.pwd_salt)
     end
 
     # change the password of the user
@@ -79,22 +79,22 @@ module Store
 
     # return whether user is working on behalf of himself or not
     def working_as_self?
-      return self.on_behalf_of.eql?(self)
+      self.on_behalf_of.eql?(self)
     end
 
     # return whether user is working on behalf of a certain organization
     def working_on_behalf_of?(org)
-      return self.on_behalf_of.eql?(org)
+      self.on_behalf_of.eql?(org)
     end
 
     # returns whether user is a member of an organization
     def is_member_of?(organization)
-      return organization.has_member?(self)
+      organization.has_member?(self)
     end
 
     # returns whether user is an admin of an organization
     def is_admin_of?(organization)
-      return organization.has_admin?(self)
+      organization.has_admin?(self)
     end
 
     # saves an user object to the system
@@ -116,6 +116,7 @@ module Store
       new_password = Security::PasswordGenerator.generate_new_password()
       self.change_password(new_password)
       Security::MailClient.send_mail(self.email, new_password) if sendMail
+      new_password
     end
 
     class << self
@@ -127,30 +128,30 @@ module Store
 
       # fetches the user object by its name
       def by_name(name)
-        return fetch_by(:name => name)
+        fetch_by(:name => name)
       end
 
       # fetches the user object by its id
       def by_id(id)
-        return fetch_by(:id => id)
+        fetch_by(:id => id)
       end
 
       # returns the user object which matches with the id or name
       def fetch_by(args = {})
-        return  @@users_by_id[args[:id]] unless args[:id].nil?
-        return  @@users_by_name[args[:name]] unless args[:name].nil?
-        return nil
+        return @@users_by_id[args[:id]] unless args[:id].nil?
+        return @@users_by_name[args[:name]] unless args[:name].nil?
+        nil
       end
 
       # returns true if a user object exists with the id or name
       def exists?(args = {})
         return @@users_by_id.has_key?(args[:id]) unless args[:id].nil?
-        return @@users_by_name.has_key?(args[:name])
+        @@users_by_name.has_key?(args[:name])
       end
 
       # returns all users in the system
       def all
-        return @@users_by_id.values.dup
+        @@users_by_id.values.dup
       end
     end
   end

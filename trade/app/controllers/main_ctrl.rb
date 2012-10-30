@@ -71,8 +71,10 @@ class Main < Sinatra::Application
         error_message = "Type a name for your Organization"
       when "user_credit_transfer_failed"
         error_message = "You do not have enough credits to transfer"
+        should_refresh = true
       when "organization_credit_transfer_failed"
         error_message = "Organization does not have enough credits to transfer"
+        should_refresh = true
       when "wrong_transfer_amount"
         error_message = "You must transfer a positive integral amount of credits"
       when "invalid_username"

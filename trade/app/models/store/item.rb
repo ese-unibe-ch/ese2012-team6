@@ -52,11 +52,11 @@ module Store
       item.price = price
       item.owner = owner
       item.description = description
-      return item
+      item
     end
 
     def to_s
-      return "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
+      "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
     end
 
     # activate the item (you don't say...)
@@ -85,18 +85,18 @@ module Store
 
     # returns whether the item is active or not
     def active?
-      return self.active
+      self.active
     end
 
     # returns whether the item is generally editable
     def editable?
-      return (not self.active)
+      (not self.active)
     end
 
     # returns whether the item is editable by a certain user object
     def editable_by?(user)
       fail if user.nil?
-      return (self.editable? && ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user))))
+      (self.editable? && ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user))))
     end
 
     # returns whether the item is deletable by a certain user object
@@ -105,7 +105,7 @@ module Store
     # returns whether the item is activatable by a certain user object
     def activatable_by?(user)
       fail if user.nil?
-      return ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user)))
+      ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user)))
     end
 
     # update the item's properties
@@ -140,17 +140,17 @@ module Store
 
       # retrieve item object by id from system
       def by_id(id)
-        return @@items[id]
+        @@items[id]
       end
 
       # get all stored items
       def all
-        return @@items.values.dup
+        @@items.values.dup
       end
 
       # determines whether a string is a valid price for an item
       def valid_price?(price)
-        return Security::StringChecker.is_numeric?(price) && price.to_i >= 0
+        Security::StringChecker.is_numeric?(price) && price.to_i >= 0
       end
     end
   end

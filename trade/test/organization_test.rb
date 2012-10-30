@@ -6,7 +6,17 @@ require_relative '../app/models/store/user'
 require_relative '../app/models/store/organization'
 require_relative '../app/models/security/string_checker'
 
-class UserTest < Test::Unit::TestCase
+class OrganizationTest < Test::Unit::TestCase
+  include  Store
+
+  def setup
+    SystemUser.clear_all
+  end
+
+  def teardown
+    SystemUser.clear_all
+  end
+
   def test_check_organization_name
     name = "Umbrella Corp."
     organization = Store::Organization.named(name)

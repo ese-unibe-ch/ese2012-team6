@@ -25,7 +25,7 @@ module Store
       organization.add_admin(options[:admin]) if options[:admin]
       organization.add_member(options[:admin]) if options[:admin]
       organization.credits = options[:credits] if options[:credits]
-      return organization
+      organization
     end
 
     # adds a member to an organization
@@ -58,13 +58,13 @@ module Store
     # determine whether a user is a member of this organization
     def has_member?(user)
       fail if user.nil?
-      return self.members.include?(user)
+      self.members.include?(user)
     end
 
     # determine whether a user is an admin of this organization
     def has_admin?(user)
       fail if user.nil?
-      return self.admins.include?(user)
+      self.admins.include?(user)
     end
 
     # saves the organization to the system
@@ -76,7 +76,7 @@ module Store
 
     # deletes the organization from the system
     def delete
-      fail unless @@organizations_by_id .has_key?(self.id)
+      fail unless @@organizations_by_id.has_key?(self.id)
       @@organizations_by_id.delete(self.id)
       @@organizations_by_name.delete(self.name)
     end
@@ -91,21 +91,20 @@ module Store
 
       # fetches the organization object by its name or id
       def fetch_by(args = {})
-        return  @@organizations_by_id[args[:id]] unless args[:id].nil?
-        return  @@organizations_by_name[args[:name]] unless args[:name].nil?
-
-        return nil
+        return @@organizations_by_id[args[:id]] unless args[:id].nil?
+        return @@organizations_by_name[args[:name]] unless args[:name].nil?
+        nil
       end
 
       # returns true if an organization object exists with the id or name
       def exists?(args = {})
         return @@organizations_by_id.has_key?(args[:id]) unless args[:id].nil?
-        return @@organizations_by_name.has_key?(args[:name])
+        @@organizations_by_name.has_key?(args[:name])
       end
 
       # returns all saved organizations
       def all
-        return @@organizations_by_id.values.dup
+        @@organizations_by_id.values.dup
       end
     end
   end

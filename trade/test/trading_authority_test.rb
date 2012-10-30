@@ -6,14 +6,21 @@ require_relative '../app/models/store/user'
 require_relative '../app/models/store/organization'
 require_relative '../app/models/store/trading_authority'
 
-class SystemUserTest < Test::Unit::TestCase
+class TradingAuthorityTest < Test::Unit::TestCase
   include Store
+
+  def test_creation_default_timeout
+    ta = TradingAuthority.new
+    assert_equal(24*60*60, ta.credit_reduce_time)
+    assert_equal(nil, ta.reduce_thread)
+    ta.stop
+  end
 
   def test_creation
     ta = TradingAuthority.timed(3)
-
     assert_equal(3, ta.credit_reduce_time)
     assert_equal(nil, ta.reduce_thread)
+    ta.stop
   end
 
   def test_start
@@ -22,7 +29,9 @@ class SystemUserTest < Test::Unit::TestCase
 
     assert_equal(true, ta.reduce_thread.alive?)
 
-    ta.reduce_thread.kill
+    ta.stop
+
+    assert_equal(false, ta.reduce_thread.alive?)
   end
 
   def test_reduce_credits
@@ -32,9 +41,7 @@ class SystemUserTest < Test::Unit::TestCase
     user.save
     org.save
 
-    ta = TradingAuthority.timed(3)
-
-    ta.swing_hammer_of_doom
+    TradingAuthority.swing_hammer_of_doom
 
     assert_equal(100-Integer(100*TradingAuthority::CREDIT_REDUCE_RATE), user.credits)
     assert_equal(100-Integer(100*TradingAuthority::CREDIT_REDUCE_RATE), org.credits)
@@ -48,6 +55,7 @@ class SystemUserTest < Test::Unit::TestCase
     org.save
 
     ta = TradingAuthority.timed(1)
+
     ta.start
 
     sleep 1.5
@@ -55,6 +63,17 @@ class SystemUserTest < Test::Unit::TestCase
     assert_equal(100-Integer(100*TradingAuthority::CREDIT_REDUCE_RATE), user.credits)
     assert_equal(100-Integer(100*TradingAuthority::CREDIT_REDUCE_RATE), org.credits)
 
-    ta.reduce_thread.kill
+    ta.stop
+  end
+
+  def test_settle_purchase
+    seller = User.named("seller", :credits => 100)
+    buyer = User.named("buyer", :credits => 100)
+
+    item = seller.propose_item("item", 50)
+    TradingAuthority.settle_item_purchase(seller, buyer, item)
+
+    assert_equal(153, seller.credits)
+    assert_equal(50, buyer.credits)
   end
 end
