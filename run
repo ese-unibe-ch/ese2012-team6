@@ -1,4 +1,0 @@
-#!/bin/bash
-# run script
-
-ruby trade/app/app.rb
