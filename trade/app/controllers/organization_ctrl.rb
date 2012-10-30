@@ -134,7 +134,7 @@ class Organization < Sinatra::Application
     member_rem = params[:rem]
 
     member_put.each {|username| organization.add_member(User.by_name(username))} unless member_put.nil?
-    member_rem.each {|username| organization.remove_member(User.by_name(username))} unless member_put.nil?
+    member_rem.each {|username| organization.remove_member(User.by_name(username))} unless member_rem.nil?
 
     redirect "/organization/#{organization.name}"
   end

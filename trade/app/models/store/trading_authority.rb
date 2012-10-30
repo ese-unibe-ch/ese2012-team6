@@ -48,7 +48,6 @@ module Store
       def swing_hammer_of_doom
         all_users = SystemUser.all
         all_users.each { |user| self.reduce_credits(user) }
-        puts "Swung hammer of doom"
       end
 
       # reduce credit of each user
