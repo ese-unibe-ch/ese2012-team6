@@ -10,9 +10,9 @@ require_relative '../store/item'
 # A Trader is the main actor in the system. The class provides services for trading items between users and creating new items
 module Store
   class Trader
-    attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
-
     @@last_id = 0
+
+    attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
 
     def initialize
       @@last_id += 1
