@@ -75,16 +75,16 @@
               %input{:type => "checkbox", :disabled => "disabled"}
           %td
             %div.action_buttons
-              -if @user.can_activate?(item)
+              -if @user.on_behalf_of.can_activate?(item)
                 -if item.active?
                   %form{:action => "/item/#{item.id}/update_status?activate=false", :method => "POST"}
                     %input.styled-button.small.float_left{:type => "submit", :value => "Deactivate"}
                 -else
                   %form{:action => "/item/#{item.id}/update_status?activate=true", :method => "POST"}
                     %input.styled-button.small{:type => "submit", :value => "Activate"}
-              -if @user.can_edit?(item)
+              -if @user.on_behalf_of.can_edit?(item)
                 %a.styled-button.small{:href => "/item/#{item.id}/edit"} Edit
-              -if @user.can_delete?(item)
+              -if @user.on_behalf_of.can_delete?(item)
                 %form{:action => "/item/#{item.id}", :method => "POST"}
                   %input{:name => "_method", :type => "hidden", :value => "delete"}
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}

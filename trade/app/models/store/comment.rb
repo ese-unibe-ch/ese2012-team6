@@ -18,7 +18,6 @@ module Store
       comment.description = description
       comment.owner = owner
       comment.time_stamp = Time.now.asctime
-      fail if @@comments.has_key?(comment.id)
       @@comments[comment.id] = comment
       comment
     end

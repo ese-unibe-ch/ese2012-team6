@@ -43,22 +43,6 @@ class TraderTest < Test::Unit::TestCase
     assert_equal(user, item.owner , "Item with no assigned owner created!")
   end
 
-  def test_fetch_by_name
-    (user = User.named("User1")).save
-    (org = Organization.named("Org1")).save
-
-    assert_equal(user, Trader.fetch_by(:name => "User1"))
-    assert_equal(org, Trader.fetch_by(:name => "Org1"))
-  end
-
-  def test_fetch_by_id
-    (user = User.named("User1")).save
-    (org = Organization.named("Org1")).save
-
-    assert_equal(user, Trader.fetch_by(:id => 1))
-    assert_equal(org, Trader.fetch_by(:id => 2))
-  end
-
   def test_fetch_all
     (user = User.named("User1")).save
     (org = Organization.named("Org1")).save
@@ -66,7 +50,7 @@ class TraderTest < Test::Unit::TestCase
     assert_equal([user, org], Trader.all)
   end
 
-  def test_by_name_and_id
+  def test_fetch_by_name
     (user = User.named("User1")).save
     (org = Organization.named("Org1")).save
 
@@ -78,20 +62,10 @@ class TraderTest < Test::Unit::TestCase
     (user = User.named("User1")).save
     (org = Organization.named("Org1")).save
 
-    assert_equal(true, Trader.exists?(:name => "User1"))
-    assert_equal(true, Trader.exists?(:name => "Org1"))
-    assert_equal(false, Trader.exists?(:name => "User2"))
-    assert_equal(false, Trader.exists?(:name => "Org2"))
-  end
-
-  def test_exists_by_id
-    (user = User.named("User1")).save
-    (org = Organization.named("Org1")).save
-
-    assert_equal(true, Trader.exists?(:id => 1))
-    assert_equal(true, Trader.exists?(:id => 2))
-    assert_equal(false, Trader.exists?(:id => 3))
-    assert_equal(false, Trader.exists?(:id => 4))
+    assert_equal(true, Trader.exists?("User1"))
+    assert_equal(true, Trader.exists?("Org1"))
+    assert_equal(false, Trader.exists?("User2"))
+    assert_equal(false, Trader.exists?("Org2"))
   end
 
   def test_user_active_items_list
@@ -186,14 +160,14 @@ class TraderTest < Test::Unit::TestCase
   end
 
   def test_user_can_buy_own_item
-    user = Store::User.named("Hans")
+    user = Trader.named("Hans")
     item = user.propose_item("TestItem", 100, "", false)
     assert_equal(false, user.can_buy?(item), "Should not be able to buy own items")
   end
 
   def test_user_can_buy_other_item
-    user = Store::User.named("Hans")
-    other = Store::User.named("Herbert")
+    user = Trader.named("Hans")
+    other = Trader.named("Herbert")
 
     item = other.propose_item("TestItem", 100, "", false)
     assert_equal(false, user.can_buy?(item))
@@ -202,7 +176,7 @@ class TraderTest < Test::Unit::TestCase
   end
 
   def test_can_edit_own_item
-    user = Store::User.named("Hans")
+    user = Trader.named("Hans")
     item = user.propose_item("TestItem", 100, "", false)
     assert_equal(true, user.can_edit?(item))
     item.activate
@@ -210,19 +184,38 @@ class TraderTest < Test::Unit::TestCase
   end
 
   def test_can_edit_other_item
-    user = Store::User.named("Hans")
-    other = Store::User.named("Herbert")
+    user = Trader.named("Hans")
+    other = Trader.named("Herbert")
     item = other.propose_item("TestItem", 100, "", false)
     assert_equal(false, user.can_edit?(item))
     item.activate
     assert_equal(false, user.can_edit?(item))
   end
 
-  # time dependent unit test, result dependent on machine
+  def test_can_delete_own_item
+    user = Trader.named("Hans")
+    item = user.propose_item("TestItem", 100, "", false)
+    assert_equal(true, user.can_delete?(item))
+    item.activate
+    assert_equal(false, user.can_edit?(item))
+  end
+
+  def test_delete_item
+    user = Trader.named("Hans")
+    item = user.propose_item("TestItem", 100, "", false)
+
+    assert_equal(true, user.can_delete?(item))
+
+    user.delete_item(item.id, false)
+
+    assert_equal(false, user.items.include? (item))
+  end
+
+  # time dependent unit test, result dependent on machine, needs mocks
 =begin
   def test_notice_item_change_fail
-    seller = Store::User.named("seller")
-    buyer = Store::User.named("buyer")
+    seller = User.named("seller")
+    buyer = User.named("buyer")
     item = seller.propose_item("item", 2);
 
     buyer.acknowledge_item_properties!
@@ -237,8 +230,8 @@ class TraderTest < Test::Unit::TestCase
   end
 
   def test_notice_item_change_success
-    seller = Store::User.named("seller")
-    buyer = Store::User.named("buyer")
+    seller = User.named("seller")
+    buyer = User.named("buyer")
     item = seller.propose_item("item", 2);
 
     buyer.acknowledge_item_properties!

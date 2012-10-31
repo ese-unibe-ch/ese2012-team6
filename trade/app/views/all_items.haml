@@ -23,7 +23,7 @@
         %td.ralign
           #{item.price}
         %td
-          %a{:href => url("/user/#{item.owner.name}")}
+          %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
             :escaped
               #{item.owner.name}
         %td

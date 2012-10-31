@@ -22,7 +22,7 @@ class Authentication < Sinatra::Application
     name = params[:username]
 
     redirect '/error/trying forget pd for pre saved users' if ["admin", "umbrellacorp", "ese", "ese2", "petergriffin"].include?(name)
-    redirect '/error/user_no_exists' unless User.exists?(:name => name)
+    redirect '/error/user_no_exists' unless User.exists?(name)
 
     user = Store::User.by_name(name)
     user.reset_password
@@ -35,7 +35,7 @@ class Authentication < Sinatra::Application
     name = params[:username].strip
     password = params[:password].strip
 
-    redirect '/error/user_no_exists' unless User.exists?(:name => name)
+    redirect '/error/user_no_exists' unless User.exists?(name)
 
     user = User.by_name(name)
     redirect '/error/wrong_password' unless user.password_matches?(password)

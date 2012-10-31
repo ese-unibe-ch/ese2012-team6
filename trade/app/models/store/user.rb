@@ -1,5 +1,4 @@
 require 'bcrypt'
-require 'rbtree'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
@@ -13,8 +12,7 @@ module Store
   # It also provides services concerning user credentials which it stores
   class User < Trader
     # up to now only using IDs for efficient sorted storing
-    @@users_by_id = RBTree.new
-    @@users_by_name = {}
+    @@users = {}
 
     attr_accessor :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email
 
@@ -100,16 +98,12 @@ module Store
 
     # saves an user object to the system
     def save
-      fail if @@users_by_id.has_key?(self.id)
-      @@users_by_id[self.id] = self
-      @@users_by_name[self.name] = self
+      @@users[self.name] = self
     end
 
     # deletes an user object from the system
     def delete
-      fail unless  @@users_by_id.has_key?(self.id)
-      @@users_by_id.delete(self.id)
-      @@users_by_name.delete(self.name)
+      @@users.delete(self.name)
     end
 
     # reset a user's password and send email with new password if desired
@@ -123,36 +117,22 @@ module Store
     class << self
       # clears all users from system
       def clear_all
-        @@users_by_id.clear
-        @@users_by_name.clear
+        @@users.clear
       end
 
       # fetches the user object by its name
       def by_name(name)
-        fetch_by(:name => name)
-      end
-
-      # fetches the user object by its id
-      def by_id(id)
-        fetch_by(:id => id)
-      end
-
-      # returns the user object which matches with the :id or :name
-      def fetch_by(args = {})
-        return @@users_by_id[args[:id]] unless args[:id].nil?
-        return @@users_by_name[args[:name]] unless args[:name].nil?
-        nil
+        @@users[name]
       end
 
       # returns true if a user object exists with the :id or :name
-      def exists?(args = {})
-        return @@users_by_id.has_key?(args[:id]) unless args[:id].nil?
-        @@users_by_name.has_key?(args[:name])
+      def exists?(name)
+        return @@users.has_key?(name)
       end
 
       # returns all users in the system
       def all
-        @@users_by_id.values.dup
+        @@users.values.sort { |a,b| a.id <=> b.id}
       end
     end
   end

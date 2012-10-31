@@ -9,24 +9,24 @@ class ItemTest < Test::Unit::TestCase
 
   def test_item_name
     item_name = "TestItem"
-    item = Store::Item.named_priced_with_owner(item_name, 0, nil)
+    item = Item.named_priced_with_owner(item_name, 0, nil)
     assert_not_nil(item.name, "Item has no name")
     assert_equal(item_name, item.name)
   end
 
   def test_item_price
     item_price = 555
-    item = Store::Item.named_priced_with_owner("TestItem", item_price, nil)
+    item = Item.named_priced_with_owner("TestItem", item_price, nil)
     assert_equal(item_price, item.price)
   end
 
   def test_item_inactive_after_creation
-    item = Store::Item.new
+    item = Item.new
     assert_equal(false, item.active?, "New items must be set inactive!")
   end
 
   def test_item_has_owner
-    user = Store::User.named("User")
+    user = User.named("User")
     item = user.propose_item("TestItem", 100)
     assert_equal(user, item.owner)
   end
@@ -38,15 +38,15 @@ class ItemTest < Test::Unit::TestCase
     p4 = "-20"
     p5 = ""
 
-    assert(Store::Item.valid_price?(p1), "20 is a valid price")
-    assert(Store::Item.valid_price?(p2), "+20 is a valid price")
-    assert(Store::Item.valid_price?(p3), "020 is a valid price")
-    assert(!Store::Item.valid_price?(p4), "-20 is an invalid price")
-    assert(!Store::Item.valid_price?(p5), "empty is an invalid price")
+    assert(Item.valid_price?(p1), "20 is a valid price")
+    assert(Item.valid_price?(p2), "+20 is a valid price")
+    assert(Item.valid_price?(p3), "020 is a valid price")
+    assert(!Item.valid_price?(p4), "-20 is an invalid price")
+    assert(!Item.valid_price?(p5), "empty is an invalid price")
   end
 
   def test_is_editable?
-    item = Store::Item.named_priced_with_owner("test",20,nil)
+    item = Item.named_priced_with_owner("test",20,nil)
     item.activate
     assert_equal(false,item.editable?)
     item.deactivate
@@ -54,7 +54,7 @@ class ItemTest < Test::Unit::TestCase
   end
 
   def test_change_status
-    item = Store::Item.named_priced_with_owner("TestItem", 0, nil)
+    item = Item.named_priced_with_owner("TestItem", 0, nil)
     assert_equal(false, item.active?)
 
     item.update_status(true)
@@ -63,7 +63,7 @@ class ItemTest < Test::Unit::TestCase
   end
 
   def test_item_update
-    item = Store::Item.named_priced_with_owner("TestItem", 0, nil)
+    item = Item.named_priced_with_owner("TestItem", 0, nil)
     item.update("NewName", 100, "NewDescription")
 
     assert_equal("NewName", item.name)
@@ -72,32 +72,32 @@ class ItemTest < Test::Unit::TestCase
   end
 
   def test_item_save
-    item = Store::Item.named_priced_with_owner("TestItem", 0, nil)
+    item = Item.named_priced_with_owner("TestItem", 0, nil)
     item.save
-    assert_equal(item, Store::Item.by_id(item.id))
+    assert_equal(item, Item.by_id(item.id))
   end
 
   def test_item_delete
-    item = Store::Item.named_priced_with_owner("TestItem", 0, nil)
+    item = Item.named_priced_with_owner("TestItem", 0, nil)
     item.save
-    assert_equal(item, Store::Item.by_id(item.id))
+    assert_equal(item, Item.by_id(item.id))
 
     item.delete
-    assert_equal(nil, Store::Item.by_id(item.id))
+    assert_equal(nil, Item.by_id(item.id))
   end
 
   def test_get_all_items
-    Store::Item.clear_all
+    Item.clear_all
 
-    item1 = Store::Item.named_priced_with_owner("TestItem1", 0, nil)
-    item2 = Store::Item.named_priced_with_owner("TestItem2", 0, nil)
-    item3 = Store::Item.named_priced_with_owner("TestItem3", 0, nil)
+    item1 = Item.named_priced_with_owner("TestItem1", 0, nil)
+    item2 = Item.named_priced_with_owner("TestItem2", 0, nil)
+    item3 = Item.named_priced_with_owner("TestItem3", 0, nil)
 
     item1.save
     item2.save
     item3.save
 
-    all_items = Store::Item.all
+    all_items = Item.all
 
     [item1, item2, item3].each {
       |item|
@@ -107,7 +107,7 @@ class ItemTest < Test::Unit::TestCase
   end
 
   def test_is_editable_by_owner
-    user = Store::User.named("Hans")
+    user = User.named("Hans")
     item = user.propose_item("TestItem", 100, "", false)
     assert_equal(true, item.editable_by?(user))
     item.activate
@@ -115,8 +115,8 @@ class ItemTest < Test::Unit::TestCase
   end
 
   def test_is_editable_by_other
-    user = Store::User.named("Hans")
-    other = Store::User.named("Herbert")
+    user = User.named("Hans")
+    other = User.named("Herbert")
     item = user.propose_item("TestItem", 100, "", false)
     assert_equal(true, item.editable_by?(user))
     item.activate
@@ -124,7 +124,7 @@ class ItemTest < Test::Unit::TestCase
   end
 
   def test_activatable_by_owner
-    user = Store::User.named("Hans")
+    user = User.named("Hans")
     item = user.propose_item("TestItem", 100, "", false)
     assert_equal(true, item.activatable_by?(user))
     item.activate
@@ -132,8 +132,8 @@ class ItemTest < Test::Unit::TestCase
   end
 
   def test_activatable_by_other
-    user = Store::User.named("Hans")
-    other = Store::User.named("Herbert")
+    user = User.named("Hans")
+    other = User.named("Herbert")
     item = user.propose_item("TestItem", 100, "", false)
     assert_equal(true, item.activatable_by?(user))
     assert_equal(false, item.activatable_by?(other))
@@ -143,7 +143,7 @@ class ItemTest < Test::Unit::TestCase
   end
 
   def test_add_comment
-    comment = Store::Comment.new_comment("newComment", nil)
+    comment = Comment.new_comment("newComment", nil)
 
     item = Item.named_priced_with_owner("NewItem", 100, nil)
     item.update_comments(comment)
@@ -152,12 +152,12 @@ class ItemTest < Test::Unit::TestCase
   end
 
   def test_delete_comment
-    comment = Store::Comment.new_comment("newComment", nil)
+    comment = Comment.new_comment("newComment", nil)
 
     item = Item.named_priced_with_owner("NewItem", 100, nil)
     item.comments << comment
     item.delete_comment(comment)
     assert_equal(false, item.comments.include?(comment))
-    assert_equal(nil, Store::Comment.by_id(comment))
+    assert_equal(nil, Comment.by_id(comment))
   end
 end

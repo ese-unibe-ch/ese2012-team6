@@ -33,6 +33,7 @@ class Item < Sinatra::Application
     redirect '/login' unless @user
 
     @user.on_behalf_of.acknowledge_item_properties!
+
     item = Item.by_id(params[:item_id].to_i)
 
     redirect "/user/#{@user.name}" if item.nil?
@@ -52,7 +53,7 @@ class Item < Sinatra::Application
     item_id = params[:item_id].to_i
     item = Item.by_id(item_id)
 
-    redirect "/item/#{item_id}" unless @user.can_edit?(item)
+    redirect "/item/#{item_id}" unless @user.on_behalf_of.can_edit?(item)
 
     haml :edit_item, :locals => {
         :item => item,
@@ -104,7 +105,7 @@ class Item < Sinatra::Application
     item = Item.by_id(item_id)
 
     # UG: necessary because this handler can also be called by scripts
-    redirect "/item/#{item_id}" unless @user.can_edit?(item)
+    redirect "/item/#{item_id}" unless @user.on_behalf_of.can_edit?(item)
 
     if file
       uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/items")
@@ -129,10 +130,10 @@ class Item < Sinatra::Application
 
     item = Item.by_id(Integer(params[:item_id]))
 
-    changed_owner = @user.open_item_page_time < item.edit_time && !@user.can_activate?(item)
+    changed_owner = @user.on_behalf_of.open_item_page_time < item.edit_time && !@user.on_behalf_of.can_activate?(item)
 
     redirect url('/error/not_owner_of_item') if changed_owner
-    redirect "/item/#{params[:item_id]}" unless @user.can_activate?(item)
+    redirect "/item/#{params[:item_id]}" unless @user.on_behalf_of.can_activate?(item)
 
     item.update_status(activate)
 

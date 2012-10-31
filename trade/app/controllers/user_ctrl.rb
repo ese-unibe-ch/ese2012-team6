@@ -72,7 +72,7 @@ class User < Sinatra::Application
     item_id = params[:item_id].to_i
     item = Item.by_id(item_id)
 
-    redirect url('/error/item_changed_details') unless @user.knows_item_properties?(item)
+    redirect url('/error/item_changed_details') unless @user.on_behalf_of.knows_item_properties?(item)
 
     buy_success, buy_message = @user.on_behalf_of.buy_item(item)
 

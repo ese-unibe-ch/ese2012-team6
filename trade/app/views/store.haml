@@ -23,13 +23,13 @@
           %td
             #{item.price}
           %td
-            %a{:href => url("/user/#{item.owner.name}")}
+            %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
               :escaped
                 #{item.owner.name}
           %td
-            -if @user.can_buy?(item)
+            -if @user.on_behalf_of.can_buy?(item)
               %form{:action => "/user/buy/#{item.id}", :method => "POST"}
-                %input.styled-button.small.buy-color{:type => "submit", :value => @user.on_behalf_of == @user ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
+                %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
 %h3
   Recent purchases
 - if most_recent_purchases.empty?

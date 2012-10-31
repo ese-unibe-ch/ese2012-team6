@@ -1,5 +1,4 @@
 require 'bcrypt'
-require 'rbtree'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
@@ -120,9 +119,9 @@ module Store
 
     alias :can_delete? :can_edit?
 
-    # returns true if user is allowed to buy
+    # returns true if user is allowed to buy item
     def can_buy?(item)
-      ((item.owner != self.on_behalf_of) && item.active?)
+      item.buyable_by?(self)
     end
 
     # returns true if user is allowed to activate an item
@@ -133,10 +132,6 @@ module Store
     # returns the system user as a string
     def to_s
       "#{self.name}, #{self.credits}"
-    end
-
-    def is_organization?
-      false
     end
 
     # sends a certain amount of money from the user/org to a another user/org
@@ -177,31 +172,20 @@ module Store
         Organization.clear_all
       end
 
-      # fetches system user object, args must contain key :name or :id
-      # returns nil if not found
-      def fetch_by(args = {})
-        return User.fetch_by(args) if User.exists?(args)
-        Organization.fetch_by(args) if Organization.exists?(args)
-      end
-
-      # returns the system user found by id
-      def by_id(id)
-        fetch_by(:id => id.to_i)
-      end
-
       # returns the system user found by name
       def by_name(name)
-        fetch_by(:name => name)
+        return User.by_name(name) if User.exists?(name)
+        Organization.by_name(name) if Organization.exists?(name)
       end
 
       # returns all system users
       def all
-        User.all.concat(Organization.all)
+        User.all.concat(Organization.all).sort { |a,b| a.id <=> b.id }
       end
 
       # returns true if the system includes a certain user or organization object, args must include keys :id xor :name
-      def exists?(args = {})
-        User.exists?(args) || Organization.exists?(args)
+      def exists?(name)
+        User.exists?(name) || Organization.exists?(name)
       end
     end
   end

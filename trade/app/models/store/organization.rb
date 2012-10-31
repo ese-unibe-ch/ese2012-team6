@@ -7,9 +7,7 @@ module Store
   class Organization < Trader
     attr_accessor :members, :admins
 
-    # up to now only using IDs for efficient sorted storing
-    @@organizations_by_id = RBTree.new
-    @@organizations_by_name = {}
+    @@organizations = {}
 
     def initialize
       super
@@ -51,11 +49,6 @@ module Store
       admins.delete(member)
     end
 
-    # returns always true if called with an organization object
-    def is_organization?
-      true
-    end
-
     # determine whether a user is a member of this organization
     def has_member?(user)
       fail if user.nil?
@@ -70,42 +63,34 @@ module Store
 
     # saves the organization to the system
     def save
-      fail if @@organizations_by_id.has_key?(self.id)
-      @@organizations_by_id[self.id] = self
-      @@organizations_by_name[self.name] = self
+      @@organizations[self.name] = self
     end
 
     # deletes the organization from the system
     def delete
-      fail unless @@organizations_by_id.has_key?(self.id)
-      @@organizations_by_id.delete(self.id)
-      @@organizations_by_name.delete(self.name)
+      @@organizations.delete(self.name)
     end
 
     # class methods
     class << self
       # deletes all organizations in the system
       def clear_all
-        @@organizations_by_name.clear
-        @@organizations_by_id.clear
-      end
-
-      # fetches the organization object by its :name or :id
-      def fetch_by(args = {})
-        return @@organizations_by_id[args[:id]] unless args[:id].nil?
-        return @@organizations_by_name[args[:name]] unless args[:name].nil?
-        nil
+        @@organizations.clear
       end
 
       # returns true if an organization object exists with the :id or :name specified
-      def exists?(args = {})
-        return @@organizations_by_id.has_key?(args[:id]) unless args[:id].nil?
-        @@organizations_by_name.has_key?(args[:name])
+      def exists?(name)
+        @@organizations.has_key?(name)
+      end
+
+      # fetches the user object by its name
+      def by_name(name)
+        @@organizations[name]
       end
 
       # returns all saved organizations
       def all
-        @@organizations_by_id.values.dup
+        @@organizations.values.sort { |a,b| a.id <=> b.id}
       end
     end
   end

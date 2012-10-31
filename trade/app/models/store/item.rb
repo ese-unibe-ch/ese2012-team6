@@ -86,27 +86,31 @@ module Store
 
     # returns whether the item is generally editable
     def editable?
-      (not self.active)
+      !self.active
     end
 
-    # returns whether the item is editable by a certain user object
-    def editable_by?(user)
-      fail if user.nil?
-      (self.editable? && ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user))))
+    # returns whether the item is editable by a certain trader
+    def editable_by?(trader)
+      fail if trader.nil?
+      self.editable? && self.owner.eql?(trader)
     end
 
     # returns whether the item is deletable by a certain user object
     alias :deletable_by? :editable_by?
 
     # returns whether the item is activatable by a certain user object
-    def activatable_by?(user)
-      fail if user.nil?
-      ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user)))
+    def activatable_by?(trader)
+      fail if trader.nil?
+      self.owner.eql?(trader)
+    end
+
+    def buyable_by?(trader)
+      fail if trader.nil?
+      (!self.owner.eql?(trader) && self.active)
     end
 
     # update the item's properties
     def update(new_name, new_price, new_desc, log = true)
-
       fail unless self.editable?
 
       old_vals = {:name => self.name, :price => self.price, :description => self.description}
