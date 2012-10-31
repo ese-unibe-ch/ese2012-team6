@@ -3,7 +3,7 @@ require_relative '../store/system_user'
 
 module Store
   # Organizations offer the ability for users to work on behalf of each other. They behave just like a normal user, but
-  # do not have a login. An organization has users and admins and it keeps track of those
+  # do not have a login. An organization has members and admins which it keeps track of
   class Organization < SystemUser
     attr_accessor :members, :admins
 
@@ -18,6 +18,7 @@ module Store
     end
 
     # creates a new organization with certain options (:admin, :description, :credits)
+    # If :admin is specified, it will be added as an admin and a member of the organization
     def self.named(name, options = {})
       organization = Organization.new
       organization.name = name

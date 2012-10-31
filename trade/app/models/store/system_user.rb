@@ -25,7 +25,7 @@ module Store
       self.image_path = "/images/no_image.gif"
     end
 
-    # creates a new system user object
+    # creates a new system user object, options include :description and :credits
     def self.named(name, options = {})
       system_user = SystemUser.new
 
@@ -135,12 +135,11 @@ module Store
       "#{self.name}, #{self.credits}"
     end
 
-    # returns false when a system user object calls this method
     def is_organization?
       false
     end
 
-    # sends a certain amount of money from the user to a certain organization
+    # sends a certain amount of money from the user/org to a another user/org
     def send_money_to(receiver, amount)
       fail if receiver.nil?
       return false unless self.credits >= amount
