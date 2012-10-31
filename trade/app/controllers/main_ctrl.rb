@@ -78,7 +78,7 @@ class Main < Sinatra::Application
       when "wrong_transfer_amount"
         error_message = "You must transfer a positive integral amount of credits"
       when "invalid_username"
-        error_message = "Your user name must only contain word characters"
+        error_message = "Your user name must only contain word characters (lower/uppercase letters and underscores)"
       when "trying forget pd for pre saved users"
         error_message = "This user was created for fast program testing, thus it hasn't got an email address"
     end
