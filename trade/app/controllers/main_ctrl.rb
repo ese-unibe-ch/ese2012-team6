@@ -2,7 +2,7 @@ require 'haml'
 require_relative('../models/store/user')
 require_relative('../models/store/item')
 
-# Handles all requests
+# Handles all requests concerning item store and error display
 class Main < Sinatra::Application
   include Store
   include Analytics

@@ -1,6 +1,6 @@
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
-require_relative '../security/string_checker'
+require_relative '../helpers/security/string_checker'
 require_relative '../store/comment'
 
 module Store

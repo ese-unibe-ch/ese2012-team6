@@ -4,7 +4,6 @@ module Store
   # user's credits by a certain percentage. Handles user's credits after item trade
   class TradingAuthority
 
-
     CREDIT_REDUCE_RATE = 0.05 unless defined? CREDIT_REDUCE_RATE
     SELL_BONUS = 0.05 unless defined? SELL_BONUS
 

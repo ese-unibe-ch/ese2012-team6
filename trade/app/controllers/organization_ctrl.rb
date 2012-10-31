@@ -2,6 +2,7 @@ require 'haml'
 require_relative('../models/store/item')
 require_relative('../models/store/user')
 require_relative('../models/store/organization')
+require_relative('../models/helpers/storage/picture_uploader')
 
 # Handles all requests concerning user registration
 class Organization < Sinatra::Application

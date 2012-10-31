@@ -4,8 +4,8 @@ require 'rbtree'
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../store/system_user'
-require_relative '../security/password_generator'
-require_relative '../security/mail_client'
+require_relative '../helpers/security/password_generator'
+require_relative '../helpers/security/mail_client'
 
 module Store
   # Models a user that can log into the system and perform actions on items. It is able to create organizations which

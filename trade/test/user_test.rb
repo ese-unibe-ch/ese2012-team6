@@ -4,7 +4,6 @@ require 'require_relative'
 require_relative '../app/models/store/item'
 require_relative '../app/models/store/user'
 require_relative '../app/models/store/organization'
-require_relative '../app/models/security/string_checker'
 
 class UserTest < Test::Unit::TestCase
   include Store

@@ -1,11 +1,11 @@
 require 'test/unit'
 require 'rubygems'
 require 'require_relative'
-require_relative '../app/models/storage/picture_uploader'
-require_relative '../app/models/store/user'
-require_relative '../app/models/security/string_checker'
+require_relative '../../app/models/helpers/storage/picture_uploader'
+require_relative '../../app/models/store/user'
+require_relative '../../app/models/helpers/security/string_checker'
 
-class Picture_Uploader_Test < Test::Unit::TestCase
+class PictureUploaderTests < Test::Unit::TestCase
   UPLOAD_PATH = File.dirname(__FILE__)
 
   def test_upload_picture

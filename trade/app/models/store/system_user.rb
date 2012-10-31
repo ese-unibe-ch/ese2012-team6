@@ -65,9 +65,10 @@ module Store
       end
     end
 
-    # deletes chosen item
+    # deletes chosen item, raises error if user can not delete item
     def delete_item(item_id, log = true)
       item = Item.by_id(item_id)
+
       fail if item.nil?
       fail unless self.can_delete?(item)
 
@@ -77,7 +78,8 @@ module Store
       Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
     end
 
-    # handles the shop of an item
+    # handles the shop of an item , returns true if buy process was successfull, false otherwise
+    # also returns error code
     def buy_item(item, log = true)
       seller = item.owner
 

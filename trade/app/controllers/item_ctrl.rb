@@ -1,8 +1,8 @@
 require 'haml'
 require 'rdiscount'
 
-require_relative '../models/storage/picture_uploader'
-require_relative '../models/security/string_checker'
+require_relative '../models/helpers/storage/picture_uploader'
+require_relative '../models/helpers/security/string_checker'
 require_relative '../models/store/comment'
 
 # Handles all requests concerning item display, alteration and deletion
@@ -182,7 +182,6 @@ class Item < Sinatra::Application
   # handles item deletion
   delete '/item/:item_id' do
     redirect '/login' unless @user
-    # UG: Check whether user can really delete item
 
     item_id = params[:item_id].to_i
     @user.delete_item(item_id)
