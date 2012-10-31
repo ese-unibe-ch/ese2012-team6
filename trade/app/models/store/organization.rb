@@ -1,9 +1,9 @@
 require 'rbtree'
 require_relative '../store/system_user'
 
-# organization class inherits the super class system_user
-# is responsible for handling with organizations
 module Store
+  # Organizations offer the ability for users to work on behalf of each other. They behave just like a normal user, but
+  # do not have a login. An organization has members and admins which it keeps track of
   class Organization < SystemUser
     attr_accessor :members, :admins
 
@@ -18,6 +18,7 @@ module Store
     end
 
     # creates a new organization with certain options (:admin, :description, :credits)
+    # If :admin is specified, it will be added as an admin and a member of the organization
     def self.named(name, options = {})
       organization = Organization.new
       organization.name = name
@@ -25,7 +26,7 @@ module Store
       organization.add_admin(options[:admin]) if options[:admin]
       organization.add_member(options[:admin]) if options[:admin]
       organization.credits = options[:credits] if options[:credits]
-      return organization
+      organization
     end
 
     # adds a member to an organization
@@ -58,13 +59,13 @@ module Store
     # determine whether a user is a member of this organization
     def has_member?(user)
       fail if user.nil?
-      return self.members.include?(user)
+      self.members.include?(user)
     end
 
     # determine whether a user is an admin of this organization
     def has_admin?(user)
       fail if user.nil?
-      return self.admins.include?(user)
+      self.admins.include?(user)
     end
 
     # saves the organization to the system
@@ -76,7 +77,7 @@ module Store
 
     # deletes the organization from the system
     def delete
-      fail unless @@organizations_by_id .has_key?(self.id)
+      fail unless @@organizations_by_id.has_key?(self.id)
       @@organizations_by_id.delete(self.id)
       @@organizations_by_name.delete(self.name)
     end
@@ -89,23 +90,22 @@ module Store
         @@organizations_by_id.clear
       end
 
-      # fetches the organization object by its name or id
+      # fetches the organization object by its :name or :id
       def fetch_by(args = {})
-        return  @@organizations_by_id[args[:id]] unless args[:id].nil?
-        return  @@organizations_by_name[args[:name]] unless args[:name].nil?
-
-        return nil
+        return @@organizations_by_id[args[:id]] unless args[:id].nil?
+        return @@organizations_by_name[args[:name]] unless args[:name].nil?
+        nil
       end
 
-      # returns true if an organization object exists with the id or name
+      # returns true if an organization object exists with the :id or :name specified
       def exists?(args = {})
         return @@organizations_by_id.has_key?(args[:id]) unless args[:id].nil?
-        return @@organizations_by_name.has_key?(args[:name])
+        @@organizations_by_name.has_key?(args[:name])
       end
 
       # returns all saved organizations
       def all
-        return @@organizations_by_id.values.dup
+        @@organizations_by_id.values.dup
       end
     end
   end

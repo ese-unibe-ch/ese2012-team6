@@ -4,9 +4,18 @@ require 'require_relative'
 require_relative '../app/models/store/item'
 require_relative '../app/models/store/user'
 require_relative '../app/models/store/organization'
-require_relative '../app/models/security/string_checker'
 
 class UserTest < Test::Unit::TestCase
+  include Store
+
+  def setup
+    SystemUser.clear_all
+  end
+
+  def teardown
+    SystemUser.clear_all
+  end
+
   def test_check_user_name
     name = "HansliCaramell"
     user = Store::User.named(name)
@@ -79,7 +88,8 @@ class UserTest < Test::Unit::TestCase
     user = Store::User.named("user")
     assert(user.password_matches?("user"))
 
-    user.reset_password(false)
+    new_password = user.reset_password(false)
     assert(!user.password_matches?("user"))
+    assert(user.password_matches?(new_password))
   end
 end

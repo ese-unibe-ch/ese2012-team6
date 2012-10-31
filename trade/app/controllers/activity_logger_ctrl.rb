@@ -3,6 +3,7 @@ require_relative '../models/analytics/activity_logger'
 require_relative '../models/store/user'
 require_relative '../models/store/item'
 
+# handles requests concerning activities and activity logging
 class ActivityLogger < Sinatra::Application
   include Store
   include Analytics
@@ -23,7 +24,7 @@ class ActivityLogger < Sinatra::Application
   end
 
   # show details page of an activity, not yet used!
-  get "/activity/:act_id" do
+  get '/activity/:act_id' do
     redirect '/login' unless @user
 
     activity_id = params[:act_id]

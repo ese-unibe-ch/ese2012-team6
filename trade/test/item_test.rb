@@ -3,7 +3,6 @@ require 'rubygems'
 require 'require_relative'
 require_relative '../app/models/store/item'
 require_relative '../app/models/store/user'
-require_relative '../app/models/security/string_checker'
 
 class ItemTest < Test::Unit::TestCase
   include Store
@@ -12,24 +11,24 @@ class ItemTest < Test::Unit::TestCase
     item_name = "TestItem"
     item = Store::Item.named_priced_with_owner(item_name, 0, nil)
     assert_not_nil(item.name, "Item has no name")
-    assert(item.name == item_name)
+    assert_equal(item_name, item.name)
   end
 
   def test_item_price
     item_price = 555
     item = Store::Item.named_priced_with_owner("TestItem", item_price, nil)
-    assert(item.price == item_price)
+    assert_equal(item_price, item.price)
   end
 
   def test_item_inactive_after_creation
     item = Store::Item.new
-    assert(item.active == false, "New items must be set inactive!")
+    assert_equal(false, item.active?, "New items must be set inactive!")
   end
 
   def test_item_has_owner
     user = Store::User.named("User")
     item = user.propose_item("TestItem", 100)
-    assert(item.owner == user)
+    assert_equal(user, item.owner)
   end
 
   def test_item_valid_price
@@ -58,7 +57,7 @@ class ItemTest < Test::Unit::TestCase
     item = Store::Item.named_priced_with_owner("TestItem", 0, nil)
     assert_equal(false, item.active?)
 
-    item.update_status("true")
+    item.update_status(true)
 
     assert_equal(true, item.active?)
   end

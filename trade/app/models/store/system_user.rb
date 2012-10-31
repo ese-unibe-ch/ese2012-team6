@@ -4,9 +4,10 @@ require 'rbtree'
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../store/trading_authority'
+require_relative '../store/item'
 
 # superclass for user and organization
-# responsible for all actions concerning user and organization objects
+# A SystemUser is the main actor in the system. The class provides services for trading items between users and creating new items
 module Store
   class SystemUser
     attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
@@ -24,7 +25,7 @@ module Store
       self.image_path = "/images/no_image.gif"
     end
 
-    # creates a new system user object
+    # creates a new system user object, options include :description and :credits
     def self.named(name, options = {})
       system_user = SystemUser.new
 
@@ -32,7 +33,7 @@ module Store
       system_user.description = options[:description] || ""
       system_user.credits = options[:credits] || 0
 
-      return system_user
+      system_user
     end
 
     # propose a new item
@@ -42,13 +43,12 @@ module Store
       self.attach_item(item)
       Analytics::ItemAddActivity.with_creator_item(self, item).log if log
 
-      return item
+      item
     end
 
-    # returns all active items of an user
+    # s all active items of an user
     def get_active_items
-      active_items = self.items.select {|i| i.active?}
-      return active_items
+      self.items.select { |i| i.active? }
     end
 
     # attaches a newly created or bought item
@@ -65,9 +65,10 @@ module Store
       end
     end
 
-    # deletes chosen item
+    # deletes chosen item, raises error if user can not delete item
     def delete_item(item_id, log = true)
       item = Item.by_id(item_id)
+
       fail if item.nil?
       fail unless self.can_delete?(item)
 
@@ -77,7 +78,8 @@ module Store
       Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
     end
 
-    # handles the shop of an item
+    # handles the shop of an item , returns true if buy process was successfull, false otherwise
+    # also returns error code
     def buy_item(item, log = true)
       seller = item.owner
 
@@ -98,12 +100,11 @@ module Store
       end
 
       seller.release_item(item)
-      seller.credits += item.price + Integer(item.price * TradingAuthority::SELL_BONUS)
+
+      TradingAuthority.settle_item_purchase(seller, self, item)
 
       item.deactivate
-
       self.attach_item(item)
-      self.credits -= item.price
 
       item.notify_change
 
@@ -114,32 +115,31 @@ module Store
 
     # returns true if an user is allowed to edit
     def can_edit?(item)
-      return item.editable_by?(self)
+      item.editable_by?(self)
     end
 
     alias :can_delete? :can_edit?
 
     # returns true if user is allowed to buy
     def can_buy?(item)
-      return ((item.owner != self.on_behalf_of) && item.active?)
+      ((item.owner != self.on_behalf_of) && item.active?)
     end
 
     # returns true if user is allowed to activate an item
     def can_activate?(item)
-      return item.activatable_by?(self)
+      item.activatable_by?(self)
     end
 
     # returns the system user as a string
     def to_s
-      return "#{self.name}, #{self.credits}"
+      "#{self.name}, #{self.credits}"
     end
 
-    # returns false when a system user object calls this method
     def is_organization?
       false
     end
 
-    # sends a certain amount of money from the user to a certain organization
+    # sends a certain amount of money from the user/org to a another user/org
     def send_money_to(receiver, amount)
       fail if receiver.nil?
       return false unless self.credits >= amount
@@ -149,7 +149,7 @@ module Store
 
       fail if self.credits < 0
 
-      return true
+      true
     end
 
     # making the transfer of credit
@@ -165,7 +165,7 @@ module Store
 
     # returns true when user is aware of latest changes to item, false otherwise
     def knows_item_properties?(item)
-      return !(self.open_item_page_time < item.edit_time)
+      !(self.open_item_page_time < item.edit_time)
     end
 
     # class methods
@@ -178,29 +178,30 @@ module Store
       end
 
       # fetches system user object, args must contain key :name or :id
+      # returns nil if not found
       def fetch_by(args = {})
         return User.fetch_by(args) if User.exists?(args)
-        return Organization.fetch_by(args) if Organization.exists?(args)
+        Organization.fetch_by(args) if Organization.exists?(args)
       end
 
       # returns the system user found by id
       def by_id(id)
-        return fetch_by(:id => id.to_i)
+        fetch_by(:id => id.to_i)
       end
 
       # returns the system user found by name
       def by_name(name)
-        return fetch_by(:name => name)
+        fetch_by(:name => name)
       end
 
       # returns all system users
       def all
-        return User.all.concat(Organization.all)
+        User.all.concat(Organization.all)
       end
 
-      # returns true if the system includes a certain user or organization object
+      # returns true if the system includes a certain user or organization object, args must include keys :id xor :name
       def exists?(args = {})
-        return User.exists?(args) || Organization.exists?(args)
+        User.exists?(args) || Organization.exists?(args)
       end
     end
   end

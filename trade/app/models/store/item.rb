@@ -1,10 +1,10 @@
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
-require_relative '../security/string_checker'
+require_relative '../helpers/security/string_checker'
 require_relative '../store/comment'
 
-# this class is responsible for the item handling
 module Store
+  # The item is the central trading object within the application. It can be traded in between traders for a certain price.
   class Item
     attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments
     @@last_id = 0
@@ -52,27 +52,23 @@ module Store
       item.price = price
       item.owner = owner
       item.description = description
-      return item
+      item
     end
 
     def to_s
-      return "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
+      "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
     end
 
-    # activate the item (you don't say...)
     def activate
       self.active = true
     end
 
-    # deactivate the item (thanks captain obvious)
     def deactivate
       self.active = false
     end
 
     # update the item's status
     def update_status(new_status, log = true)
-
-      new_status = (new_status == "true")
       old_status = self.active
 
       if old_status != new_status
@@ -85,18 +81,18 @@ module Store
 
     # returns whether the item is active or not
     def active?
-      return self.active
+      self.active
     end
 
     # returns whether the item is generally editable
     def editable?
-      return (not self.active)
+      (not self.active)
     end
 
     # returns whether the item is editable by a certain user object
     def editable_by?(user)
       fail if user.nil?
-      return (self.editable? && ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user))))
+      (self.editable? && ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user))))
     end
 
     # returns whether the item is deletable by a certain user object
@@ -105,7 +101,7 @@ module Store
     # returns whether the item is activatable by a certain user object
     def activatable_by?(user)
       fail if user.nil?
-      return ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user)))
+      ((self.owner.eql?(user)) || (self.owner.is_organization? && self.owner.has_admin?(user)))
     end
 
     # update the item's properties
@@ -140,17 +136,17 @@ module Store
 
       # retrieve item object by id from system
       def by_id(id)
-        return @@items[id]
+        @@items[id]
       end
 
       # get all stored items
       def all
-        return @@items.values.dup
+        @@items.values.dup
       end
 
       # determines whether a string is a valid price for an item
       def valid_price?(price)
-        return Security::StringChecker.is_numeric?(price) && price.to_i >= 0
+        Security::StringChecker.is_numeric?(price) && price.to_i >= 0
       end
     end
   end

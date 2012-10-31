@@ -2,6 +2,7 @@ require 'haml'
 require_relative('../models/store/item')
 require_relative('../models/store/user')
 require_relative('../models/store/organization')
+require_relative('../models/helpers/storage/picture_uploader')
 
 # Handles all requests concerning user registration
 class Organization < Sinatra::Application
@@ -24,10 +25,7 @@ class Organization < Sinatra::Application
   get '/organization/new' do
     redirect '/login' unless @user
 
-    haml :new_organization, :locals => { :org_name => "",
-                                         :org_desc => "",
-                                         :viewer => @user
-                                       }
+    haml :new_organization
   end
 
   # Handles creating organization
@@ -45,7 +43,7 @@ class Organization < Sinatra::Application
     members = params[:member] || []
     members.each { |member| organization.add_member(User.by_name(member)) }
 
-    redirect "/organizations"
+    redirect '/organizations'
   end
 
   # Get information about organization
@@ -85,7 +83,7 @@ class Organization < Sinatra::Application
   end
 
   # handles a user add request to organization and determines whether the user is able to become admin of said organization
-  post "/organization/:organization_name/add/:username/" do
+  post '/organization/:organization_name/add/:username/' do
     redirect '/login' unless @user
 
     organization = Organization.by_name(params[:organization_name])
@@ -96,13 +94,13 @@ class Organization < Sinatra::Application
     else
       organization.add_member(user)
     end
-    #redirect "/organization/#{params[:organization_name]}"
-    redirect (back + "#manage_admins")
+
+    redirect (back + '#manage_admins')
   end
 
   # handles a user remove request from organization and determines whether the user can resign as admin or not,
   # THERE MUST ALWAYS BE AN ADMIN!
-  post "/organization/:organization_name/remove/:username/" do
+  post '/organization/:organization_name/remove/:username/' do
     redirect '/login' unless @user
 
     organization = Organization.by_name(params[:organization_name])
@@ -117,8 +115,7 @@ class Organization < Sinatra::Application
     # fail if org has no admin
     fail if organization.admins.size == 0
 
-    #redirect "/organization/#{params[:organization_name]}"
-    redirect (back + "#manage_admins")
+    redirect (back + '#manage_admins')
   end
 
   # Handles changing organization
@@ -134,7 +131,7 @@ class Organization < Sinatra::Application
     member_rem = params[:rem]
 
     member_put.each {|username| organization.add_member(User.by_name(username))} unless member_put.nil?
-    member_rem.each {|username| organization.remove_member(User.by_name(username))} unless member_put.nil?
+    member_rem.each {|username| organization.remove_member(User.by_name(username))} unless member_rem.nil?
 
     redirect "/organization/#{organization.name}"
   end
@@ -147,9 +144,9 @@ class Organization < Sinatra::Application
     file = params[:file_upload]
     redirect to("/organization/#{viewed_organization.name}") unless file
 
-    redirect "/error/wrong_size" if file[:tempfile].size > 400*1024
+    redirect '/error/wrong_size' if file[:tempfile].size > 400*1024
 
-    uploader = PictureUploader.with_path("/images/organizations")
+    uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/organizations")
     viewed_organization.image_path = uploader.upload(file, viewed_organization.id)
 
     redirect back
@@ -163,12 +160,12 @@ class Organization < Sinatra::Application
     org = Organization.by_name(org_name)
 
     fail unless @user.is_admin_of?(org)
-    redirect "/error/wrong_transfer_amount" unless (StringChecker.is_numeric?(params[:gift_amount]) && Integer(params[:gift_amount]) >= 0)
+    redirect '/error/wrong_transfer_amount' unless (StringChecker.is_numeric?(params[:gift_amount]) && Integer(params[:gift_amount]) >= 0)
 
     amount = params[:gift_amount].to_i
     success = org.send_money_to(@user, amount)
 
-    redirect "/error/organization_credit_transfer_failed" unless success
+    redirect '/error/organization_credit_transfer_failed' unless success
     redirect back
   end
 end

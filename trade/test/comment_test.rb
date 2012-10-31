@@ -4,7 +4,7 @@ require 'require_relative'
 require_relative '../app/models/store/comment'
 require_relative '../app/models/store/user'
 
-class Comment_Test < Test::Unit::TestCase
+class CommentTest < Test::Unit::TestCase
 
   def test_create_comment
     user = Store::User.named("John")

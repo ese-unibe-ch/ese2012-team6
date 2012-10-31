@@ -2,11 +2,13 @@ require 'rubygems'
 require 'tlsmail'
 
 module Security
+  # provides service to send mails to recipients
   class MailClient
-    def self.send_mail(to,contents)
+    # send a mail with content to recipient
+    def self.send_mail(to, contents)
 
-      from = 'awesome.trading.app@gmail.com'    #insert a gmail address
-      pw = 'our_app_is_awesome'                 #and the password to the corresponding account
+      from = 'awesome.trading.app@gmail.com' #insert a gmail address
+      pw = 'our_app_is_awesome' #and the password to the corresponding account
 
       content = <<EOF
 From: #{from}
@@ -15,10 +17,10 @@ subject: Password Reset
 
 
       Your Password has been reset on request to "#{contents}"
-      Please change it directly after your next login.
+      Please change it immediately after your next login.
 
-Sincerely
-Awesome Traiding App
+Sincerely,
+Awesome Trading App
 EOF
 
       Net::SMTP.enable_tls(OpenSSL::SSL::VERIFY_NONE)

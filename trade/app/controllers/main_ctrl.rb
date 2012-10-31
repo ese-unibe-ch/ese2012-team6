@@ -2,7 +2,7 @@ require 'haml'
 require_relative('../models/store/user')
 require_relative('../models/store/item')
 
-# Handles all requests
+# Handles all requests concerning item store and error display
 class Main < Sinatra::Application
   include Store
   include Analytics
@@ -12,7 +12,7 @@ class Main < Sinatra::Application
   end
 
   # Default page handler, shows store page
-  get "/" do
+  get '/' do
     redirect '/login' unless @user
 
     @user.acknowledge_item_properties!
@@ -25,7 +25,7 @@ class Main < Sinatra::Application
   end
 
   # Error handler, shows error message
-  get "/error/:error_msg" do
+  get '/error/:error_msg' do
 
     should_refresh = false
 
@@ -71,12 +71,16 @@ class Main < Sinatra::Application
         error_message = "Type a name for your Organization"
       when "user_credit_transfer_failed"
         error_message = "You do not have enough credits to transfer"
+        should_refresh = true
       when "organization_credit_transfer_failed"
         error_message = "Organization does not have enough credits to transfer"
+        should_refresh = true
       when "wrong_transfer_amount"
         error_message = "You must transfer a positive integral amount of credits"
       when "invalid_username"
-        error_message = "Your user name must only contain word characters"
+        error_message = "Your user name must only contain word characters (lower/uppercase letters and underscores)"
+      when "trying forget pd for pre saved users"
+        error_message = "This user was created for fast program testing, thus it hasn't got an email address"
     end
 
     last_page = back

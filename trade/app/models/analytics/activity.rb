@@ -28,7 +28,7 @@ module Analytics
 
     # Returns a string stating what this activity has stored
     def what_happened?
-      return "Nothing"
+      "Nothing"
     end
 
     # Saves this activity to a location using the ActivityLogger class
@@ -49,7 +49,7 @@ module Analytics
     end
 
     def what_happened
-      return "Nothing"
+      "Nothing"
     end
   end
 
@@ -63,7 +63,7 @@ module Analytics
     end
 
     def what_happened
-      return "Nothing"
+      "Nothing"
     end
   end
 
@@ -88,15 +88,12 @@ module Analytics
       buy_activity.price = item.price
       buy_activity.success = success
 
-      return buy_activity
+      buy_activity
     end
 
     def what_happened
-      if self.success
-        return "User #{self.actor_name} bought item ##{self.item_id} #{self.item_name} for #{self.price}$"
-      else
-        return "User #{self.actor_name} tried to buy item ##{self.item_id} #{self.item_name} for #{self.price}$ but purchase failed"
-      end
+      return "User #{self.actor_name} bought item ##{self.item_id} #{self.item_name} for #{self.price}$" if self.success
+      "User #{self.actor_name} tried to buy item ##{self.item_id} #{self.item_name} for #{self.price}$ but purchase failed"
     end
   end
 
@@ -122,11 +119,11 @@ module Analytics
       edit_activity.old_values = old_vals
       edit_activity.new_values = new_vals
 
-      return edit_activity
+      edit_activity
     end
 
     def what_happened
-      return "User #{self.actor_name} edited item ##{self.item_id} #{self.item_name}"
+      "User #{self.actor_name} edited item ##{self.item_id} #{self.item_name}"
     end
   end
 
@@ -145,12 +142,12 @@ module Analytics
       add_activity.actor_name = creator.name
       add_activity.item_id = item.id
       add_activity.item_name = item.name
-     
-      return add_activity
+
+      add_activity
     end
 
     def what_happened
-      return "User #{self.actor_name} added item ##{self.item_id} #{self.item_name}"
+      "User #{self.actor_name} added item ##{self.item_id} #{self.item_name}"
     end
   end
 
@@ -174,11 +171,11 @@ module Analytics
       status_change_activity.item_name = item.name
       status_change_activity.new_status = new_status
 
-      return status_change_activity
+      status_change_activity
     end
 
     def what_happened
-      return "User #{self.actor_name} changed status of item ##{self.item_id} #{self.item_name} to #{self.new_status ? "active" : "inactive"}"
+      "User #{self.actor_name} changed status of item ##{self.item_id} #{self.item_name} to #{self.new_status ? "active" : "inactive"}"
     end
   end
 
@@ -197,11 +194,11 @@ module Analytics
       delete_activity.item_id = item.id
       delete_activity.item_name = item.name
 
-      return delete_activity
+      delete_activity
     end
 
     def what_happened
-      return "User #{self.actor_name} deleted item ##{self.item_id} #{self.item_name}"
+      "User #{self.actor_name} deleted item ##{self.item_id} #{self.item_name}"
     end
   end
 
@@ -216,11 +213,11 @@ module Analytics
     def self.with_username(user_name)
       login_act = UserLoginActivity.new
       login_act.user_name = user_name
-      return login_act
+      login_act
     end
 
     def what_happened
-      return "User #{self.user_name} logged in"
+      "User #{self.user_name} logged in"
     end
   end
 
@@ -235,11 +232,11 @@ module Analytics
     def self.with_username(user_name)
       logout_act = UserLogoutActivity.new
       logout_act.user_name = user_name
-      return logout_act
+      logout_act
     end
 
     def what_happened
-      return "User #{self.user_name} logged out"
+      "User #{self.user_name} logged out"
     end
   end
 end

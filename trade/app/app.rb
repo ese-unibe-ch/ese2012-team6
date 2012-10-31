@@ -16,7 +16,11 @@ require_relative('controllers/user_ctrl')
 require_relative('controllers/activity_logger_ctrl')
 require_relative('controllers/organization_ctrl')
 
+APP_STARTUP_PATH = File.dirname(__FILE__)
+PUBLIC_FOLDER = File.join(APP_STARTUP_PATH, "public")
+
 class App < Sinatra::Base
+
   # Controllers
   use Authentication
   use Main
@@ -29,7 +33,8 @@ class App < Sinatra::Base
   include Store
 
   enable :sessions
-  set :public_folder, 'app/public'
+  set :root, APP_STARTUP_PATH
+  set :public_folder, PUBLIC_FOLDER
 
   configure :development do
     #add default users
@@ -59,4 +64,5 @@ end
 
 # Now, run it
 App.run!
+
 
