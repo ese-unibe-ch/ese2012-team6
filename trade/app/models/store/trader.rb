@@ -6,7 +6,8 @@ require_relative '../store/trading_authority'
 require_relative '../store/item'
 
 # superclass for user and organization
-# A Trader is the main actor in the system. The class provides services for trading items between users and creating new items
+# A Trader is the main actor in the system. The class provides services for trading items between users and creating new items.
+# Keeps track of its own items
 module Store
   class Trader
     @@last_id = 0
@@ -24,33 +25,33 @@ module Store
       self.image_path = "/images/no_image.gif"
     end
 
-    # creates a new system user object, options include :description and :credits
+    # creates a new trader object, options include :description and :credits
     def self.named(name, options = {})
-      system_user = Trader.new
+      trader = Trader.new
 
-      system_user.name = name
-      system_user.description = options[:description] || ""
-      system_user.credits = options[:credits] || 0
+      trader.name = name
+      trader.description = options[:description] || ""
+      trader.credits = options[:credits] || 0
 
-      system_user
+      trader
     end
 
     # propose a new item
     def propose_item(name, price, description = "", log = true)
       item = Item.named_priced_with_owner(name, price, self, description)
       item.save
+
       self.attach_item(item)
       Analytics::ItemAddActivity.with_creator_item(self, item).log if log
 
       item
     end
 
-    # s all active items of an user
+    # get a list of all active items of a user
     def get_active_items
       self.items.select { |i| i.active? }
     end
 
-    # attaches a newly created or bought item
     def attach_item(item)
       self.items << item
       item.owner = self
@@ -64,7 +65,7 @@ module Store
       end
     end
 
-    # deletes chosen item, raises error if user can not delete item
+    # deletes chosen item, raises error if trader can not delete item
     def delete_item(item_id, log = true)
       item = Item.by_id(item_id)
 
@@ -172,18 +173,18 @@ module Store
         Organization.clear_all
       end
 
-      # returns the system user found by name
+      # returns the trader found by name
       def by_name(name)
         return User.by_name(name) if User.exists?(name)
         Organization.by_name(name) if Organization.exists?(name)
       end
 
-      # returns all system users
+      # returns all traders
       def all
         User.all.concat(Organization.all).sort { |a,b| a.id <=> b.id }
       end
 
-      # returns true if the system includes a certain user or organization object, args must include keys :id xor :name
+      # returns true if the system includes a certain trader with the name specified
       def exists?(name)
         User.exists?(name) || Organization.exists?(name)
       end

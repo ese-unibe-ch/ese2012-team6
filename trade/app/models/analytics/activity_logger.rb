@@ -31,6 +31,7 @@ module Analytics
     end
 
     # get the previous description of an item
+    # returns empty string if no previous description was found
     def self.get_previous_description(item)
       activities = @@activities.values
       edit_activities = activities.select { |act| act.type == ActivityType::ITEM_EDIT && act.item_id == item.id }

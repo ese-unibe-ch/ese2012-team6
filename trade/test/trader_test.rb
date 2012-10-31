@@ -99,7 +99,7 @@ class TraderTest < Test::Unit::TestCase
     assert(transaction_result, "Transaction failed when it should have succeeded\nReason: #{transaction_message}")
 
     assert_equal(0, buyer.credits, "Buyer has too many credits left")
-    assert_equal(205, seller.credits, "Seller has too few credits")
+    assert_equal(205, seller.credits, "Seller has too few credits") #notice sell bonus!
 
     assert(!seller.items.include?(item), "Seller still owns the sold item")
     assert(buyer.items.include?(item), "Buyer doesn't have the item")
@@ -187,8 +187,12 @@ class TraderTest < Test::Unit::TestCase
     user = Trader.named("Hans")
     other = Trader.named("Herbert")
     item = other.propose_item("TestItem", 100, "", false)
+
     assert_equal(false, user.can_edit?(item))
+    assert_equal(true, other.can_edit?(item))
+
     item.activate
+    assert_equal(false, user.can_edit?(item))
     assert_equal(false, user.can_edit?(item))
   end
 
@@ -208,7 +212,7 @@ class TraderTest < Test::Unit::TestCase
 
     user.delete_item(item.id, false)
 
-    assert_equal(false, user.items.include? (item))
+    assert_equal(false, user.items.include?(item))
   end
 
   # time dependent unit test, result dependent on machine, needs mocks

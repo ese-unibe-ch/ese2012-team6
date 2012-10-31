@@ -22,16 +22,12 @@ module Store
 
     # save item to system
     def save
-      fail if @@items.has_key?(self.id)
       @@items[self.id] = self
-      fail unless @@items.has_key?(self.id)
     end
 
     # delete item from system
     def delete
-      fail unless @@items.has_key?(self.id)
       @@items.delete(self.id)
-      fail if @@items.has_key?(self.id)
     end
 
     # updates newly created comments
@@ -91,7 +87,6 @@ module Store
 
     # returns whether the item is editable by a certain trader
     def editable_by?(trader)
-      fail if trader.nil?
       self.editable? && self.owner.eql?(trader)
     end
 
@@ -100,12 +95,11 @@ module Store
 
     # returns whether the item is activatable by a certain user object
     def activatable_by?(trader)
-      fail if trader.nil?
       self.owner.eql?(trader)
     end
 
     def buyable_by?(trader)
-      fail if trader.nil?
+
       (!self.owner.eql?(trader) && self.active)
     end
 

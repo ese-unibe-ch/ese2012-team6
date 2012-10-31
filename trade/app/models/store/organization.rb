@@ -51,13 +51,11 @@ module Store
 
     # determine whether a user is a member of this organization
     def has_member?(user)
-      fail if user.nil?
       self.members.include?(user)
     end
 
     # determine whether a user is an admin of this organization
     def has_admin?(user)
-      fail if user.nil?
       self.admins.include?(user)
     end
 
