@@ -15,12 +15,14 @@ module Store
       self.last_refresh = Time.now
     end
 
+    # create new TradingAuthority with a timeout
     def self.timed(time)
       ta = TradingAuthority.new
       ta.credit_reduce_time = time
       ta
     end
 
+    # start governing trader's credits
     def start
       Thread.abort_on_exception = true
       self.last_refresh = Time.now

@@ -137,14 +137,14 @@ module Store
         fetch_by(:id => id)
       end
 
-      # returns the user object which matches with the id or name
+      # returns the user object which matches with the :id or :name
       def fetch_by(args = {})
         return @@users_by_id[args[:id]] unless args[:id].nil?
         return @@users_by_name[args[:name]] unless args[:name].nil?
         nil
       end
 
-      # returns true if a user object exists with the id or name
+      # returns true if a user object exists with the :id or :name
       def exists?(args = {})
         return @@users_by_id.has_key?(args[:id]) unless args[:id].nil?
         @@users_by_name.has_key?(args[:name])

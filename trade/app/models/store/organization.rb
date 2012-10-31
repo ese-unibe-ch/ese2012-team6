@@ -90,14 +90,14 @@ module Store
         @@organizations_by_id.clear
       end
 
-      # fetches the organization object by its name or id
+      # fetches the organization object by its :name or :id
       def fetch_by(args = {})
         return @@organizations_by_id[args[:id]] unless args[:id].nil?
         return @@organizations_by_name[args[:name]] unless args[:name].nil?
         nil
       end
 
-      # returns true if an organization object exists with the id or name
+      # returns true if an organization object exists with the :id or :name specified
       def exists?(args = {})
         return @@organizations_by_id.has_key?(args[:id]) unless args[:id].nil?
         @@organizations_by_name.has_key?(args[:name])

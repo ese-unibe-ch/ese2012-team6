@@ -199,7 +199,7 @@ module Store
         User.all.concat(Organization.all)
       end
 
-      # returns true if the system includes a certain user or organization object
+      # returns true if the system includes a certain user or organization object, args must include keys :id xor :name
       def exists?(args = {})
         User.exists?(args) || Organization.exists?(args)
       end
