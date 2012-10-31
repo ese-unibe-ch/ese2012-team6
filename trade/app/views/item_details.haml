@@ -64,7 +64,7 @@
             %form{:action => "/item/#{item.id}/delete_comment/#{comment.id}", :method => "POST"}
               %input.styled-button.float_right.delete-color{:type => "submit", :value => "Delete"}
           %h4
-            %a{:href => url("#{comment.owner.class == Store::User ? "/user/" : "/organization/" }")}
+            %a{:href => url("#{comment.owner.class == Store::User ? "/user/" : "/organization/"}#{comment.owner.name}")}
               :escaped
                 #{comment.owner.name}
             wrote at: #{comment.time_stamp}

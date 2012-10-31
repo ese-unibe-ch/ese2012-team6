@@ -186,7 +186,7 @@ class Item < Sinatra::Application
     redirect '/login' unless @user
 
     item_id = params[:item_id].to_i
-    @user.delete_item(item_id)
+    @user.on_behalf_of.delete_item(item_id)
 
     redirect back
   end
