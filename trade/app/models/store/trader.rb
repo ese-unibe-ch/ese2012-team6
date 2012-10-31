@@ -95,8 +95,6 @@ module Store
       elsif !seller.items.include?(item)
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "seller_not_own_item" #Seller does not own item to buy
-      elsif !self.knows_item_properties?(item)
-        return false, "item_changed_details" #Buyer is not aware of latest changes to item's properties
       end
 
       seller.release_item(item)

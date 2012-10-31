@@ -103,7 +103,7 @@ module Store
       (!self.owner.eql?(trader) && self.active)
     end
 
-    # update the item's properties
+    # update the item's properties, raises error if item is not editable
     def update(new_name, new_price, new_desc, log = true)
       fail unless self.editable?
 

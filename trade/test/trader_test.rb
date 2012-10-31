@@ -214,42 +214,4 @@ class TraderTest < Test::Unit::TestCase
 
     assert_equal(false, user.items.include?(item))
   end
-
-  # time dependent unit test, result dependent on machine, needs mocks
-=begin
-  def test_notice_item_change_fail
-    seller = User.named("seller")
-    buyer = User.named("buyer")
-    item = seller.propose_item("item", 2);
-
-    buyer.acknowledge_item_properties!
-    sleep(0.001)
-    # change item while buyer is not looking
-    item.deactivate
-    item.update("newName", 3, "aölsdfjaldf", false)
-    item.activate
-
-    assert_equal(false, buyer.knows_item_properties?(item))
-    assert_equal([false, "item_changed_details"] , buyer.buy_item(item, false))
-  end
-
-  def test_notice_item_change_success
-    seller = User.named("seller")
-    buyer = User.named("buyer")
-    item = seller.propose_item("item", 2);
-
-    buyer.acknowledge_item_properties!
-
-    # change item while buyer is not looking
-    item.deactivate
-    item.update("newName", 3, "aölsdfjaldf", false)
-    item.activate
-    sleep(0.001)
-    # buyer looks at item
-    buyer.acknowledge_item_properties!
-
-    assert_equal(true, buyer.knows_item_properties?(item))
-    assert_equal(true , buyer.buy_item(item, false)[0])
-  end
-=end
 end
