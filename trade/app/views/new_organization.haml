@@ -2,7 +2,7 @@
   %h3.no_top_margin
     Type name of Organization
   %p
-    %input.textbox8{:type => "text", :name => "org_name", :style => "width: 60px", :value => org_name}
+    %input.textbox8{:type => "text", :name => "org_name", :style => "width: 100px"}
   %h3
     Description
   %p
@@ -16,7 +16,7 @@
           %th Add
       %tbody
         -for user in Store::User.all
-          -if user != viewer
+          -if user != @user
             %tr
               %td
                 %a{:href => url("/user/#{user.name}")}

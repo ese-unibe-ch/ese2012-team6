@@ -25,10 +25,7 @@ class Organization < Sinatra::Application
   get '/organization/new' do
     redirect '/login' unless @user
 
-    haml :new_organization, :locals => { :org_name => "",
-                                         :org_desc => "",
-                                         :viewer => @user
-                                       }
+    haml :new_organization
   end
 
   # Handles creating organization
