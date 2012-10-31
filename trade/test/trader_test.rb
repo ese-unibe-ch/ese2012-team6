@@ -2,23 +2,23 @@ require 'test/unit'
 require 'rubygems'
 require 'require_relative'
 require_relative '../app/models/store/user'
-require_relative '../app/models/store/system_user'
+require_relative '../app/models/store/trader'
 require_relative '../app/models/store/organization'
 require_relative '../app/models/store/item'
 
-class SystemUserTest < Test::Unit::TestCase
+class TraderTest < Test::Unit::TestCase
   include Store
 
   def setup
-    SystemUser.clear_all
+    Trader.clear_all
   end
 
   def teardown
-    SystemUser.clear_all
+    Trader.clear_all
   end
 
   def test_creation_default
-    user = SystemUser.named("Hans")
+    user = Trader.named("Hans")
     assert_equal(0, user.credits)
     assert_equal("", user.description)
     assert_equal(0, user.items.size)
@@ -26,17 +26,17 @@ class SystemUserTest < Test::Unit::TestCase
   end
 
   def test_creation_with_credits
-    user = SystemUser.named("Hans", :credits => 100)
+    user = Trader.named("Hans", :credits => 100)
     assert_equal(100, user.credits)
   end
 
   def test_creation_with_description
-    user = SystemUser.named("Hans", :description => "New description")
+    user = Trader.named("Hans", :description => "New description")
     assert_equal("New description", user.description)
   end
 
   def test_user_proposes_item
-    user = SystemUser.named("User")
+    user = Trader.named("User")
     item = user.propose_item("TestItem", 100)
 
     assert_equal(false, item.active, "Newly created items must be inactive!")
@@ -47,55 +47,55 @@ class SystemUserTest < Test::Unit::TestCase
     (user = User.named("User1")).save
     (org = Organization.named("Org1")).save
 
-    assert_equal(user, SystemUser.fetch_by(:name => "User1"))
-    assert_equal(org, SystemUser.fetch_by(:name => "Org1"))
+    assert_equal(user, Trader.fetch_by(:name => "User1"))
+    assert_equal(org, Trader.fetch_by(:name => "Org1"))
   end
 
   def test_fetch_by_id
     (user = User.named("User1")).save
     (org = Organization.named("Org1")).save
 
-    assert_equal(user, SystemUser.fetch_by(:id => 1))
-    assert_equal(org, SystemUser.fetch_by(:id => 2))
+    assert_equal(user, Trader.fetch_by(:id => 1))
+    assert_equal(org, Trader.fetch_by(:id => 2))
   end
 
   def test_fetch_all
     (user = User.named("User1")).save
     (org = Organization.named("Org1")).save
 
-    assert_equal([user, org], SystemUser.all)
+    assert_equal([user, org], Trader.all)
   end
 
   def test_by_name_and_id
     (user = User.named("User1")).save
     (org = Organization.named("Org1")).save
 
-    assert_equal(user, SystemUser.by_name("User1"))
-    assert_equal(org, SystemUser.by_name("Org1"))
+    assert_equal(user, Trader.by_name("User1"))
+    assert_equal(org, Trader.by_name("Org1"))
   end
 
   def test_exists_by_name
     (user = User.named("User1")).save
     (org = Organization.named("Org1")).save
 
-    assert_equal(true, SystemUser.exists?(:name => "User1"))
-    assert_equal(true, SystemUser.exists?(:name => "Org1"))
-    assert_equal(false, SystemUser.exists?(:name => "User2"))
-    assert_equal(false, SystemUser.exists?(:name => "Org2"))
+    assert_equal(true, Trader.exists?(:name => "User1"))
+    assert_equal(true, Trader.exists?(:name => "Org1"))
+    assert_equal(false, Trader.exists?(:name => "User2"))
+    assert_equal(false, Trader.exists?(:name => "Org2"))
   end
 
   def test_exists_by_id
     (user = User.named("User1")).save
     (org = Organization.named("Org1")).save
 
-    assert_equal(true, SystemUser.exists?(:id => 1))
-    assert_equal(true, SystemUser.exists?(:id => 2))
-    assert_equal(false, SystemUser.exists?(:id => 3))
-    assert_equal(false, SystemUser.exists?(:id => 4))
+    assert_equal(true, Trader.exists?(:id => 1))
+    assert_equal(true, Trader.exists?(:id => 2))
+    assert_equal(false, Trader.exists?(:id => 3))
+    assert_equal(false, Trader.exists?(:id => 4))
   end
 
   def test_user_active_items_list
-    user = SystemUser.named("User")
+    user = Trader.named("User")
 
     user.propose_item("TestItem1", 1)
     item2 = user.propose_item("TestItem2", 2)
@@ -113,8 +113,8 @@ class SystemUserTest < Test::Unit::TestCase
   end
 
   def test_user_buy_success
-    buyer = SystemUser.named("Buyer", :credits => 100)
-    seller = SystemUser.named("Seller", :credits => 100)
+    buyer = Trader.named("Buyer", :credits => 100)
+    seller = Trader.named("Seller", :credits => 100)
 
     item = seller.propose_item("piece of crap", 100)
     item.activate
@@ -135,8 +135,8 @@ class SystemUserTest < Test::Unit::TestCase
   end
 
   def test_user_buy_inactive_item
-    buyer = SystemUser.named("Buyer", :credits => 100)
-    seller = SystemUser.named("Seller", :credits => 100)
+    buyer = Trader.named("Buyer", :credits => 100)
+    seller = Trader.named("Seller", :credits => 100)
 
     item = seller.propose_item("piece of crap", 100)
     buyer.acknowledge_item_properties!
@@ -155,8 +155,8 @@ class SystemUserTest < Test::Unit::TestCase
   end
 
   def test_user_buy_too_expensive
-    buyer = SystemUser.named("Buyer", :credits => 100)
-    seller = SystemUser.named("Seller", :credits => 100)
+    buyer = Trader.named("Buyer", :credits => 100)
+    seller = Trader.named("Seller", :credits => 100)
 
     item = seller.propose_item("big piece of crap", 9001) #item price is over 9000!
     item.activate
@@ -176,8 +176,8 @@ class SystemUserTest < Test::Unit::TestCase
   end
 
   def test_send_money_to
-    user1 = SystemUser.named("User1", :credits => 100)
-    user2 = SystemUser.named("User2", :credits => 100)
+    user1 = Trader.named("User1", :credits => 100)
+    user2 = Trader.named("User2", :credits => 100)
 
     user1.send_money_to(user2, 50)
 

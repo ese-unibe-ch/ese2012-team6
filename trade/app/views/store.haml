@@ -11,7 +11,7 @@
       %th Owner
       %th
   %tbody
-    -for user in Store::SystemUser.all
+    -for user in Store::Trader.all
       -for item in user.get_active_items
         %tr
           %td

@@ -48,7 +48,7 @@ module Store
     class << self
       # all credits get reduced in a special time interval
       def swing_hammer_of_doom
-        all_users = SystemUser.all
+        all_users = Trader.all
         all_users.each { |user| self.reduce_credits(user) }
       end
 

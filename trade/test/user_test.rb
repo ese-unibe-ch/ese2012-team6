@@ -9,11 +9,11 @@ class UserTest < Test::Unit::TestCase
   include Store
 
   def setup
-    SystemUser.clear_all
+    Trader.clear_all
   end
 
   def teardown
-    SystemUser.clear_all
+    Trader.clear_all
   end
 
   def test_check_user_name

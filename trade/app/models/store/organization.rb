@@ -1,10 +1,10 @@
 require 'rbtree'
-require_relative '../store/system_user'
+require_relative '../store/trader'
 
 module Store
   # Organizations offer the ability for users to work on behalf of each other. They behave just like a normal user, but
   # do not have a login. An organization has members and admins which it keeps track of
-  class Organization < SystemUser
+  class Organization < Trader
     attr_accessor :members, :admins
 
     # up to now only using IDs for efficient sorted storing

@@ -3,7 +3,7 @@ require 'rbtree'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
-require_relative '../store/system_user'
+require_relative '../store/trader'
 require_relative '../helpers/security/password_generator'
 require_relative '../helpers/security/mail_client'
 
@@ -11,7 +11,7 @@ module Store
   # Models a user that can log into the system and perform actions on items. It is able to create organizations which
   # it can work on behalf of. A new User always gets the initial amount of 100 credits to start trading with other users
   # It also provides services concerning user credentials which it stores
-  class User < SystemUser
+  class User < Trader
     # up to now only using IDs for efficient sorted storing
     @@users_by_id = RBTree.new
     @@users_by_name = {}

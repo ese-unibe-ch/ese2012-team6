@@ -1,7 +1,7 @@
 require 'test/unit'
 require 'rubygems'
 require 'require_relative'
-require_relative '../app/models/store/system_user'
+require_relative '../app/models/store/trader'
 require_relative '../app/models/store/user'
 require_relative '../app/models/store/organization'
 require_relative '../app/models/store/trading_authority'

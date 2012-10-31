@@ -17,7 +17,7 @@ class User < Sinatra::Application
   # handle on behalf of selector change
   post '/user/work_on_behalf_of/' do
     org_name = params[:on_behalf_of]
-    org = SystemUser.by_name(org_name)
+    org = Trader.by_name(org_name)
     @user.work_on_behalf_of(org)
     redirect back
   end

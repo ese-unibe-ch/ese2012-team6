@@ -32,7 +32,7 @@ class Item < Sinatra::Application
   get '/item/:item_id' do
     redirect '/login' unless @user
 
-    @user.acknowledge_item_properties!
+    @user.on_behalf_of.acknowledge_item_properties!
     item = Item.by_id(params[:item_id].to_i)
 
     redirect "/user/#{@user.name}" if item.nil?
@@ -154,7 +154,7 @@ class Item < Sinatra::Application
     item_price = params[:item_price].to_i
     item_description = params[:item_description] ? params[:item_description] : ""
 
-    item_owner = SystemUser.by_name(params[:owner])
+    item_owner = Trader.by_name(params[:owner])
     item = item_owner.propose_item(item_name, item_price, item_description)
 
     uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/items")

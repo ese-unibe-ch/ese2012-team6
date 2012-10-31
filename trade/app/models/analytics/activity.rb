@@ -17,11 +17,9 @@ module Analytics
   # Provides the skeleton for all derived activities, stores information about when it was created or what type this activity is made of
   class Activity
     attr_accessor :id, :type, :timestamp
-    @@last_id = 0
 
     def initialize
-      @@last_id += 1
-      self.id = @@last_id
+      self.id = -1
       self.type = ActivityType::NONE
       self.timestamp = Time.now
     end

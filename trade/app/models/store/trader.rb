@@ -7,9 +7,9 @@ require_relative '../store/trading_authority'
 require_relative '../store/item'
 
 # superclass for user and organization
-# A SystemUser is the main actor in the system. The class provides services for trading items between users and creating new items
+# A Trader is the main actor in the system. The class provides services for trading items between users and creating new items
 module Store
-  class SystemUser
+  class Trader
     attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
 
     @@last_id = 0
@@ -27,7 +27,7 @@ module Store
 
     # creates a new system user object, options include :description and :credits
     def self.named(name, options = {})
-      system_user = SystemUser.new
+      system_user = Trader.new
 
       system_user.name = name
       system_user.description = options[:description] || ""
