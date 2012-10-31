@@ -1,4 +1,3 @@
-require 'rbtree'
 require_relative '../store/trader'
 
 module Store

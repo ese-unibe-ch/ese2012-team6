@@ -7,6 +7,10 @@ require_relative '../app/models/store/user'
 class ItemTest < Test::Unit::TestCase
   include Store
 
+  def before
+    Item.clear_all
+  end
+
   def test_item_name
     item_name = "TestItem"
     item = Item.named_priced_with_owner(item_name, 0, nil)
@@ -97,13 +101,7 @@ class ItemTest < Test::Unit::TestCase
     item2.save
     item3.save
 
-    all_items = Item.all
-
-    [item1, item2, item3].each {
-      |item|
-      assert(item, all_items.include?(item))
-    }
-
+    assert_equal([item1, item2, item3], Item.all)
   end
 
   def test_is_editable_by_owner

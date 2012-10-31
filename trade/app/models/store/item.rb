@@ -1,3 +1,5 @@
+require 'rbtree'
+
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../helpers/security/string_checker'
@@ -8,7 +10,7 @@ module Store
   class Item
     attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments
     @@last_id = 0
-    @@items = {}
+    @@items = RBTree.new
 
     def initialize
       @@last_id += 1

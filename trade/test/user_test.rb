@@ -66,14 +66,26 @@ class UserTest < Test::Unit::TestCase
 
   def test_can_edit_org_item
     user = User.named("user")
-    (org = Organization.named("org")).save
+    org = Organization.named("org")
 
-    assert(user.working_as_self?, "is not working on behalf of himself")
-    assert(!user.working_on_behalf_of?(org), "is working on behalf of this org")
+    item = org.propose_item("Item", 20)
+    assert(!user.can_edit?(item))
 
     user.work_on_behalf_of(org)
-    assert(user.working_on_behalf_of?(org), "is not working on behalf of this org")
-    assert(!user.working_as_self?, "is still working on behalf of himself")
+    assert(user.on_behalf_of.can_edit?(item))
+  end
+
+  def test_can_buy_org_item
+    user = User.named("user")
+    org = Organization.named("org")
+
+    item = org.propose_item("Item", 20)
+    item.activate
+
+    assert(user.can_buy?(item))
+
+    user.work_on_behalf_of(org)
+    assert(!user.on_behalf_of.can_buy?(item))
   end
 
   def test_password_matches_default_password
