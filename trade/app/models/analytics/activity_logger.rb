@@ -16,7 +16,7 @@ module Analytics
 
     # get all stored activities in descending order by timestamp (more recent come first)
     def self.get_all_activities
-      @@activities.values.sort! { |a, b| b.timestamp <=> a.timestamp }
+      @@activities.values.reverse
     end
 
     # retrieve activity by id
