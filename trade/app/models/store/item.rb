@@ -59,20 +59,16 @@ module Store
       "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
     end
 
-    # activate the item (you don't say...)
     def activate
       self.active = true
     end
 
-    # deactivate the item (thanks captain obvious)
     def deactivate
       self.active = false
     end
 
     # update the item's status
     def update_status(new_status, log = true)
-
-      new_status = (new_status == "true")
       old_status = self.active
 
       if old_status != new_status
