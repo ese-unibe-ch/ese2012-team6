@@ -101,7 +101,7 @@ module Store
 
     # returns whether the item is generally editable
     def editable?
-      !self.active
+      !self.active && (self.isFixed? || self.bidders.empty?)
     end
 
     # returns whether the item is editable by a certain trader

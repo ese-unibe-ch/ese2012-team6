@@ -55,6 +55,12 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(false,item.editable?)
     item.deactivate
     assert_equal(true,item.editable?)
+
+    item = Item.named_priced_with_owner_auction("myItem", 10, nil, 2, 0, description = "test")
+    item.activate
+    assert !item.editable?
+    item.deactivate
+    assert item.editable?
   end
 
   def test_change_status
