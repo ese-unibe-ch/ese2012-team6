@@ -43,24 +43,32 @@ class AuctionTest < Test::Unit::TestCase
     item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
     item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, 0, nil)
     assert(item.owner == @userA)
-    assert(item.currentSellingPrice == nil) #there is no lowest-Bid, therefore no price to pay
+    assert(item.currentSellingPrice == nil)
 
-    assert(@userB.canBid?(item,10))
+    assert(@userB.canBid?(item, 10))
 
-    @userB.bid(item,10)
-    assert(item.currentSellingPrice == initialPrice) #userB would pay initial price, since he is the first bidder
+    ###### FIRST BID :: Price = nil
+    @userB.bid(item, 10)
+    ### AFTER :: Bidders = [10], Price = 5
+    assert(item.currentSellingPrice == 5)
 
-    assert(!@userC.canBid?(item,initialPrice))    #shown price = 5, can bid from 5+inc
-    assert(!@userC.canBid?(item,initialPrice+1))
-    assert(@userC.canBid?(item,initialPrice+increment))
-    @userC.bid(item,initialPrice+increment)
-    print item.currentSellingPrice
-    assert(item.currentSellingPrice == 9)               #price should be 5 + inc (= bid) + inc (for the winner)
+    assert(!@userC.canBid?(item, 3))
+    assert(!@userC.canBid?(item, 4))
+    assert(@userC.canBid?(item, 5))
 
-    assert(!@userC.canBid?(item,7))    #shown price = 7, can bid from 7+inc
-    assert(!@userC.canBid?(item,8))
-    assert(@userC.canBid?(item,9))
-    @userC.bid(item,9)
+    ###### SECOND BID :: Price = 5, Minimal Bid = 5 ######
+    @userC.bid(item, 5)
+    ### AFTER :: Bidders = [5, 10], Price = 7
+    assert(item.currentSellingPrice == 7)
+
+    assert(!@userC.canBid?(item, 5))
+    assert(!@userC.canBid?(item, 6))
+    assert(@userC.canBid?(item, 7))
+
+    ###### THIRD BID :: Price = 7, Minimal Bid = 7 ######
+    @userC.bid(item, 7)
+    ### AFTER :: Bidders = [7, 10], Price = 9
+
     assert(item.currentSellingPrice == 9)
 
   end

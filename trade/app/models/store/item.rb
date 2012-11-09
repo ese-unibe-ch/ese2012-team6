@@ -154,15 +154,15 @@ module Store
 
     # gets the highest Bidder/Amount pair out of bidders
     def highestBid
-      self.bidders.sort_by{|bidder, amount| amount}
-      {self.bidders.keys.last, self.bidders.values.last}
+      maxBid = self.bidders.max_by{|k,v| v}
+      {maxBid[0], maxBid[1]}
     end
 
     # gets the second highest Bidder/Amount pair out of bidders
     def secondInLineBid
-      self.bidders.sort_by{|bidder, amount| amount}
-      length = self.bidders.count
-      {self.bidders.keys[length-2], self.bidders.values[length-2]}
+      sorted = self.bidders.sort_by {|key, value| value}
+      length = sorted.length.to_i
+      {sorted[length-2][0], sorted[length-2][1]}
     end
 
     # the currentSellingPrice is the price you have to pay if you win the auction
