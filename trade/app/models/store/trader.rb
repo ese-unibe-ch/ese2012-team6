@@ -38,7 +38,7 @@ module Store
 
     # propose a new item
     def propose_item(name, price, description = "", log = true)
-      item = Item.named_priced_with_owner(name, price, self, description)
+      item = Item.named_priced_with_owner_fixed(name, price, self, description)
       item.save
 
       self.attach_item(item)
@@ -49,7 +49,7 @@ module Store
 
     # get a list of all active items of a user
     def get_active_items
-      self.items.select { |i| i.active? }
+      self.items.select { |i| i.active? }       #TODO only fixed or only auction
     end
 
     def attach_item(item)
@@ -80,7 +80,7 @@ module Store
 
     # handles the shop of an item , returns true if buy process was successfull, false otherwise
     # also returns error code
-    def buy_item(item, log = true)
+    def buy_item(item, log = true)            #TODO call this at the end of auction
       seller = item.owner
 
       if seller.nil?
@@ -160,6 +160,44 @@ module Store
     # returns true when user is aware of latest changes to item, false otherwise
     def knows_item_properties?(item)
       !(self.open_item_page_time < item.edit_time)
+    end
+
+    def bid(item, amount)
+      if canBid?(item, amount)
+        item.bidders[self.id] = amount
+      end
+    end
+
+    def canBid?(item, amount)
+      enoughMoneyForBid?(amount) && !sameBidExists?(item, amount) && amountBiggerThanCurrentSellingPrice(item, amount) && higherThanLastOwnBid?(item, amount)
+    end
+
+    def amountBiggerThanCurrentSellingPrice(item, amount)
+      if item.currentSellingPrice != nil
+        amount >= item.currentSellingPrice + item.increment
+      else
+        amount >= item.price
+      end
+    end
+
+    def enoughMoneyForBid?(amount)
+      self.credits >= amount
+    end
+
+    def sameBidExists?(item, amount)
+      item.bidders.has_value?(amount)
+    end
+
+    def higherThanLastOwnBid?(item, amount)
+      if (self.alreadyBade?(item))
+        amount >= item.bidders[self.id]+item.increment  #higher than last own bid
+      else
+        true
+      end
+    end
+
+    def alreadyBade?(item)
+      item.bidders[self.id] != nil
     end
 
     # class methods

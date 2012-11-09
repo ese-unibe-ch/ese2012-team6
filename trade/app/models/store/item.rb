@@ -8,7 +8,7 @@ require_relative '../store/comment'
 module Store
   # The item is the central trading object within the application. It can be traded in between traders for a certain price.
   class Item
-    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments
+    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments, :isFixed, :endTime, :increment, :bidders
     @@last_id = 0
     @@items = RBTree.new
 
@@ -20,6 +20,8 @@ module Store
       self.image_path = "/images/no_image.gif"
       self.edit_time = Time.now
       self.comments = []
+      self.isFixed = true
+      self.bidders = {}
     end
 
     # save item to system
@@ -43,15 +45,30 @@ module Store
       comment.delete
     end
 
-    # create a new item object with a name, price and owner
-    def self.named_priced_with_owner(name, price, owner, description = "")
+    # create a new item object for fixpriced sale with a name, price and owner
+    def self.named_priced_with_owner_fixed(name, price, owner, description = "")
       item = Item.new
       item.name = name
       item.price = price
       item.owner = owner
       item.description = description
+      item.isFixed = true
       item
     end
+
+    # create a new item object for auction with a name, price and owner
+    def self.named_priced_with_owner_auction(name, price, owner, increment, endTime, description = "")
+      item = Item.new
+      item.name = name
+      item.price = price
+      item.owner = owner
+      item.description = description
+      item.isFixed = false
+      item.increment = increment
+      item.endTime = endTime
+      item
+    end
+
 
     def to_s
       "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
@@ -127,6 +144,38 @@ module Store
       self.edit_time = Time.now
     end
 
+    def isAuction?
+      !self.isFixed
+    end
+
+    def isFixed?
+      self.isFixed
+    end
+
+    # gets the highest Bidder/Amount pair out of bidders
+    def highestBid
+      self.bidders.sort_by{|bidder, amount| amount}
+      {self.bidders.keys.last, self.bidders.values.last}
+    end
+
+    # gets the second highest Bidder/Amount pair out of bidders
+    def secondInLineBid
+      self.bidders.sort_by{|bidder, amount| amount}
+      length = self.bidders.count
+      {self.bidders.keys[length-2], self.bidders.values[length-2]}
+    end
+
+    # the currentSellingPrice is the price you have to pay if you win the auction
+    def currentSellingPrice
+      if self.bidders.size == 0
+        nil
+      elsif self.bidders.size == 1
+        self.price
+      else
+        self.secondInLineBid.values[0] + increment               #TODO
+      end
+    end
+
     # class methods
     class << self
       # deletes all items of an user
@@ -142,6 +191,14 @@ module Store
       # get all stored items
       def all
         @@items.values.dup
+      end
+
+      def allFixed
+        @@items.values.select{|val| val.isFixed?}.dup
+      end
+
+      def allAuction
+        @@items.values.select{|val| val.isAuction?}.dup
       end
 
       # determines whether a string is a valid price for an item
