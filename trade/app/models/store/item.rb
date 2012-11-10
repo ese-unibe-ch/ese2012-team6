@@ -3,6 +3,7 @@ require 'rbtree'
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../helpers/security/string_checker'
+require_relative '../helpers/converter/converter'
 require_relative '../store/comment'
 
 module Store
@@ -154,15 +155,24 @@ module Store
 
     # gets the highest Bidder/Amount pair out of bidders
     def highestBid
-      maxBid = self.bidders.max_by{|k,v| v}
-      {maxBid[0], maxBid[1]}
+      sorted = self.bidders.sort_by {|key, value| value}
+      length = sorted.length.to_i
+      if length < 1
+        nil
+      else
+        {sorted[length-1][0], sorted[length-1][1]}
+      end
     end
 
     # gets the second highest Bidder/Amount pair out of bidders
     def secondInLineBid
       sorted = self.bidders.sort_by {|key, value| value}
       length = sorted.length.to_i
-      {sorted[length-2][0], sorted[length-2][1]}
+      if length < 2
+        nil
+      else
+        {sorted[length-2][0], sorted[length-2][1]}
+      end
     end
 
     # the currentSellingPrice is the price you have to pay if you win the auction
@@ -174,6 +184,22 @@ module Store
       else
         self.secondInLineBid.values[0] + increment               #TODO
       end
+    end
+    
+    def current_winner
+      highest_bid = self.highestBid
+      highest_bid != nil ? highest_bid.keys[0] : nil
+    end
+    
+    def time_delta
+      current_time = elapsed_seconds = DateTime.now
+      end_time = self.endTime
+      delta_in_seconds = ((end_time - current_time) * 24 * 60 * 60).to_i
+      delta_in_seconds
+    end
+    
+    def time_delta_string
+      Converter::TimeConverter.convert_seconds_to_string self.time_delta
     end
 
     # class methods

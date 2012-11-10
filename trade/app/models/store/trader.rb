@@ -164,7 +164,7 @@ module Store
 
     def bid(item, amount)
       if canBid?(item, amount)
-        item.bidders[self.id] = amount
+        item.bidders[self] = amount
       end
     end
 
@@ -190,14 +190,14 @@ module Store
 
     def higherThanLastOwnBid?(item, amount)
       if (self.alreadyBade?(item))
-        amount >= item.bidders[self.id]+item.increment  #higher than last own bid
+        amount >= item.bidders[self]+item.increment  #higher than last own bid
       else
         true
       end
     end
 
     def alreadyBade?(item)
-      item.bidders[self.id] != nil
+      item.bidders[self] != nil
     end
 
     # class methods

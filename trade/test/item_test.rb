@@ -164,4 +164,46 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(false, item.comments.include?(comment))
     assert_equal(nil, Comment.by_id(comment))
   end
+  
+  def test_time_delta
+    item = Item.named_priced_with_owner_auction("myItem", 10, nil, 2, DateTime.now + 1105, description = "test") # more than two hours valid
+    assert item.time_delta_string == "3 years"
+
+    item.endTime = DateTime.now + 365+31+31+10
+    assert item.time_delta_string == "One year, 2 months"
+
+    item.endTime = DateTime.now + 370
+    assert item.time_delta_string == "One year"
+
+    item.endTime = DateTime.now + 30+30+30+10
+    assert item.time_delta_string == "3 months"
+
+    item.endTime = DateTime.now + 30+10 +(1.0/24)  # add one hour to prevent rounding errors
+    assert item.time_delta_string == "One month, 10 days"
+
+    item.endTime = DateTime.now + 30
+    assert item.time_delta_string == "One month"
+
+    item.endTime = DateTime.now + 5  +(1.0/24)  # add one hour to prevent rounding errors
+    assert item.time_delta_string == "5 days"
+
+    item.endTime = DateTime.now + 1.51 +(2.0/(24*60)) # add 2 minutes to prevent rounding errors
+    assert item.time_delta_string == "One day, 12 hours"
+
+    item.endTime = DateTime.now + 1 + (1.0/(24*60))
+    assert item.time_delta_string == "One day"
+
+    item.endTime = DateTime.now + 2.0/24 + (5.0/(24*60))
+    assert item.time_delta_string == "2 hours"
+
+    item.endTime = DateTime.now + (52.0/(24*60))
+    assert item.time_delta_string == "One hour"
+
+    item.endTime = DateTime.now + 2.0/(24*60) + (2.0/(24*60*60))
+    assert item.time_delta_string == "2 minutes"
+
+    item.endTime = DateTime.now + (30.0/(24*60*60)) + (1.0/(24*60*60*10))
+    assert item.time_delta_string == "30 seconds"
+
+  end
 end

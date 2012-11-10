@@ -70,7 +70,18 @@ class AuctionTest < Test::Unit::TestCase
     ### AFTER :: Bidders = [7, 10], Price = 9
 
     assert(item.currentSellingPrice == 9)
+  end
 
+  def test_current_winner
+    initialPrice = 5
+    increment = 2
+    item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
+    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, 0, nil)
+    assert item.current_winner == nil
+    @userB.bid(item, 10)
+    assert item.current_winner == @userB
+    @userC.bid(item, 15)
+    assert item.current_winner == @userC
   end
 
 end
