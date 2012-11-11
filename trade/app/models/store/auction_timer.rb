@@ -57,7 +57,7 @@ module Store
 
         selling_price = item.currentSellingPrice
         buyers_bid = item.bidders[buyer]
-        price = Math.min(selling_price, buyers_bid) # this fixes the situation where the loser bids 9, winner bids 10
+        price = [selling_price, buyers_bid].min     # this fixes the situation where the loser bids 9, winner bids 10
                                                     # and the increment is 2. The winner would have to pay 11, but
                                                     # that's not fair, so we let him pay 10.
 
