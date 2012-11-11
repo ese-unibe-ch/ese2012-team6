@@ -1,7 +1,7 @@
 %h2
   Items
 %h3
-  The following items are registered by the system
+  The following auctions are registered by the system
 %table.table-minimalistic
   %thead
     %tr
@@ -12,7 +12,7 @@
       %th Active
       %th
   %tbody
-    -for item in Store::Item.allFixed
+    -for item in Store::Item.allAuction
       %tr
         %td
           %img{:src => item.image_path, :height => "40px"}
