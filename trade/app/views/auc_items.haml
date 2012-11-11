@@ -10,6 +10,7 @@
       %th Price
       %th Owner
       %th Active
+      %th Finishes in
       %th
   %tbody
     -for item in Store::Item.allAuction
@@ -31,3 +32,5 @@
             %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
           -else
             %input{:type => "checkbox", :disabled => "disabled"}
+        %td{:title => item.end_time.strftime("%Y-%m-%d %H:%M")}
+          %p #{item.time_delta_string}

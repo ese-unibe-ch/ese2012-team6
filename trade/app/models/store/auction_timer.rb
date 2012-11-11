@@ -1,6 +1,8 @@
 module Store
   class AuctionTimer
 
+    SELL_BONUS = 0.05 unless defined? SELL_BONUS
+
     # public for testing
     attr_accessor :check_interval, :last_refresh, :check_thread
 
@@ -53,23 +55,31 @@ module Store
         seller = item.owner
         buyer = item.current_winner
 
+        if buyer == nil || item.currentSellingPrice == nil
+          item.deactivate
+          item.bidders = {}
+          return
+        end
+
         seller.release_item(item)
 
         selling_price = item.currentSellingPrice
         buyers_bid = item.bidders[buyer]
-        price = [selling_price, buyers_bid].min     # this fixes the situation where the loser bids 9, winner bids 10
-                                                    # and the increment is 2. The winner would have to pay 11, but
-                                                    # that's not fair, so we let him pay 10.
 
-        seller.credits += price + Integer((price * Store::TradingAuthority.SELL_BONUS).ceil)
+        price = selling_price
+
+        seller.credits += price + Integer((price * SELL_BONUS).ceil)
         # buyer.credits -= item.price       we have already taken them...
+        # TODO we got an inconsistency here. We should put the money on hold, but not remove it from the seller.
+        # only remove it when the transfer is complete, because we got an other price possibly.
 
         item.deactivate
+        item.bidders = {}
         buyer.attach_item(item)
 
         item.notify_change
 
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(buyer, item).log if log
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(buyer, item).log
       end
     end
   end

@@ -74,9 +74,35 @@ class User < Sinatra::Application
 
     redirect url('/error/item_changed_details') unless @user.on_behalf_of.knows_item_properties?(item)
 
+    if item.isAuction?
+      redirect "user/bid/#{item_id}"
+    end
+
     buy_success, buy_message = @user.on_behalf_of.buy_item(item)
 
     redirect url("/error/#{buy_message}") unless buy_success
+    redirect back
+  end
+
+  get '/user/bid/:item_id' do
+    item_id = params[:item_id].to_i
+    item = Item.by_id(item_id)
+    haml :bid, :locals => {:action_url => "/user/bid/#{params[:item_id]}", :item => item}
+  end
+
+  post '/user/bid/:item_id' do
+    redirect '/login' unless @user
+
+    amount = params[:amount].to_i
+
+    item_id = params[:item_id].to_i
+    item = Item.by_id(item_id)
+
+    redirect url('/error/item_changed_details') unless @user.on_behalf_of.knows_item_properties?(item)
+
+    @user.on_behalf_of.bid(item, amount)
+
+    # redirect url("/error/#{buy_message}") unless buy_success
     redirect back
   end
 
