@@ -45,11 +45,11 @@ class App < Sinatra::Base
     (peter_griffin = User.named("petergriffin")).save
 
     #add default items
-    (liver = user_ese.propose_item("Liver", 40)).activate
-    (heart = umbrella_corp.propose_item("Heart", 80)).activate
-    (meg = peter_griffin.propose_item("Meg", 2)).activate
-    random = umbrella_corp.propose_item("Random", 50)
-    (bender = umbrella_corp.propose_item("Bender", 110)).activate
+    (liver = user_ese.propose_item("Liver", 40, "fixed", nil, nil)).activate
+    (heart = umbrella_corp.propose_item("Heart", 80, "fixed", nil, nil)).activate
+    (meg = peter_griffin.propose_item("Meg", 2, "fixed", nil, nil)).activate
+    random = umbrella_corp.propose_item("Random", 50, "fixed", nil, nil)
+    (bender = umbrella_corp.propose_item("Bender", 110, "fixed", nil, nil)).activate
 
     #add default organization
    (organization_mordor_inc = Organization.named("MordorInc", :credits => 200, :admin => user_ese)).save

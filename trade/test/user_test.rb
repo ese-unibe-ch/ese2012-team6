@@ -68,7 +68,7 @@ class UserTest < Test::Unit::TestCase
     user = User.named("user")
     org = Organization.named("org")
 
-    item = org.propose_item("Item", 20)
+    item = org.propose_item("Item", 20, "fixed", nil, nil)
     assert(!user.can_edit?(item))
 
     user.work_on_behalf_of(org)
@@ -79,7 +79,7 @@ class UserTest < Test::Unit::TestCase
     user = User.named("user")
     org = Organization.named("org")
 
-    item = org.propose_item("Item", 20)
+    item = org.propose_item("Item", 20, "fixed", nil, nil)
     item.activate
 
     assert(user.can_buy?(item))

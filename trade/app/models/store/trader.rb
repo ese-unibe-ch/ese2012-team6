@@ -39,7 +39,7 @@ module Store
     end
 
     # propose a new item
-    def propose_item(name, price, description = "", log = true)
+    def propose_item(name, price, selling_mode, increment, end_time, description = "", log = true)
       item = Item.named_priced_with_owner_fixed(name, price, self, description)
       item.save
 

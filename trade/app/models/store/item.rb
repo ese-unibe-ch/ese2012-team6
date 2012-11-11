@@ -9,7 +9,7 @@ require_relative '../store/comment'
 module Store
   # The item is the central trading object within the application. It can be traded in between traders for a certain price.
   class Item
-    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments, :isFixed, :endTime, :increment, :bidders
+    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments, :selling_mode, :end_time, :increment, :bidders
     @@last_id = 0
     @@items = RBTree.new
 
@@ -21,7 +21,7 @@ module Store
       self.image_path = "/images/no_image.gif"
       self.edit_time = Time.now
       self.comments = []
-      self.isFixed = true
+      self.selling_mode = "fixed"
       self.bidders = {}
     end
 
@@ -53,7 +53,7 @@ module Store
       item.price = price
       item.owner = owner
       item.description = description
-      item.isFixed = true
+      item.selling_mode = "fixed"
       item
     end
 
@@ -64,9 +64,9 @@ module Store
       item.price = price
       item.owner = owner
       item.description = description
-      item.isFixed = false
+      item.selling_mode = "auction"
       item.increment = increment
-      item.endTime = endTime
+      item.end_time = endTime
       item
     end
 
@@ -124,16 +124,21 @@ module Store
     end
 
     # update the item's properties, raises error if item is not editable
-    def update(new_name, new_price, new_desc, log = true)
+    def update(new_name, new_price, new_desc, new_selling_mode, new_increment, new_end_time, log = true)
       fail unless self.editable?
 
-      old_vals = {:name => self.name, :price => self.price, :description => self.description}
-      new_vals = {:name => new_name, :price => new_price, :description => new_desc}
+      old_vals = {:name => self.name, :price => self.price, :description => self.description,
+        :selling_mode => self.selling_mode, :increment => self.increment, end_time => self.end_time}
+      new_vals = {:name => new_name, :price => new_price, :description => new_desc,
+        :selling_mode => new_selling_mode, :increment => new_increment, end_time => new_end_time}
 
       if old_vals != new_vals
         self.name = new_name
         self.price = new_price
         self.description = new_desc
+        self.selling_mode = new_selling_mode
+        self.increment = new_increment
+        self.end_time = new_end_time
 
         self.notify_change
         Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals).log if log
@@ -146,11 +151,11 @@ module Store
     end
 
     def isAuction?
-      !self.isFixed
+      self.selling_mode == "auction"
     end
 
     def isFixed?
-      self.isFixed
+      self.selling_mode == "fixed"
     end
 
     # gets the highest Bidder/Amount pair out of bidders
@@ -193,7 +198,7 @@ module Store
     
     def time_delta
       current_time = elapsed_seconds = DateTime.now
-      end_time = self.endTime
+      end_time = self.end_time
       delta_in_seconds = ((end_time - current_time) * 24 * 60 * 60).to_i
       delta_in_seconds
     end

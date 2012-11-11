@@ -51,7 +51,7 @@ class TradingAuthorityTest < Test::Unit::TestCase
     seller = User.named("seller", :credits => 100)
     buyer = User.named("buyer", :credits => 100)
 
-    item = seller.propose_item("item", 50)
+    item = seller.propose_item("item", 50, "fixed", nil, nil)
     TradingAuthority.settle_item_purchase(seller, buyer, item)
 
     assert_equal(153, seller.credits)

@@ -31,7 +31,7 @@ class ItemTest < Test::Unit::TestCase
 
   def test_item_has_owner
     user = User.named("User")
-    item = user.propose_item("TestItem", 100)
+    item = user.propose_item("TestItem", 100, "fixed", nil, nil)
     assert_equal(user, item.owner)
   end
 
@@ -74,7 +74,7 @@ class ItemTest < Test::Unit::TestCase
 
   def test_item_update
     item = Item.named_priced_with_owner_fixed("TestItem", 0, nil)
-    item.update("NewName", 100, "NewDescription")
+    item.update("NewName", 100, "NewDescription", "fixed", nil, nil)
 
     assert_equal("NewName", item.name)
     assert_equal(100, item.price)
@@ -112,7 +112,7 @@ class ItemTest < Test::Unit::TestCase
 
   def test_is_editable_by_owner
     user = User.named("Hans")
-    item = user.propose_item("TestItem", 100, "", false)
+    item = user.propose_item("TestItem", 100, "fixed", nil, nil, "", false)
     assert_equal(true, item.editable_by?(user))
     item.activate
     assert_equal(false, item.editable_by?(user))
@@ -121,7 +121,7 @@ class ItemTest < Test::Unit::TestCase
   def test_is_editable_by_other
     user = User.named("Hans")
     other = User.named("Herbert")
-    item = user.propose_item("TestItem", 100, "", false)
+    item = user.propose_item("TestItem", 100, "fixed", nil, nil, "", false)
     assert_equal(true, item.editable_by?(user))
     item.activate
     assert_equal(false, item.editable_by?(other))
@@ -129,7 +129,7 @@ class ItemTest < Test::Unit::TestCase
 
   def test_activatable_by_owner
     user = User.named("Hans")
-    item = user.propose_item("TestItem", 100, "", false)
+    item = user.propose_item("TestItem", 100, "fixed", nil, nil, "", false)
     assert_equal(true, item.activatable_by?(user))
     item.activate
     assert_equal(true, item.activatable_by?(user))
@@ -138,7 +138,7 @@ class ItemTest < Test::Unit::TestCase
   def test_activatable_by_other
     user = User.named("Hans")
     other = User.named("Herbert")
-    item = user.propose_item("TestItem", 100, "", false)
+    item = user.propose_item("TestItem", 100, "fixed", nil, nil, "", false)
     assert_equal(true, item.activatable_by?(user))
     assert_equal(false, item.activatable_by?(other))
     item.activate
@@ -169,40 +169,40 @@ class ItemTest < Test::Unit::TestCase
     item = Item.named_priced_with_owner_auction("myItem", 10, nil, 2, DateTime.now + 1105, description = "test") # more than two hours valid
     assert item.time_delta_string == "3 years"
 
-    item.endTime = DateTime.now + 365+31+31+10
+    item.end_time = DateTime.now + 365+31+31+10
     assert item.time_delta_string == "One year, 2 months"
 
-    item.endTime = DateTime.now + 370
+    item.end_time = DateTime.now + 370
     assert item.time_delta_string == "One year"
 
-    item.endTime = DateTime.now + 30+30+30+10
+    item.end_time = DateTime.now + 30+30+30+10
     assert item.time_delta_string == "3 months"
 
-    item.endTime = DateTime.now + 30+10 +(1.0/24)  # add one hour to prevent rounding errors
+    item.end_time = DateTime.now + 30+10 +(1.0/24)  # add one hour to prevent rounding errors
     assert item.time_delta_string == "One month, 10 days"
 
-    item.endTime = DateTime.now + 30
+    item.end_time = DateTime.now + 30
     assert item.time_delta_string == "One month"
 
-    item.endTime = DateTime.now + 5  +(1.0/24)  # add one hour to prevent rounding errors
+    item.end_time = DateTime.now + 5  +(1.0/24)  # add one hour to prevent rounding errors
     assert item.time_delta_string == "5 days"
 
-    item.endTime = DateTime.now + 1.51 +(2.0/(24*60)) # add 2 minutes to prevent rounding errors
+    item.end_time = DateTime.now + 1.51 +(2.0/(24*60)) # add 2 minutes to prevent rounding errors
     assert item.time_delta_string == "One day, 12 hours"
 
-    item.endTime = DateTime.now + 1 + (1.0/(24*60))
+    item.end_time = DateTime.now + 1 + (1.0/(24*60))
     assert item.time_delta_string == "One day"
 
-    item.endTime = DateTime.now + 2.0/24 + (5.0/(24*60))
+    item.end_time = DateTime.now + 2.0/24 + (5.0/(24*60))
     assert item.time_delta_string == "2 hours"
 
-    item.endTime = DateTime.now + (52.0/(24*60))
+    item.end_time = DateTime.now + (52.0/(24*60))
     assert item.time_delta_string == "One hour"
 
-    item.endTime = DateTime.now + 2.0/(24*60) + (2.0/(24*60*60))
+    item.end_time = DateTime.now + 2.0/(24*60) + (2.0/(24*60*60))
     assert item.time_delta_string == "2 minutes"
 
-    item.endTime = DateTime.now + (30.0/(24*60*60)) + (1.0/(24*60*60*10))
+    item.end_time = DateTime.now + (30.0/(24*60*60)) + (1.0/(24*60*60*10))
     assert item.time_delta_string == "30 seconds"
 
   end
