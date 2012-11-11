@@ -8,6 +8,9 @@
                                                     :item_name => item.name,
                                                     :item_price => item.price,
                                                     :item_desc => show_previous_description ? Analytics::ActivityLogger.get_previous_description(item) : item.description,
+                                                    :item_increment => item.increment,
+                                                    :auction_end => item.end_time,
+                                                    :selling_mode => item.selling_mode,
                                                     :edit => true }
     %br
     -if not show_previous_description

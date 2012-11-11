@@ -1,16 +1,6 @@
 %form{:action => action_url, :method => "POST", :onsubmit => "return validate_item_edit(this);", :enctype => "multipart/form-data"}
-  -# this changes the elements visibility based on the selected selling mode
   :javascript
-    function updateForm() {
-      var isAuction = document.getElementById("selling_mode_auction").checked;
-      var isFixed = document.getElementById("selling_mode_fixed").checked;
-      
-      if(isAuction) {
-        document.getElementById("auction_options").style.display = 'block';
-      }else{
-        document.getElementById("auction_options").style.display = 'none';
-      }
-    }
+    addListener();
   %h3.no_top_margin
     Name
   %p
@@ -22,9 +12,9 @@
   %h3
     Selling mode
   %p
-    %input{ :type => "radio", :name => "selling_mode", :value => "fixed", :id =>"selling_mode_fixed", :onclick => "updateForm()", :checked => true}
+    %input{ :type => "radio", :name => "selling_mode", :value => "fixed", :id =>"selling_mode_fixed", :onclick => "updateForm()", :checked => selling_mode == "fixed"}
       Fixed
-    %input{ :type => "radio", :name => "selling_mode", :value => "auction", :id =>"selling_mode_auction", :onclick => "updateForm()" }
+    %input{ :type => "radio", :name => "selling_mode", :value => "auction", :id =>"selling_mode_auction", :onclick => "updateForm()", :checked => selling_mode == "auction" }
       Auction
   %div{ :id => "auction_options", :style => "display: none"}
     %h3
