@@ -167,9 +167,16 @@ module Store
     def bid(item, amount)
       if canBid?(item, amount)
         previous_winner = item.current_winner
+        if item.highestBid != nil
+          previous_maxBid = item.bidders[previous_winner]
+        else
+          previous_maxBid = 0
+        end
         item.bidders[self] = amount
+        self.credits -= amount
         if previous_winner != nil && previous_winner != item.current_winner && previous_winner.email != nil
           Security::MailClient.send_new_winner_mail(previous_winner.email, item)
+          previous_winner.credits += previous_maxBid
         end
       end
     end

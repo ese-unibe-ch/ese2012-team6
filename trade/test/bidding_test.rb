@@ -84,4 +84,19 @@ class AuctionTest < Test::Unit::TestCase
     assert item.current_winner == @userC
   end
 
+  def test_get_money_back_if_overbidden
+    initialPrice = 5
+    increment = 2
+    item_name = "TestItem"
+    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, 0, nil)
+    @userB.bid(item,20)
+    assert @userB.credits = 980
+    @userC.bid(item,15)
+    assert @userB.credits = 980
+    assert @userC.credits = 1000
+    @userC.bid(item,25)
+    assert@userB.credits = 1000
+    assert@userC.credits = 975
+  end
+
 end

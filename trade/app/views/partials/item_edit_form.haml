@@ -7,6 +7,14 @@
     Price
   %p
     %input.textbox8{:type => "text", :name => "item_price", :style => "width: 60px", :value => item_price}
+  %h3
+    Increment (auction only)
+  %p
+    %input.textbox8{:type => "text", :name => "item_increment", :style => "width: 60px", :value => item_increment}
+  %h3
+    End-Date (auction only)
+  %p
+    %input.textbox8{:type => "text", :name => "auction_end", :style => "width: 60px", :value => auction_end}
   -if not edit
     %h3
       Owner
