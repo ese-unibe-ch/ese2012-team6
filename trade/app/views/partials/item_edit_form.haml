@@ -1,4 +1,16 @@
 %form{:action => action_url, :method => "POST", :onsubmit => "return validate_item_edit(this);", :enctype => "multipart/form-data"}
+  -# this changes the elements visibility based on the selected selling mode
+  :javascript
+    function updateForm() {
+      var isAuction = document.getElementById("selling_mode_auction").checked;
+      var isFixed = document.getElementById("selling_mode_fixed").checked;
+      
+      if(isAuction) {
+        document.getElementById("auction_options").style.display = 'block';
+      }else{
+        document.getElementById("auction_options").style.display = 'none';
+      }
+    }
   %h3.no_top_margin
     Name
   %p
@@ -8,13 +20,21 @@
   %p
     %input.textbox8{:type => "text", :name => "item_price", :style => "width: 60px", :value => item_price}
   %h3
-    Increment (auction only)
+    Selling mode
   %p
-    %input.textbox8{:type => "text", :name => "item_increment", :style => "width: 60px", :value => item_increment}
-  %h3
-    End-Date (auction only)
-  %p
-    %input.textbox8{:type => "text", :name => "auction_end", :style => "width: 60px", :value => auction_end}
+    %input{ :type => "radio", :name => "selling_mode", :value => "fixed", :id =>"selling_mode_fixed", :onclick => "updateForm()", :checked => true}
+      Fixed
+    %input{ :type => "radio", :name => "selling_mode", :value => "auction", :id =>"selling_mode_auction", :onclick => "updateForm()" }
+      Auction
+  %div{ :id => "auction_options", :style => "display: none"}
+    %h3
+      Increment (auction only)
+    %p
+      %input.textbox8{:type => "text", :name => "item_increment", :style => "width: 60px", :value => item_increment}
+    %h3
+      End-Date (auction only)
+    %p
+      %input.textbox8{:type => "text", :name => "auction_end", :style => "width: 60px", :value => auction_end}
   -if not edit
     %h3
       Owner
