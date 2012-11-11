@@ -40,7 +40,11 @@ module Store
 
     # propose a new item
     def propose_item(name, price, selling_mode, increment, end_time, description = "", log = true)
-      item = Item.named_priced_with_owner_fixed(name, price, self, description)
+      if selling_mode == "fixed"
+        item = Item.named_priced_with_owner_fixed(name, price, self, description)
+      else
+        item = Item.named_priced_with_owner_auction(name, price, self, increment, end_time, description)
+      end
       item.save
 
       self.attach_item(item)
