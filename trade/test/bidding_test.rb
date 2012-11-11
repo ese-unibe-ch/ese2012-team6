@@ -99,4 +99,14 @@ class AuctionTest < Test::Unit::TestCase
     assert@userC.credits = 975
   end
 
+  def test_cant_edit_after_bidding
+    initialPrice = 5
+    increment = 2
+    item_name = "TestItem"
+    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, 0, nil)
+    assert item.editable?
+    @userB.bid(item,20)
+    assert !item.editable?
+  end
+
 end
