@@ -14,6 +14,8 @@ class ItemTest < Test::Unit::TestCase
   def test_item_name
     item_name = "TestItem"
     item = Item.named_priced_with_owner_fixed(item_name, 0, nil)
+    assert item.isFixed?
+    assert !item.isAuction?
     assert_not_nil(item.name, "Item has no name")
     assert_equal(item_name, item.name)
   end

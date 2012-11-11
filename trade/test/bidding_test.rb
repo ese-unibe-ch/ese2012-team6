@@ -30,6 +30,8 @@ class AuctionTest < Test::Unit::TestCase
     increment = 2
     item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
     item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, 0, nil)
+    assert item.isAuction?
+    assert !item.isFixed?
     assert(!@userD.canBid?(item,1)) # bid not high enough
     assert(!@userD.canBid?(item,2)) # not enough money
 
