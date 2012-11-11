@@ -1,6 +1,7 @@
 %form{:action => action_url, :method => "POST", :onsubmit => "return validate_item_edit(this);", :enctype => "multipart/form-data"}
   :javascript
     addListener();
+    $(document).ready = $(document).ready(function() { $('#datetimepicker').datetimepicker({ dateFormat: 'dd-mm-yy', minDate: 0 }); });
   %h3.no_top_margin
     Name
   %p
@@ -12,9 +13,9 @@
   %h3
     Selling mode
   %p
-    %input{ :type => "radio", :name => "selling_mode", :value => "fixed", :id =>"selling_mode_fixed", :onclick => "updateForm()", :checked => selling_mode == "fixed"}
+    %input{ :type => "radio", :name => "selling_mode", :value => "fixed", :id =>"selling_mode_fixed", :onclick => "updateForm()", :checked => !defined?(selling_mode) ? true : selling_mode == "fixed"}
       Fixed
-    %input{ :type => "radio", :name => "selling_mode", :value => "auction", :id =>"selling_mode_auction", :onclick => "updateForm()", :checked => selling_mode == "auction" }
+    %input{ :type => "radio", :name => "selling_mode", :value => "auction", :id =>"selling_mode_auction", :onclick => "updateForm()", :checked => !defined?(selling_mode) ? false : selling_mode == "auction" }
       Auction
   %div{ :id => "auction_options", :style => "display: none"}
     %h3
@@ -24,7 +25,7 @@
     %h3
       End-Date (auction only)
     %p
-      %input.textbox8{:type => "text", :name => "auction_end", :style => "width: 60px", :value => auction_end}
+      %input.textbox8{:type => "text", :id => "datetimepicker", :name => "auction_end", :style => "width: 60px", :value => auction_end}
   -if not edit
     %h3
       Owner

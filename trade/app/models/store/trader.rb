@@ -40,7 +40,11 @@ module Store
 
     # propose a new item
     def propose_item(name, price, selling_mode, increment, end_time, description = "", log = true)
-      item = Item.named_priced_with_owner_fixed(name, price, self, description)
+      if selling_mode == "fixed"
+        item = Item.named_priced_with_owner_fixed(name, price, self, description)
+      else
+        item = Item.named_priced_with_owner_auction(name, price, self, increment.to_i, end_time, description)
+      end
       item.save
 
       self.attach_item(item)
@@ -82,7 +86,7 @@ module Store
 
     # handles the shop of an item , returns true if buy process was successfull, false otherwise
     # also returns error code
-    def buy_item(item, log = true)            #TODO call this at the end of auction
+    def buy_item(item, log = true)
       seller = item.owner
 
       if seller.nil?

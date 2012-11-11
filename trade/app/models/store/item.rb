@@ -1,9 +1,11 @@
 require 'rbtree'
+require 'parsedate'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../helpers/security/string_checker'
 require_relative '../helpers/converter/converter'
+require_relative '../helpers/time/time_helper'
 require_relative '../store/comment'
 
 module Store
@@ -65,8 +67,8 @@ module Store
       item.owner = owner
       item.description = description
       item.selling_mode = "auction"
-      item.increment = increment
-      item.end_time = endTime
+      item.increment = increment.to_i
+      item.end_time = Time.mktime(*ParseDate.parsedate(endTime)).to_datetime
       item
     end
 
@@ -130,15 +132,15 @@ module Store
       old_vals = {:name => self.name, :price => self.price, :description => self.description,
         :selling_mode => self.selling_mode, :increment => self.increment, end_time => self.end_time}
       new_vals = {:name => new_name, :price => new_price, :description => new_desc,
-        :selling_mode => new_selling_mode, :increment => new_increment, end_time => new_end_time}
+        :selling_mode => new_selling_mode, :increment => new_increment.to_i, end_time => Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime}
 
       if old_vals != new_vals
         self.name = new_name
         self.price = new_price
         self.description = new_desc
         self.selling_mode = new_selling_mode
-        self.increment = new_increment
-        self.end_time = new_end_time
+        self.increment = new_increment.to_i
+        self.end_time = Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime
 
         self.notify_change
         Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals).log if log
@@ -187,7 +189,7 @@ module Store
       elsif self.bidders.size == 1
         self.price
       else
-        self.secondInLineBid.values[0] + increment               #TODO
+        self.secondInLineBid.values[0].to_i + increment.to_i
       end
     end
     

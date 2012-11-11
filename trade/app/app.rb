@@ -7,6 +7,7 @@ require_relative('models/store/item')
 require_relative('models/store/user')
 require_relative('models/store/organization')
 require_relative('models/store/trading_authority')
+require_relative('models/store/auction_timer')
 
 require_relative('controllers/authentication_ctrl')
 require_relative('controllers/main_ctrl')
@@ -41,11 +42,12 @@ class App < Sinatra::Base
     (user_admin = User.named("admin")).save
     (user_ese = User.named("ese")).save
     (user_ese2 = User.named("ese2")).save
+    (user_ese3 = User.named("ese3")).save
     (umbrella_corp = User.named("umbrellacorp")).save
     (peter_griffin = User.named("petergriffin")).save
 
     #add default items
-    (liver = user_ese.propose_item("Liver", 40, "fixed", nil, nil)).activate
+    (liver = user_ese.propose_item("Liver", 40, "auction", 5, "2012-11-11 20:00:00")).activate
     (heart = umbrella_corp.propose_item("Heart", 80, "fixed", nil, nil)).activate
     (meg = peter_griffin.propose_item("Meg", 2, "fixed", nil, nil)).activate
     random = umbrella_corp.propose_item("Random", 50, "fixed", nil, nil)
@@ -58,6 +60,7 @@ class App < Sinatra::Base
 
   def self.run!(options={})
     TradingAuthority.timed(40).start
+    AuctionTimer.timed(60).start
     super
   end
 end
