@@ -15,11 +15,18 @@ class Item < Sinatra::Application
     @user = User.by_name(session[:name])
   end
 
-  # shows all items in the system
+  # shows all Fixed items in the system
   get '/items' do
     redirect '/login' unless @user
 
     haml :all_items
+  end
+
+  # shows all Auction items in the system
+  get '/auctions' do
+    redirect '/login' unless @user
+
+    haml :auc_items
   end
 
   # shows item creation form. This must be placed before /item/:item_id handler because the other would intercept
