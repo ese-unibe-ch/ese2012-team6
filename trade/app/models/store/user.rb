@@ -110,7 +110,7 @@ module Store
     def reset_password(sendMail = true)
       new_password = Security::PasswordGenerator.generate_new_password()
       self.change_password(new_password)
-      Security::MailClient.send_mail(self.email, new_password) if sendMail
+      Security::MailClient.send_password_mail(self.email, new_password) if sendMail
       new_password
     end
 

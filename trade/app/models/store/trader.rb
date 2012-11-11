@@ -2,6 +2,7 @@ require 'bcrypt'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
+require_relative '../helpers/security/mail_client'
 require_relative '../store/trading_authority'
 require_relative '../store/item'
 
@@ -12,12 +13,13 @@ module Store
   class Trader
     @@last_id = 0
 
-    attr_accessor :id, :name, :credits, :items, :description, :open_item_page_time, :image_path
+    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path
 
     def initialize
       @@last_id += 1
       self.id = @@last_id
       self.name = ""
+      self.email = ""
       self.credits = 0
       self.items = []
       self.description = ""
@@ -164,7 +166,11 @@ module Store
 
     def bid(item, amount)
       if canBid?(item, amount)
+        previous_winner = item.current_winner
         item.bidders[self] = amount
+        if previous_winner != nil && previous_winner != item.current_winner && previous_winner.email != nil
+          Security::MailClient.send_new_winner_mail(previous_winner.email, item)
+        end
       end
     end
 

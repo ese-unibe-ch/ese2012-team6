@@ -68,6 +68,14 @@ module Store
       @@organizations.delete(self.name)
     end
 
+    def email
+      emails = []
+      self.members.each {|member|
+        emails.push member.email
+      }
+      emails
+    end
+
     # class methods
     class << self
       # deletes all organizations in the system

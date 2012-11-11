@@ -73,6 +73,17 @@ class OrganizationTest < Test::Unit::TestCase
     assert(!organization.has_member?(member), "member still in list")
   end
 
+  def test_organization_email
+    organization = Organization.named("org")
+    member = User.named("you", :email => "you@mail.com")
+    member2 = User.named("him", :email => "him@mail.com")
+
+    organization.add_member(member)
+    organization.add_member(member2)
+
+    assert organization.email == ["you@mail.com","him@mail.com"]
+  end
+
   def test_default_credits_amount
     default_amount = 0
     organization = Organization.named("Org")
