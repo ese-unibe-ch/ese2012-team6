@@ -177,10 +177,16 @@ module Store
           previous_maxBid = 0
         end
         item.bidders[self] = amount
-        self.credits -= amount
+        # reduce money if user is new winner, otherwise nothing happens
+        if item.current_winner == self then self.credits -= amount end
         if previous_winner != nil && previous_winner != item.current_winner && previous_winner.email != nil
+          # we got a new winner
           Security::MailClient.send_new_winner_mail(previous_winner.email, item)
           previous_winner.credits += previous_maxBid
+        elsif previous_winner == item.current_winner
+          # still same winner, but probably change amount of money on hold
+          item.current_winner.credits += item.bidders[item.current_winner]
+          item.current_winner.credits -= item.currentSellingPrice
         end
       end
     end
