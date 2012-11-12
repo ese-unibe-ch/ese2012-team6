@@ -1,3 +1,20 @@
+:javascript
+  //addListener();
+  $(document).ready(function() {
+    var update = window.setInterval("GetRemaining();", 1000);
+    GetRemaining = function(){
+      var elements = $(".time-remaining");
+      elements.each(function(){
+        var id = this.getAttribute("id").replace("remaining_", "")
+        request = new XMLHttpRequest();
+        request.open('GET', '/item/remaining/'+id, false);
+        request.send(null);
+        if (request.status === 200) {
+          this.innerHTML = request.responseText;
+        }
+      });
+    }
+  });
 %h2
   Items
 %h3
@@ -32,5 +49,5 @@
             %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
           -else
             %input{:type => "checkbox", :disabled => "disabled"}
-        %td{:title => item.end_time.strftime("%Y-%m-%d %H:%M")}
+        %td{:title => item.end_time.strftime("%Y-%m-%d %H:%M"), :id => "remaining_"+item.id.to_s, :class => "time-remaining"}
           %p #{item.time_delta_string}

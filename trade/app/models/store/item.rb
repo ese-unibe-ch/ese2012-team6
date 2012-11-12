@@ -214,7 +214,15 @@ module Store
         self.secondInLineBid.values[0].to_i + increment.to_i
       end
     end
-    
+
+    def currentAuctionPriceToShow
+      if self.currentSellingPrice == nil
+        self.price
+      else
+        self.currentSellingPrice
+      end
+    end
+
     def current_winner
       highest_bid = self.highestBid
       highest_bid != nil ? highest_bid.keys[0] : nil

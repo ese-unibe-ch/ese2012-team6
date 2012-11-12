@@ -93,14 +93,17 @@ class AuctionTest < Test::Unit::TestCase
     item_name = "TestItem"
     item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, "2015-10-15 18:00:00", nil)
     @userB.bid(item,20)
+    assert item.currentSellingPrice == 5
     assert @userA.credits == 1000
-    assert @userB.credits == 980
+    assert @userB.credits == 995
     assert @userC.credits == 1000
     @userC.bid(item,15)
+    assert item.currentSellingPrice == 17
     assert @userA.credits == 1000
     assert @userB.credits == 983
     assert @userC.credits == 1000
     @userC.bid(item,25)
+    assert item.currentSellingPrice == 22
     assert @userA.credits == 1000
     assert @userB.credits == 1000
     assert @userC.credits == 978

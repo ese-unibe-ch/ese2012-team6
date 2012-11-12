@@ -204,4 +204,9 @@ class Item < Sinatra::Application
 
     redirect back
   end
+
+  get '/item/remaining/:item_id' do
+    item = Item.by_id(Integer(params[:item_id]))
+    Haml::Filters::Plain.render(item.time_delta_string)
+  end
 end
