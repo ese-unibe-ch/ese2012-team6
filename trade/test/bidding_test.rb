@@ -129,8 +129,7 @@ class AuctionTest < Test::Unit::TestCase
     assert @userC.credits == 978
     AuctionTimer.finish_auction(item)
     assert @userA.credits == 1022
-    assert @userB.credits == 1000   # this is 1003 instead :-/
+    assert @userB.credits == 1000
     assert @userC.credits == 978
   end
-
 end
