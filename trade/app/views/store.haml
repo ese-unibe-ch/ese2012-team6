@@ -13,23 +13,59 @@
   %tbody
     -for user in Store::Trader.all
       -for item in user.get_active_items
-        %tr
-          %td
-            %img{:src => item.image_path, :height => "40px"}
-          %td
-            %a{:href => url("/item/#{item.id}")}
-              :escaped
-                #{item.name}
-          %td
-            #{item.price}
-          %td
-            %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
-              :escaped
-                #{item.owner.name}
-          %td
-            -if @user.on_behalf_of.can_buy?(item)
-              %form{:action => "/user/buy/#{item.id}", :method => "POST"}
-                %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
+        -if item.isFixed?
+          %tr
+            %td
+              %img{:src => item.image_path, :height => "40px"}
+            %td
+              %a{:href => url("/item/#{item.id}")}
+                :escaped
+                  #{item.name}
+            %td
+              #{item.price}
+            %td
+              %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
+                :escaped
+                  #{item.owner.name}
+            %td
+              -if @user.on_behalf_of.can_buy?(item)
+                %form{:action => "/user/buy/#{item.id}", :method => "POST"}
+                  %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
+%h3
+  Current auctions
+%table.table-minimalistic
+  %thead
+    %tr
+      %th Pic
+      %th Item
+      %th Price
+      %th Owner
+      %th finishes in
+      %th
+  %tbody
+    -for user in Store::Trader.all
+      -for item in user.get_active_items
+        -if item.isAuction?
+          %tr
+            %td
+              %img{:src => item.image_path, :height => "40px"}
+            %td
+              %a{:href => url("/item/#{item.id}")}
+                :escaped
+                  #{item.name}
+            %td
+              #{item.currentAuctionPriceToShow}
+            %td
+              %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
+                :escaped
+                  #{item.owner.name}
+            %td{:title => item.end_time.strftime("%Y-%m-%d %H:%M")}
+              %p #{item.time_delta_string}
+            %td
+              -if @user.on_behalf_of.can_buy?(item)
+                %form{:action => "/user/buy/#{item.id}", :method => "POST"}
+                  %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy" : "Bid as #{@user.on_behalf_of.name}"}
+
 %h3
   Recent purchases
 - if most_recent_purchases.empty?
