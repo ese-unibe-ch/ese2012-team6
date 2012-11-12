@@ -208,9 +208,9 @@ class ItemTest < Test::Unit::TestCase
     assert item.time_delta_string == "30 seconds"
 
     item.end_time = DateTime.now - 30
-    assert item.time_delta_string == "One month ago"
+    assert item.time_delta_string == "Auction is over since: One month ago"
 
     item.end_time = DateTime.now - 30-10 -(1.0/24)  # add one hour to prevent rounding errors
-    assert item.time_delta_string == "One month, 10 days ago"
+    assert item.time_delta_string == "Auction is over since: One month, 10 days ago"
   end
 end

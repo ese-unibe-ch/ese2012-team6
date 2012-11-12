@@ -132,8 +132,33 @@ class AuctionTest < Test::Unit::TestCase
     assert @userB.credits == 1000
     assert @userC.credits == 978
     AuctionTimer.finish_auction(item)
+    assert item.bidders == {}
     assert @userA.credits == 1022
     assert @userB.credits == 1000
     assert @userC.credits == 978
+  end
+
+  def test_get_money_back_when_deactivated
+    initialPrice = 5
+    increment = 2
+    item_name = "TestItem"
+    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, "2015-10-15 18:00:00", nil)
+    @userB.bid(item,20)
+    @userC.bid(item,15)
+    @userC.bid(item,25)
+    @userC.bid(item,30)
+    assert @userA.credits == 1000
+    assert @userB.credits == 1000
+    assert @userC.credits == 978
+    item.deactivate
+    assert item.bidders == {}
+    assert @userA.credits == 1000
+    assert @userB.credits == 1000
+    assert @userC.credits == 1000
+    item.activate
+    assert item.bidders == {}
+    assert @userA.credits == 1000
+    assert @userB.credits == 1000
+    assert @userC.credits == 1000
   end
 end

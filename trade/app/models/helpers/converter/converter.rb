@@ -84,7 +84,7 @@ module Converter
       end
 
       if before
-        time_string = time_string + " ago"
+        time_string = "Auction is over since: " + time_string + " ago"
       end
 
       return time_string

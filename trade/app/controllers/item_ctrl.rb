@@ -210,6 +210,10 @@ class Item < Sinatra::Application
   get '/item/remaining/:item_id' do
     redirect '/login' unless @user
 
+    response.headers['Expires'] = 'Sat, 1 Jan 2005 00:00:00 GMT'
+    response.headers['Last-Modified'] = Time.now.strftime("%a, %d %b %Y %H:%M:%S")
+    response.headers['Cache-Control'] = 'no-cache, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
     item = Item.by_id(Integer(params[:item_id]))
     if item != nil
       Haml::Filters::Plain.render(item.time_delta_string)

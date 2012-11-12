@@ -57,7 +57,6 @@ module Store
 
         if buyer == nil || item.currentSellingPrice == nil
           item.deactivate
-          item.bidders = {}
           return
         end
 
@@ -69,7 +68,6 @@ module Store
         seller.credits += selling_price # + Integer((price * SELL_BONUS).ceil)
 
         item.deactivate
-        item.bidders = {}
         buyer.attach_item(item)
 
         item.notify_change

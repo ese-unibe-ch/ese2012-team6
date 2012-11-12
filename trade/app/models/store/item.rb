@@ -93,6 +93,16 @@ module Store
 
     def deactivate
       self.active = false
+      if self.isAuction?
+        # pay money back
+        if !self.is_finished?
+          buyer = self.current_winner
+          if buyer != nil
+            buyer.credits += self.currentSellingPrice
+          end
+        end
+        self.bidders = {}
+      end
     end
 
     # update the item's status
@@ -227,6 +237,10 @@ module Store
       highest_bid = self.highestBid
       highest_bid != nil ? highest_bid.keys[0] : nil
     end
+
+    def is_finished?
+      time_delta < 0
+    end
     
     def time_delta
       current_time = elapsed_seconds = DateTime.now
@@ -236,11 +250,7 @@ module Store
     end
     
     def time_delta_string
-      if self.time_delta < 0
-        "Auction is over"
-      else
-        Converter::TimeConverter.convert_seconds_to_string self.time_delta
-      end
+      Converter::TimeConverter.convert_seconds_to_string self.time_delta
     end
 
     # class methods
