@@ -32,6 +32,8 @@ class Item < Sinatra::Application
   # shows item creation form. This must be placed before /item/:item_id handler because the other would intercept
   # this one
   get '/item/new' do
+    redirect '/login' unless @user
+
     haml :new_item
   end
 
@@ -206,7 +208,11 @@ class Item < Sinatra::Application
   end
 
   get '/item/remaining/:item_id' do
+    redirect '/login' unless @user
+
     item = Item.by_id(Integer(params[:item_id]))
-    Haml::Filters::Plain.render(item.time_delta_string)
+    if item != nil
+      Haml::Filters::Plain.render(item.time_delta_string)
+    end
   end
 end
