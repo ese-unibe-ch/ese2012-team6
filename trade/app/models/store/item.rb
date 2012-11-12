@@ -67,8 +67,18 @@ module Store
       item.owner = owner
       item.description = description
       item.selling_mode = "auction"
-      item.increment = increment.to_i
-      item.end_time = Time.mktime(*ParseDate.parsedate(endTime)).to_datetime
+      item.increment = increment != nil ? increment.to_i : nil
+      if endTime != nil
+        if endTime.is_a? (Fixnum)
+          item.end_time = DateTime.now + endTime
+        elsif endTime.is_a? (String)
+          item.end_time = Time.mktime(*ParseDate.parsedate(endTime)).to_datetime
+        elsif endTime.is_a? (DateTime)
+          item.end_time = endTime
+        end
+      else
+        item.end_time = nil
+      end
       item
     end
 
@@ -129,18 +139,30 @@ module Store
     def update(new_name, new_price, new_desc, new_selling_mode, new_increment, new_end_time, log = true)
       fail unless self.editable?
 
+      if new_end_time != nil
+        if new_end_time.is_a? (Fixnum)
+          new_end_time = DateTime.now + new_end_time
+        elsif new_end_time.is_a? (String)
+          new_end_time = Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime
+        elsif new_end_time.is_a? (DateTime)
+          new_end_time = new_end_time
+        end
+      else
+        new_end_time = nil
+      end
+
       old_vals = {:name => self.name, :price => self.price, :description => self.description,
         :selling_mode => self.selling_mode, :increment => self.increment, end_time => self.end_time}
       new_vals = {:name => new_name, :price => new_price, :description => new_desc,
-        :selling_mode => new_selling_mode, :increment => new_increment.to_i, end_time => Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime}
+        :selling_mode => new_selling_mode, :increment => new_increment != nil ? new_increment.to_i : nil, end_time => new_end_time}
 
       if old_vals != new_vals
         self.name = new_name
         self.price = new_price
         self.description = new_desc
         self.selling_mode = new_selling_mode
-        self.increment = new_increment.to_i
-        self.end_time = Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime
+        self.increment = new_increment != nil ? new_increment.to_i : nil
+        self.end_time = new_end_time
 
         self.notify_change
         Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals).log if log
