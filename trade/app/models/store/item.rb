@@ -69,11 +69,11 @@ module Store
       item.selling_mode = "auction"
       item.increment = increment != nil ? increment.to_i : nil
       if endTime != nil
-        if endTime.is_a? (Fixnum)
+        if endTime.is_a?(Fixnum)
           item.end_time = DateTime.now + endTime
-        elsif endTime.is_a? (String)
+        elsif endTime.is_a?(String)
           item.end_time = Time.mktime(*ParseDate.parsedate(endTime)).to_datetime
-        elsif endTime.is_a? (DateTime)
+        elsif endTime.is_a?(DateTime)
           item.end_time = endTime
         end
       else
@@ -140,11 +140,11 @@ module Store
       fail unless self.editable?
 
       if new_end_time != nil
-        if new_end_time.is_a? (Fixnum)
+        if new_end_time.is_a?(Fixnum)
           new_end_time = DateTime.now + new_end_time
-        elsif new_end_time.is_a? (String)
+        elsif new_end_time.is_a?(String)
           new_end_time = Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime
-        elsif new_end_time.is_a? (DateTime)
+        elsif new_end_time.is_a?(DateTime)
           new_end_time = new_end_time
         end
       else

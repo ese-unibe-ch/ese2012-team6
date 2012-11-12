@@ -7,7 +7,7 @@ module Store
     attr_accessor :check_interval, :last_refresh, :check_thread
 
     def initialize
-      self.check_interval = 60 # 1 minute
+      self.check_interval = 10 # 10 seconds
       self.last_refresh = Time.now
     end
 

@@ -207,5 +207,10 @@ class ItemTest < Test::Unit::TestCase
     item.end_time = DateTime.now + (30.0/(24*60*60)) + (1.0/(24*60*60*10))
     assert item.time_delta_string == "30 seconds"
 
+    item.end_time = DateTime.now - 30
+    assert item.time_delta_string == "One month ago"
+
+    item.end_time = DateTime.now - 30-10 -(1.0/24)  # add one hour to prevent rounding errors
+    assert item.time_delta_string == "One month, 10 days ago"
   end
 end

@@ -9,6 +9,12 @@ module Converter
 
       seconds = time_delta
 
+      before = false
+      if seconds < 0
+        before = true
+        seconds = -seconds
+      end
+
       if seconds >= year
         years = (seconds / year).floor
       else
@@ -47,33 +53,41 @@ module Converter
         minutes = 0
       end
 
+      time_string = ""
+
       if years >= 2
-        return years.to_s + " years"
+        time_string = years.to_s + " years"
       elsif years == 1 && months >= 2
-        return "One year, " + months.to_s + " months"
+        time_string = "One year, " + months.to_s + " months"
       elsif years == 1 || months >= 10
-        return "One year"
+        time_string = "One year"
       elsif months >= 2
-        return months.to_s + " months"
+        time_string = months.to_s + " months"
       elsif months == 1 && days >= 8
-        return "One month, " + days.to_s + " days"
+        time_string = "One month, " + days.to_s + " days"
       elsif months == 1 || days >= 25
-        return "One month"
+        time_string = "One month"
       elsif days >=2
-        return days.to_s + " days"
+        time_string = days.to_s + " days"
       elsif days == 1 && hours >= 5
-        return "One day, " + hours.to_s + " hours"
+        time_string = "One day, " + hours.to_s + " hours"
       elsif days == 1 || hours >= 22
-        return "One day"
+        time_string = "One day"
       elsif hours >=2
-        return hours.to_s + " hours"
+        time_string = hours.to_s + " hours"
       elsif hours == 1 || minutes >= 50
-        return "One hour"
+        time_string = "One hour"
       elsif minutes >=2
-        return minutes.to_s + " minutes"
+        time_string = minutes.to_s + " minutes"
       else
-        return seconds.to_s + " seconds"
+        time_string = seconds.to_s + " seconds"
       end
+
+      if before
+        time_string = time_string + " ago"
+      end
+
+      return time_string
     end
   end
 end

@@ -124,6 +124,7 @@ class AuctionTest < Test::Unit::TestCase
     @userB.bid(item,20)
     @userC.bid(item,15)
     @userC.bid(item,25)
+    @userC.bid(item,30)
     assert @userA.credits == 1000
     assert @userB.credits == 1000
     assert @userC.credits == 978
