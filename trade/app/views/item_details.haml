@@ -40,6 +40,20 @@
     %p
       :escaped
         #{item.owner.name}
+    -if item.isAuction?
+      %h3
+        Increment
+      %p
+        #{item.increment}
+      %h3
+        Current winner
+      %p
+        -if item.current_winner != nil
+          :escaped
+            #{item.current_winner.name}
+        -else
+          No winner yet
+
 %h3
   Description
 -if item.description == ""
