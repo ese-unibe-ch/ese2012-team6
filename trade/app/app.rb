@@ -60,7 +60,8 @@ class App < Sinatra::Base
 
   def self.run!(options={})
     TradingAuthority.timed(40).start
-    AuctionTimer.timed(60).start
+    AuctionTimer.check_auctions
+    AuctionTimer.timed(10).start
     super
   end
 end

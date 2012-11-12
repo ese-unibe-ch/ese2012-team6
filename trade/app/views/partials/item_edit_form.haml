@@ -1,7 +1,10 @@
 %form{:action => action_url, :method => "POST", :onsubmit => "return validate_item_edit(this);", :enctype => "multipart/form-data"}
   :javascript
-    addListener();
-    $(document).ready = $(document).ready(function() { $('#datetimepicker').datetimepicker({ dateFormat: 'dd-mm-yy', minDate: 0 }); });
+    //addListener();
+    $(document).ready(function() {
+      $('#datetimepicker').datetimepicker({ dateFormat: 'dd-mm-yy', minDate: 0 });
+      updateForm();
+    });
   %h3.no_top_margin
     Name
   %p
