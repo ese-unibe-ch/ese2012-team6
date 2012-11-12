@@ -51,7 +51,7 @@ module Store
         }
       end
 
-      def finish_auction item
+      def finish_auction(item)
         seller = item.owner
         buyer = item.current_winner
 
@@ -66,9 +66,12 @@ module Store
         selling_price = item.currentSellingPrice
         buyers_bid = item.bidders[buyer]
 
+        buyer.credits += buyers_bid
+        buyer.credits -= selling_price
+
         price = selling_price
 
-        seller.credits += price + Integer((price * SELL_BONUS).ceil)
+        seller.credits += price # + Integer((price * SELL_BONUS).ceil)
         # buyer.credits -= item.price       we have already taken them...
         # TODO we got an inconsistency here. We should put the money on hold, but not remove it from the seller.
         # only remove it when the transfer is complete, because we got an other price possibly.

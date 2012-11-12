@@ -5,6 +5,7 @@ require_relative '../app/models/store/user'
 require_relative '../app/models/store/trader'
 require_relative '../app/models/store/organization'
 require_relative '../app/models/store/item'
+require_relative '../app/models/store/auction_timer'
 
 class AuctionTest < Test::Unit::TestCase
   include Store
@@ -90,15 +91,19 @@ class AuctionTest < Test::Unit::TestCase
     initialPrice = 5
     increment = 2
     item_name = "TestItem"
-    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, 0, nil)
+    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, "2015-10-15 18:00:00", nil)
     @userB.bid(item,20)
-    assert @userB.credits = 980
+    assert @userA.credits == 1000
+    assert @userB.credits == 980
+    assert @userC.credits == 1000
     @userC.bid(item,15)
-    assert @userB.credits = 980
-    assert @userC.credits = 1000
+    assert @userA.credits == 1000
+    assert @userB.credits == 983
+    assert @userC.credits == 1000
     @userC.bid(item,25)
-    assert@userB.credits = 1000
-    assert@userC.credits = 975
+    assert @userA.credits == 1000
+    assert @userB.credits == 1000
+    assert @userC.credits == 978
   end
 
   def test_cant_edit_after_bidding
@@ -109,6 +114,23 @@ class AuctionTest < Test::Unit::TestCase
     assert item.editable?
     @userB.bid(item,20)
     assert !item.editable?
+  end
+
+  def test_finish_transaction
+    initialPrice = 5
+    increment = 2
+    item_name = "TestItem"
+    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, "2009-10-15 18:00:00", nil)
+    @userB.bid(item,20)
+    @userC.bid(item,15)
+    @userC.bid(item,25)
+    assert @userA.credits == 1000
+    assert @userB.credits == 1000
+    assert @userC.credits == 978
+    AuctionTimer.finish_auction(item)
+    assert @userA.credits == 1022
+    assert @userB.credits == 1000   # this is 1003 instead :-/
+    assert @userC.credits == 978
   end
 
 end
