@@ -138,6 +138,17 @@ class AuctionTest < Test::Unit::TestCase
     assert @userC.credits == 978
   end
 
+  def test_finish_transaction_no_bidder
+    initialPrice = 5
+    increment = 2
+    item_name = "TestItem"
+    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, "2009-10-15 18:00:00", nil)
+    item.activate
+    AuctionTimer.finish_auction(item)
+    assert @userA.credits == 1000
+    assert !item.active?
+  end
+
   def test_get_money_back_when_deactivated
     initialPrice = 5
     increment = 2
