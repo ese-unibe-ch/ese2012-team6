@@ -13,7 +13,7 @@ module Store
   class Trader
     @@last_id = 0
 
-    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path
+    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path, :active
 
     def initialize
       @@last_id += 1
@@ -25,6 +25,7 @@ module Store
       self.description = ""
       self.open_item_page_time = Time.now
       self.image_path = "/images/no_image.gif"
+      self.active = true
     end
 
     # creates a new trader object, options include :description and :credits

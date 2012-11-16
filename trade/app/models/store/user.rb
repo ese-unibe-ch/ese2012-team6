@@ -132,7 +132,7 @@ module Store
 
       # returns all users in the system
       def all
-        @@users.values.sort { |a,b| a.id <=> b.id}
+        @@users.values.sort { |a,b| a.id <=> b.id}     #users.all: die inaktiven nicht zurückgeben
       end
     end
   end
