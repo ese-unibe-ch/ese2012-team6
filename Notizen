@@ -1,0 +1,10 @@
+Woche 2.1: suspend
+Es muss ein delete-Button geben bei MyProfile.
+Der User darf nirgendwo mehr angezeigt werden: Er erhält eine zusätzliche Instanzvariable active, die auf false gesetzt wird, wenn er sich löscht. Bei allen Schleifen, wo durch den User-Array durchgegangen wird, muss zusätzlich abgefragt werden, ob der User active ist. Falls nicht, wird er uns seine Items nicht angezeigt. 
+
+Neue Instanzvariable: ok
+Alle Schleifen durch User-Array angepasst: 
+Alle Schleifen durch Item-Array angepasst: 
+delete-button: 
+controller für delete: 
+
