@@ -163,6 +163,7 @@ class Item < Sinatra::Application
     item_name = StringChecker.destroy_script(params[:item_name])
 
     redirect '/error/invalid_price' unless Store::Item.valid_price?(params[:item_price])
+    fail unless StringChecker.is_numeric?(params[:item_quantity])
 
     item_price = params[:item_price].to_i
     item_description = params[:item_description] ? params[:item_description] : ""
@@ -173,6 +174,7 @@ class Item < Sinatra::Application
 
     item_owner = Trader.by_name(params[:owner])
     item = item_owner.propose_item(item_name, item_price, item_selling_mode, item_increment, item_end_time, item_description)
+    item.quantity = params[:item_quantity].to_i
 
     uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/items")
     item.image_path = uploader.upload(file, item.id)
@@ -191,7 +193,8 @@ class Item < Sinatra::Application
     redirect '/error/invalid_price' unless Item.valid_price?(params[:item_price])
     item_price = params[:item_price].to_i
 
-    @user.on_behalf_of.propose_item(item_name, item_price, "fixed", nil, nil)
+    item = @user.on_behalf_of.propose_item(item_name, item_price, "fixed", nil, nil)
+    item.quantity = params[:item_quantity].to_i
 
     redirect "/item/#{item.id}" if back == url('/item/new')
     redirect back

@@ -11,7 +11,7 @@ require_relative '../store/comment'
 module Store
   # The item is the central trading object within the application. It can be traded in between traders for a certain price.
   class Item
-    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments, :selling_mode, :end_time, :increment, :bidders
+    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :comments, :selling_mode, :end_time, :increment, :bidders, :quantity
     @@last_id = 0
     @@items = RBTree.new
 
@@ -25,6 +25,7 @@ module Store
       self.comments = []
       self.selling_mode = "fixed"
       self.bidders = {}
+      self.quantity = 1
     end
 
     # save item to system
