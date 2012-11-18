@@ -38,6 +38,12 @@ module Store
       trader
     end
 
+    def propose_item_with_quantity(name, price, quantity, selling_mode, increment, end_time, description = "", log = true)
+      item = propose_item(name,price,selling_mode,increment,end_time,description,log)
+      item.quantity = quantity
+      item
+    end
+
     # propose a new item
     def propose_item(name, price, selling_mode, increment, end_time, description = "", log = true)
       if selling_mode == "fixed"
@@ -63,6 +69,12 @@ module Store
       item.owner = self
     end
 
+    def release_quantity_of_item(item, quantity)
+      if self.items.include?(item)
+        item.quantity -= quantity
+      end
+    end
+
     # deletes the owner of an item to release it
     def release_item(item)
       if self.items.include?(item)
@@ -86,7 +98,7 @@ module Store
 
     # handles the shop of an item , returns true if buy process was successfull, false otherwise
     # also returns error code
-    def buy_item(item, log = true)
+    def buy_item(item, quantity = 1, log = true)
       seller = item.owner
 
       if seller.nil?
@@ -101,15 +113,19 @@ module Store
       elsif !seller.items.include?(item)
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "seller_not_own_item" #Seller does not own item to buy
+      elsif quantity > item.quantity
+        return false, "you have to enter a valid quantity" #Seller doesn't have enough items
       end
 
-      seller.release_item(item)
-
-      TradingAuthority.settle_item_purchase(seller, self, item)
-
+      if quantity == item.quantity
+        seller.release_item(item)
+        self.attach_item(item)
+      else
+        seller.release_quantity_of_item(item, quantity)
+        self.propose_item_with_quantity(item.name, item.price, quantity, item.selling_mode, item.increment, item.end_time, item.description)
+      end
+      TradingAuthority.settle_item_purchase(seller, self, item, quantity)
       item.deactivate
-      self.attach_item(item)
-
       item.notify_change
 
       Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item).log if log
