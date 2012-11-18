@@ -19,7 +19,7 @@ class Main < Sinatra::Application
 
     most_recent_purchases = ActivityLogger.get_most_recent_purchases(10)
 
-    haml :store, :locals => { :users => Store::User.all,
+    haml :store, :locals => { :users => Store::User.all_active,
                               :most_recent_purchases => most_recent_purchases
     }
   end

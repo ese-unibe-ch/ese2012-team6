@@ -271,7 +271,7 @@ module Store
       end
 
       def allFixed
-        @@items.values.select{|val| val.isFixed?}.dup
+        @@items.values.select{|val| val.isFixed?}.dup # Gibt duplizierten Array zurück von allen fixed-price items, damit kann man items ändern, aber Liste nicht.
       end
 
       def allAuction

@@ -43,6 +43,7 @@ class Authentication < Sinatra::Application
     session[:name] = name
     user.login
     @user = user
+    @user.active = true
 
     redirect '/'
   end

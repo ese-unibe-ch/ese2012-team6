@@ -246,7 +246,7 @@ module Store
 
       # returns all traders
       def all
-        User.all.concat(Organization.all).sort { |a,b| a.id <=> b.id }
+        User.all_active.concat(Organization.all).sort { |a,b| a.id <=> b.id }
       end
 
       # returns true if the system includes a certain trader with the name specified
