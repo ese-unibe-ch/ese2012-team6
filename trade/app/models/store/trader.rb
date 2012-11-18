@@ -38,9 +38,16 @@ module Store
       trader
     end
 
+    #propose a new item with quantity
     def propose_item_with_quantity(name, price, quantity, selling_mode, increment, end_time, description = "", log = true)
-      item = self.propose_item(name,price,selling_mode,increment,end_time,description,log)
-      item.quantity = quantity
+      equal_item = self.check_for_equal_item(name,price,description)
+      if equal_item == nil
+        item = self.propose_item(name,price,selling_mode,increment,end_time,description,log)
+        item.quantity = quantity
+      else
+        equal_item.quantity += quantity
+        item = equal_item
+      end
       item
     end
 
@@ -97,7 +104,7 @@ module Store
       Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
     end
 
-    # handles the shop of an item , returns true if buy process was successfull, false otherwise
+    # handles the shop of an item , returns true if buy process was successful, false otherwise
     # also returns error code
     def buy_item(item, quantity = 1, log = true)
       seller = item.owner
@@ -120,9 +127,16 @@ module Store
 
       if quantity == item.quantity
         seller.release_item(item)
-        self.attach_item(item)
-        item.deactivate
-        item.notify_change
+        equal_item = self.check_for_equal_item(item.name, item.price, item.description)
+        if equal_item == nil
+          self.attach_item(item)
+          item.deactivate
+          item.notify_change
+        else
+          equal_item.quantity += quantity
+          equal_item.deactivate
+          equal_item.notify_change
+        end
       else
         seller.release_quantity_of_item(item, quantity)
         new_item = self.propose_item_with_quantity(item.name, item.price, quantity, item.selling_mode, item.increment, item.end_time, item.description)
@@ -244,6 +258,11 @@ module Store
 
     def alreadyBade?(item)
       item.bidders[self] != nil
+    end
+
+    def check_for_equal_item(name, price, description)
+      index = items.index {|x| x.name.eql?(name) and x.price.eql?(price) and x.description.eql?(description)}
+      return items[index] unless index == nil
     end
 
     # class methods
