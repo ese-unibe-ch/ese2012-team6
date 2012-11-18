@@ -72,13 +72,15 @@ class User < Sinatra::Application
     item_id = params[:item_id].to_i
     item = Item.by_id(item_id)
 
+    redirect '/error/invalid_quantity' unless Store::Item.valid_price?(params[:buy_amount])
     redirect url('/error/item_changed_details') unless @user.on_behalf_of.knows_item_properties?(item)
 
+    quantity = params[:buy_amount].to_i
     if item.isAuction?
       redirect "user/bid/#{item_id}"
     end
 
-    buy_success, buy_message = @user.on_behalf_of.buy_item(item)
+    buy_success, buy_message = @user.on_behalf_of.buy_item(item, quantity)
 
     redirect url("/error/#{buy_message}") unless buy_success
     redirect back

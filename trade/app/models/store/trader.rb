@@ -39,7 +39,7 @@ module Store
     end
 
     def propose_item_with_quantity(name, price, quantity, selling_mode, increment, end_time, description = "", log = true)
-      item = propose_item(name,price,selling_mode,increment,end_time,description,log)
+      item = self.propose_item(name,price,selling_mode,increment,end_time,description,log)
       item.quantity = quantity
       item
     end
@@ -69,6 +69,7 @@ module Store
       item.owner = self
     end
 
+    #releases a certain quantity of an item
     def release_quantity_of_item(item, quantity)
       if self.items.include?(item)
         item.quantity -= quantity
@@ -114,19 +115,20 @@ module Store
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "seller_not_own_item" #Seller does not own item to buy
       elsif quantity > item.quantity
-        return false, "you have to enter a valid quantity" #Seller doesn't have enough items
+        return false, "invalid_quantity" #Seller doesn't have enough items
       end
 
       if quantity == item.quantity
         seller.release_item(item)
         self.attach_item(item)
+        item.deactivate
+        item.notify_change
       else
         seller.release_quantity_of_item(item, quantity)
-        self.propose_item_with_quantity(item.name, item.price, quantity, item.selling_mode, item.increment, item.end_time, item.description)
+        new_item = self.propose_item_with_quantity(item.name, item.price, quantity, item.selling_mode, item.increment, item.end_time, item.description)
+        new_item.deactivate
       end
       TradingAuthority.settle_item_purchase(seller, self, item, quantity)
-      item.deactivate
-      item.notify_change
 
       Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item).log if log
 
