@@ -150,7 +150,7 @@ module Store
     def update(new_name, new_price, new_desc, new_selling_mode, new_increment, new_end_time, log = true)
       fail unless self.editable?
 
-      if new_end_time != nil
+      if new_end_time != nil and new_end_time != ""
         if new_end_time.is_a?(Fixnum)
           new_end_time = DateTime.now + new_end_time
         elsif new_end_time.is_a?(String)
