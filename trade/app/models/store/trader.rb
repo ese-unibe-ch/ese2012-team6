@@ -84,7 +84,7 @@ module Store
       Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
     end
 
-    # handles the shop of an item , returns true if buy process was successfull, false otherwise
+    # handles the shop of an item , returns true if buy process was successful, false otherwise
     # also returns error code
     def buy_item(item, log = true)
       seller = item.owner
