@@ -12,7 +12,7 @@
       %th Active
       %th
   %tbody
-    -for item in Store::Item.allFixed
+    -for item in Store::Item.allFixed_of_active_users
       %tr
         %td
           %img{:src => item.image_path, :height => "40px"}

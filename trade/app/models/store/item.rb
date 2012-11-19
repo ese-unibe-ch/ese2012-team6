@@ -274,8 +274,18 @@ module Store
         @@items.values.select{|val| val.isFixed?}.dup # Gibt duplizierten Array zurück von allen fixed-price items, damit kann man items ändern, aber Liste nicht.
       end
 
+      def allFixed_of_active_users
+        allFixedItems = self.allFixed
+        allFixedItems.select {|a| owner.active == true}
+      end
+
       def allAuction
         @@items.values.select{|val| val.isAuction?}.dup
+      end
+
+      def allAuction_of_active_users
+        allAuctionItems = self.allAuction
+        allAuctionItems.select{|a| owner.active == true}
       end
 
       # determines whether a string is a valid price for an item

@@ -137,7 +137,7 @@ module Store
 
       # returns all users in the system that are active
       def all_active
-        all_users = @@users.values.sort { |a,b| a.id <=> b.id}
+        all_users = self.all
         all_users.select {|a| a.active == true}
       end
     end
