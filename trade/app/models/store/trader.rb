@@ -112,7 +112,7 @@ module Store
       if seller.nil?
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "item_no_owner" #Item does not belong to anybody
-      elsif self.credits < item.price
+      elsif self.credits < (item.price * quantity)
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "not_enough_credits" #Buyer does not have enough credits
       elsif !item.active?

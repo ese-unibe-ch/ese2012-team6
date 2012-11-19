@@ -64,7 +64,7 @@ class Main < Sinatra::Application
       when "invalid_price"
         error_message = "You entered an invalid price. Please enter a positive numeric value"
       when "invalid_quantity"
-        error_message = "You entered an invalid quantity. Please enter a positive numeric value"
+        error_message = "You entered an invalid quantity"
       when "wrong_password"
         error_message = "You entered a wrong password"
       when "wrong_size"
