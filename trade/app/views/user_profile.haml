@@ -31,6 +31,7 @@
         %th Name
         %th Price
         %th Active
+        %th Qty
         %th
     %tbody
       -if @user.working_as_self? && is_my_profile
@@ -41,6 +42,8 @@
             %td
               %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
             %td
+            %td
+              %input.textbox8(type="text" name="item_quantity" style="width: 30px" value="1")
             %td
               %input{:name => "_method", :type => "hidden", :value => "put"}
               %input.styled-button.small{:type => "submit", :value => "Quick Add"}
@@ -56,6 +59,8 @@
               %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
             -else
               %input{:type => "checkbox", :disabled => "disabled"}
+          %td
+            #{item.quantity}
           %td
             %div.action_buttons
               -if @user.on_behalf_of.can_activate?(item)

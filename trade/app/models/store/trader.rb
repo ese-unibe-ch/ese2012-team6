@@ -39,6 +39,19 @@ module Store
       trader
     end
 
+    #propose a new item with quantity
+    def propose_item_with_quantity(name, price, quantity, selling_mode, increment, end_time, description = "", log = true)
+      equal_item = self.check_for_equal_item(name,price,description)
+      if equal_item == nil
+        item = self.propose_item(name,price,selling_mode,increment,end_time,description,log)
+        item.quantity = quantity
+      else
+        equal_item.quantity += quantity
+        item = equal_item
+      end
+      item
+    end
+
     # propose a new item
     def propose_item(name, price, selling_mode, increment, end_time, description = "", log = true)
       if selling_mode == "fixed"
@@ -62,6 +75,13 @@ module Store
     def attach_item(item)
       self.items << item
       item.owner = self
+    end
+
+    #releases a certain quantity of an item
+    def release_quantity_of_item(item, quantity)
+      if self.items.include?(item)
+        item.quantity -= quantity
+      end
     end
 
     # deletes the owner of an item to release it
@@ -93,13 +113,13 @@ module Store
 
     # handles the shop of an item , returns true if buy process was successful, false otherwise
     # also returns error code
-    def buy_item(item, log = true)
+    def buy_item(item, quantity = 1, log = true)
       seller = item.owner
 
       if seller.nil?
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "item_no_owner" #Item does not belong to anybody
-      elsif self.credits < item.price
+      elsif self.credits < (item.price * quantity)
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "not_enough_credits" #Buyer does not have enough credits
       elsif !item.active?
@@ -108,16 +128,28 @@ module Store
       elsif !seller.items.include?(item)
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
         return false, "seller_not_own_item" #Seller does not own item to buy
+      elsif quantity > item.quantity
+        return false, "invalid_quantity" #Seller doesn't have enough items
       end
 
-      seller.release_item(item)
-
-      TradingAuthority.settle_item_purchase(seller, self, item)
-
-      item.deactivate
-      self.attach_item(item)
-
-      item.notify_change
+      if quantity == item.quantity
+        seller.release_item(item)
+        equal_item = self.check_for_equal_item(item.name, item.price, item.description)
+        if equal_item == nil
+          self.attach_item(item)
+          item.deactivate
+          item.notify_change
+        else
+          equal_item.quantity += quantity
+          equal_item.deactivate
+          equal_item.notify_change
+        end
+      else
+        seller.release_quantity_of_item(item, quantity)
+        new_item = self.propose_item_with_quantity(item.name, item.price, quantity, item.selling_mode, item.increment, item.end_time, item.description)
+        new_item.deactivate
+      end
+      TradingAuthority.settle_item_purchase(seller, self, item, quantity)
 
       Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item).log if log
 
@@ -233,6 +265,11 @@ module Store
 
     def alreadyBade?(item)
       item.bidders[self] != nil
+    end
+
+    def check_for_equal_item(name, price, description)
+      index = items.index {|x| x.name.eql?(name) and x.price.eql?(price) and x.description.eql?(description)}
+      return items[index] unless index == nil
     end
 
     # class methods

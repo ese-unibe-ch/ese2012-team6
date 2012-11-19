@@ -58,9 +58,9 @@ module Store
       end
 
       # update seller's and buyer's credits according to item pricing and sell bonus
-      def settle_item_purchase(seller, buyer, item)
-        seller.credits += item.price + Integer((item.price * SELL_BONUS).ceil)
-        buyer.credits -= item.price
+      def settle_item_purchase(seller, buyer, item, quantity = 1)
+        seller.credits += item.price * quantity + Integer((item.price * quantity * SELL_BONUS).ceil)
+        buyer.credits -= item.price * quantity
       end
     end
   end

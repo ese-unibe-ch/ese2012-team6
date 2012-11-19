@@ -8,6 +8,7 @@
       %th Pic
       %th Name
       %th Price
+      %th Qty
       %th Owner
       %th Active
       %th
@@ -22,6 +23,8 @@
               #{item.name}
         %td.ralign
           #{item.price}
+        %td.ralign
+          #{item.quantity}
         %td
           %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
             :escaped
