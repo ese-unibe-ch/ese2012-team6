@@ -275,8 +275,8 @@ module Store
       end
 
       def allFixed_of_active_users
-        allFixedItems = self.allFixed
-        allFixedItems.select {|a| owner.active == true}
+        all_fixed_items = self.allFixed
+        all_fixed_items.select {|a| a.owner.active == true}
       end
 
       def allAuction
@@ -284,8 +284,8 @@ module Store
       end
 
       def allAuction_of_active_users
-        allAuctionItems = self.allAuction
-        allAuctionItems.select{|a| owner.active == true}
+        all_auction_items = self.allAuction
+        all_auction_items.select{|a| a.owner.active == true}
       end
 
       # determines whether a string is a valid price for an item
