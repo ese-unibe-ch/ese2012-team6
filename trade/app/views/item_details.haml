@@ -15,7 +15,7 @@
       %input{:name => "_method", :type => "hidden", :value => "delete"}
       %input.styled-button.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
   -if @user.on_behalf_of.can_buy?(item)
-    %form{:action => "/user/buy/#{item.id}", :method => "POST"}
+    %form{:action => "/user/add_pending/#{item.id}", :method => "POST"}
       %input.styled-button.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy/Bid" : "Buy/Bid as #{@user.on_behalf_of.name}"}
 %h4
   -if item.active?

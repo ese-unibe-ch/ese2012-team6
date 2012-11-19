@@ -65,6 +65,12 @@ class User < Sinatra::Application
     redirect "/user/#{@user.name}"
   end
 
+  post '/user/add_pending/:item_id' do
+    item = Item.by_id(params[:item_id])
+    @user.on_behalf_of.add_pending_item(item)
+
+  end
+
   # Handles user buy request
   post '/user/buy/:item_id' do
     redirect '/login' unless @user

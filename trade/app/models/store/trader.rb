@@ -13,7 +13,7 @@ module Store
   class Trader
     @@last_id = 0
 
-    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path
+    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path, :pending_items
 
     def initialize
       @@last_id += 1
@@ -22,6 +22,7 @@ module Store
       self.email = ""
       self.credits = 0
       self.items = []
+      self.pending_items = []
       self.description = ""
       self.open_item_page_time = Time.now
       self.image_path = "/images/no_image.gif"
@@ -82,6 +83,12 @@ module Store
       item.delete
 
       Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
+    end
+
+    # adds the item to buy to the pending list
+    def add_pending_item(item)
+      item.deactivate
+      self.pending_items.push(item)
     end
 
     # handles the shop of an item , returns true if buy process was successful, false otherwise
