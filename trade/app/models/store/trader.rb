@@ -5,6 +5,7 @@ require_relative '../analytics/activity'
 require_relative '../helpers/security/mail_client'
 require_relative '../store/trading_authority'
 require_relative '../store/item'
+require_relative '../store/purchase'
 
 # superclass for user and organization
 # A Trader is the main actor in the system. The class provides services for trading items between users and creating new items.
@@ -111,7 +112,9 @@ module Store
     end
 
     # adds the item to buy to the pending list
-    def purchase(purchase, log = true)
+    def purchase(item, quantity = 1, log = true)
+      purchase = Purchase.create(item, quantity, item.owner, self)
+
       seller = purchase.seller
       purchased_item = purchase.item
 
@@ -132,14 +135,12 @@ module Store
       end
 
       purchase.prepare
+      purchase
     end
 
     # handles the shop of an item , returns true if buy process was successful, false otherwise
-    def confirm_purchase(item,quantity = 1, log = true)
-      TradingAuthority.settle_item_purchase(item.seller, item, quantity)
-      Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, quantity).log if log
-      self.delete_pending(item)
-      item.deactivate
+    def confirm_purchase(purchase)
+      purchase.confirm
     end
 
     def add_to_pending(purchase)

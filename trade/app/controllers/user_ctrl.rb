@@ -81,8 +81,7 @@ class User < Sinatra::Application
 
     quantity = params[:buy_amount].to_i
 
-    purchase = Purchase.create(item, quantity, item.owner, @user.on_behalf_of)
-    @user.on_behalf_of.purchase(purchase)
+    @user.on_behalf_of.purchase(item, quantity)
     redirect back
   end
 
@@ -92,8 +91,7 @@ class User < Sinatra::Application
     purchase_id = params[:purchase_id].to_i
 
     purchase = @user.on_behalf_of.pending_purchases.detect{|purchase| purchase.id = purchase_id}
-    purchase.confirm
-
+    @user.on_behalf_of.confirm_purchase(purchase)
     redirect "/user/#{@user.name}" if @user.working_as_self?
     redirect "/organization/#{@user.on_behalf_of.name}"
   end

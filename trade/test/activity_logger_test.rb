@@ -4,6 +4,7 @@ require 'require_relative'
 require_relative '../app/models/analytics/activity'
 require_relative '../app/models/store/user'
 require_relative '../app/models/store/item'
+require_relative '../app/models/store/purchase'
 
 class ActivityLoggerTest < Test::Unit::TestCase
   include Analytics
@@ -40,7 +41,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
 
   def test_get_all_activities
     user = User.named("Hans")
-    item = user.propose_item("Test", 100, "fixed", nil, nil, "", false) #don't log item creation
+    item = user.propose_item("Test", 100, "fixed", nil, nil, 1, "", false) #don't log item creation
 
     act1 = ItemDeleteActivity.with_remover_item(user, item)
     act2 = ItemAddActivity.with_creator_item(user, item)
@@ -67,19 +68,19 @@ class ActivityLoggerTest < Test::Unit::TestCase
   def test_recent_purchases
     user = User.named("Hansli")
     user2 = User.named("Fritzli")
-    item = user.propose_item("Test1", 100, "fixed", nil, nil, "", false)
-    item2 = user2.propose_item("Test2", 100, "fixed", nil, nil, "", false)
+    item = user.propose_item("Test1", 100, "fixed", nil, nil,1, "", false)
+    item2 = user2.propose_item("Test2", 100, "fixed", nil, nil,1, "", false)
 
     item.activate
     item2.activate
 
     [user, user2].each{ |usr| usr.acknowledge_item_properties! }
 
-    user.purchase(item2)
-    user.confirm_purchase(item2)
+    purchase1 = user.purchase(item2)
+    user.confirm_purchase(purchase1)
 
-    user2.purchase(item)
-    user2.confirm_purchase(item)
+    purchase2 = user2.purchase(item)
+    user2.confirm_purchase(purchase2)
 
     recent_purchases = ActivityLogger.get_most_recent_purchases(2)
 

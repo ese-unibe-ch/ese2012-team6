@@ -45,7 +45,6 @@ module Store
 
       Analytics::ItemBuyActivity.with_buyer_item_price_success(self.buyer, self.item, self.quantity).log
 
-
       self.buyer.delete_pending(self)
     end
   end
