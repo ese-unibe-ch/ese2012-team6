@@ -117,22 +117,24 @@ module Store
       purchased_item = item
 
       if seller.nil?
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
         return false, "item_no_owner" #Item does not belong to anybody
       elsif self.credits < (purchased_item.price * quantity)
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
         return false, "not_enough_credits" #Buyer does not have enough credits
       elsif !purchased_item.active?
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
         return false, "buy_inactive_item" #Trying to buy inactive item
       elsif !seller.items.include?(purchased_item)
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
         return false, "seller_not_own_item" #Seller does not own item to buy
       elsif quantity > purchased_item.quantity
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
         return false, "invalid_quantity" #Seller doesn't have enough items
       end
       purchase = Purchase.create(item, quantity, seller, self)
       purchase.prepare
+      Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, quantity).log if log
       return true, "Transaction successful"
     end
 
