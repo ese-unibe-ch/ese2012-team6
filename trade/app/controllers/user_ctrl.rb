@@ -83,7 +83,8 @@ class User < Sinatra::Application
 
     success, success_message = @user.on_behalf_of.purchase(item, quantity)
     redirect "/error/#{success_message}" unless success
-    redirect back
+    redirect "/user/#{@user.name}" if @user.working_as_self?
+    redirect "/organization/#{@user.on_behalf_of.name}"
   end
 
   # Handles user buy request
