@@ -157,7 +157,7 @@ module Store
     # handles the shop of an item , returns true if buy process was successful, false otherwise
     def confirm_purchase(item,quantity = 1, log = true)
       TradingAuthority.settle_item_purchase(item.seller, item, quantity)
-      Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item).log if log
+      Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, quantity).log if log
       self.delete_pending(item)
       item.deactivate
     end
