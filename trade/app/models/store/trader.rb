@@ -268,8 +268,8 @@ module Store
       item.bidders[self] != nil
     end
 
-    def check_for_equal_item(name, price, description)
-      index = items.index {|x| x.name.eql?(name) and x.price.eql?(price) and x.description.eql?(description)}
+    def check_for_equal_item(name, price, description, item_not_to_compare = nil)
+      index = items.index {|x| x.name.eql?(name) and x.price.eql?(price) and x.description.eql?(description) and x != item_not_to_compare}
       return items[index] unless index == nil
     end
 

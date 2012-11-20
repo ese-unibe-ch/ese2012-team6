@@ -124,9 +124,9 @@ class Item < Sinatra::Application
       item.image_path = uploader.upload(file, item.id)
     end
 
-    item.update(item_name, item_price, item_description, item_selling_mode, item_increment, item_end_time)
+    item_to_show_id = item.update(item_name, item_price, item_description, item_selling_mode, item_increment, item_end_time)
 
-    redirect "/item/#{item_id}"
+    redirect "/item/#{item_to_show_id}"
   end
 
   #returns the selected image. (Only usable with URL request)
