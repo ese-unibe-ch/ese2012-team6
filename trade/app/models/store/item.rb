@@ -177,10 +177,13 @@ module Store
 
         self.notify_change
         Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals).log if log
-        equal_item = owner.check_for_equal_item(new_name, new_price, new_desc)
-        if equal_item != nil
-          equal_item.quantity += self.quantity
-          owner.items.delete(self)
+
+        unless self.owner.nil?
+          equal_item = self.owner.check_for_equal_item(new_name, new_price, new_desc)
+          if equal_item != nil
+            equal_item.quantity += self.quantity
+            owner.items.delete(self)
+          end
         end
       end
     end

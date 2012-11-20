@@ -144,7 +144,7 @@ module Store
       end
       TradingAuthority.settle_item_purchase(seller, self, item, quantity)
 
-      Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item).log if log
+      Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, quantity).log if log
 
       return true, "Transaction successful"
     end

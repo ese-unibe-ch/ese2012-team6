@@ -80,6 +80,6 @@
       -for activity in most_recent_purchases
         %tr
           %td
-            =activity.timestamp.to_s
+            =activity.timestamp.asctime.to_s
           %td
             =activity.what_happened
