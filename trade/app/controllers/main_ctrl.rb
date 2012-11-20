@@ -15,7 +15,7 @@ class Main < Sinatra::Application
   get '/' do
     redirect '/login' unless @user
 
-    @user.acknowledge_item_properties!
+    @user.on_behalf_of.acknowledge_item_properties!
 
     most_recent_purchases = ActivityLogger.get_most_recent_purchases(10)
 
@@ -63,6 +63,8 @@ class Main < Sinatra::Application
                         at least one upper case letter and at least one number"
       when "invalid_price"
         error_message = "You entered an invalid price. Please enter a positive numeric value"
+      when "invalid_quantity"
+        error_message = "You entered an invalid quantity"
       when "wrong_password"
         error_message = "You entered a wrong password"
       when "wrong_size"

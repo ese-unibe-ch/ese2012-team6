@@ -3,6 +3,8 @@ require_relative('../models/store/item')
 require_relative('../models/store/user')
 require_relative('../models/store/organization')
 require_relative('../models/helpers/storage/picture_uploader')
+require_relative('../models/store/trader')
+require_relative('../models/store/purchase')
 
 # Handles all requests concerning user display and actions
 class User < Sinatra::Application
@@ -17,7 +19,7 @@ class User < Sinatra::Application
   # handle on behalf of selector change
   post '/user/work_on_behalf_of/' do
     org_name = params[:on_behalf_of]
-    org = SystemUser.by_name(org_name)
+    org = Trader.by_name(org_name)
     @user.work_on_behalf_of(org)
     redirect back
   end
@@ -65,18 +67,57 @@ class User < Sinatra::Application
     redirect "/user/#{@user.name}"
   end
 
-  # Handles user buy request
-  post '/user/buy/:item_id' do
+  post '/user/add_pending/:item_id' do
     redirect '/login' unless @user
 
     item_id = params[:item_id].to_i
     item = Item.by_id(item_id)
 
-    redirect url('/error/item_changed_details') unless @user.knows_item_properties?(item)
+    if item.isAuction?
+      redirect "user/bid/#{item_id}"
+    end
 
-    buy_success, buy_message = @user.on_behalf_of.buy_item(item)
+    redirect '/error/invalid_quantity' unless StringChecker.is_numeric?(params[:buy_amount])
+    redirect url('/error/item_changed_details') unless @user.on_behalf_of.knows_item_properties?(item)
 
-    redirect url("/error/#{buy_message}") unless buy_success
+    quantity = params[:buy_amount].to_i
+
+    success, success_message = @user.on_behalf_of.purchase(item, quantity)
+    redirect "/error/#{success_message}" unless success
+    redirect "/user/#{@user.name}" if @user.working_as_self?
+    redirect "/organization/#{@user.on_behalf_of.name}"
+  end
+
+  # Handles user buy request
+  post '/user/buy/:purchase_id' do
+    redirect '/login' unless @user
+    purchase_id = params[:purchase_id].to_i
+
+    purchase = @user.on_behalf_of.pending_purchases.detect{|purchase| purchase.id = purchase_id}
+    @user.on_behalf_of.confirm_purchase(purchase)
+    redirect "/user/#{@user.name}" if @user.working_as_self?
+    redirect "/organization/#{@user.on_behalf_of.name}"
+  end
+
+  get '/user/bid/:item_id' do
+    item_id = params[:item_id].to_i
+    item = Item.by_id(item_id)
+    haml :bid, :locals => {:action_url => "/user/bid/#{params[:item_id]}", :item => item}
+  end
+
+  post '/user/bid/:item_id' do
+    redirect '/login' unless @user
+
+    amount = params[:amount].to_i
+
+    item_id = params[:item_id].to_i
+    item = Item.by_id(item_id)
+
+    redirect url('/error/item_changed_details') unless @user.on_behalf_of.knows_item_properties?(item)
+
+    @user.on_behalf_of.bid(item, amount)
+
+    # redirect url("/error/#{buy_message}") unless buy_success
     redirect back
   end
 

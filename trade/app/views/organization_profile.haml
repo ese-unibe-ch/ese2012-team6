@@ -48,6 +48,7 @@
         %th Name
         %th Price
         %th Active
+        %th Qty
         %th
     %tbody
       -if @user.working_on_behalf_of?(viewed_organization)
@@ -58,6 +59,8 @@
             %td
               %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
             %td
+            %td
+              %input.textbox8(type="text" name="item_quantity" style="width: 30px" value="1")
             %td
               %input{:name => "_method", :type => "hidden", :value => "put"}
               %input.styled-button.small{:type => "submit", :value => "Quick Add"}
@@ -74,20 +77,55 @@
             -else
               %input{:type => "checkbox", :disabled => "disabled"}
           %td
+            #{item.quantity}
+          %td
             %div.action_buttons
-              -if @user.can_activate?(item)
+              -if @user.on_behalf_of.can_activate?(item)
                 -if item.active?
                   %form{:action => "/item/#{item.id}/update_status?activate=false", :method => "POST"}
                     %input.styled-button.small.float_left{:type => "submit", :value => "Deactivate"}
                 -else
                   %form{:action => "/item/#{item.id}/update_status?activate=true", :method => "POST"}
                     %input.styled-button.small{:type => "submit", :value => "Activate"}
-              -if @user.can_edit?(item)
+              -if @user.on_behalf_of.can_edit?(item)
                 %a.styled-button.small{:href => "/item/#{item.id}/edit"} Edit
-              -if @user.can_delete?(item)
+              -if @user.on_behalf_of.can_delete?(item)
                 %form{:action => "/item/#{item.id}", :method => "POST"}
                   %input{:name => "_method", :type => "hidden", :value => "delete"}
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
+%h3
+  Pending Items:
+-if @user.on_behalf_of.pending_purchases.empty? or !@user.is_member_of?(viewed_organization)
+  %p
+    No pending items
+-else
+  %table.table-minimalistic
+    %thead
+      %tr
+        %th Name
+        %th Price
+        %th Qty
+        %th Seller
+        %th
+    %tbody
+      -for purchase in @user.on_behalf_of.pending_purchases do
+        -item = purchase.item
+        -quantity = purchase.quantity
+        %tr
+          %td
+            %a{:href => url("/item/#{item.id}")}
+              =purchase.item.name
+          %td
+            #{purchase.item.price}
+          %td
+            #{purchase.quantity}
+          %td
+            #{purchase.seller.name}
+          %td
+            %div.action_button
+              %form{:action => "/user/buy/#{purchase.id}", :method => "POST"}
+                %input.styled-button.small.float_left{:type => "submit", :value => "Validate Reception"}
+
 %h3
   Members
 %ul

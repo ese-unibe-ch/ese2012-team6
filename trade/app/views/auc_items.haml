@@ -1,0 +1,53 @@
+:javascript
+  //addListener();
+  $(document).ready(function() {
+    var update = window.setInterval("GetRemaining();", 1000);
+    GetRemaining = function(){
+      var elements = $(".time-remaining");
+      elements.each(function(){
+        var id = this.getAttribute("id").replace("remaining_", "")
+        request = new XMLHttpRequest();
+        request.open('GET', '/item/remaining/'+id, false);
+        request.send(null);
+        if (request.status === 200) {
+          this.innerHTML = request.responseText;
+        }
+      });
+    }
+  });
+%h2
+  Items
+%h3
+  The following auctions are registered by the system
+%table.table-minimalistic
+  %thead
+    %tr
+      %th Pic
+      %th Name
+      %th Price
+      %th Owner
+      %th Active
+      %th Finishes in
+      %th
+  %tbody
+    -for item in Store::Item.allAuction
+      %tr
+        %td
+          %img{:src => item.image_path, :height => "40px"}
+        %td
+          %a{:href => url("/item/#{item.id}")}
+            :escaped
+              #{item.name}
+        %td.ralign
+          #{item.price}
+        %td
+          %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
+            :escaped
+              #{item.owner.name}
+        %td
+          -if item.active?
+            %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
+          -else
+            %input{:type => "checkbox", :disabled => "disabled"}
+        %td{:title => item.end_time.strftime("%Y-%m-%d %H:%M"), :id => "remaining_"+item.id.to_s, :class => "time-remaining"}
+          %p #{item.time_delta_string}

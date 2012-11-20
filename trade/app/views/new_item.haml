@@ -5,7 +5,9 @@
     %img{:src => "/images/no_image.gif", :width => "200", :height => "200" }
   %div.details_container
     =haml :"/partials/item_edit_form", :locals => { :action_url => "/item",
-                                                    :item_name => "",
-                                                    :item_price => "",
-                                                    :item_desc => "",
-                                                    :edit => false}
+    :item_name => "",
+    :item_price => "",
+    :item_increment => "",
+    :auction_end => "",
+    :item_desc => "",
+    :edit => false}
