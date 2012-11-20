@@ -1,3 +1,5 @@
+require_relative '../store/item'
+
 module Store
   class Purchase
     attr_accessor :id, :item, :quantity, :seller, :buyer
@@ -27,7 +29,8 @@ module Store
         self.seller.release_item(self.item)
       else
         self.seller.release_quantity_of_item(self.item, quantity)
-        self.item = Store::Item.named_priced_with_owner_fixed(item.name, item.price, nil, item.description)
+        self.item = self.item.clone
+        self.item.id = Item.next_id!
         self.item.quantity = self.quantity
         self.item.save
       end
