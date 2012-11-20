@@ -93,7 +93,7 @@ class User < Sinatra::Application
     redirect '/login' unless @user
     purchase_id = params[:purchase_id].to_i
 
-    purchase = @user.on_behalf_of.pending_purchases.detect{|purchase| purchase.id = purchase_id}
+    purchase = @user.on_behalf_of.pending_purchases.detect{|purchase| purchase.id == purchase_id}
     @user.on_behalf_of.confirm_purchase(purchase)
     redirect "/user/#{@user.name}" if @user.working_as_self?
     redirect "/organization/#{@user.on_behalf_of.name}"
