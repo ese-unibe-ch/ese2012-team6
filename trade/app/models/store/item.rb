@@ -294,9 +294,19 @@ module Store
       def allFixed
         @@items.values.select{|val| val.isFixed? && val.state != :pending}.dup
       end
+	  
+      def allFixed_of_active_users
+        all_fixed_items = self.allFixed
+        all_fixed_items.select {|a| a.owner.active == true}
+      end
 
       def allAuction
         @@items.values.select{|val| val.isAuction?}.dup
+      end
+
+	  def allAuction_of_active_users
+        all_auction_items = self.allAuction
+        all_auction_items.select{|a| a.owner.active == true}
       end
 
       # determines whether a string is a valid price for an item

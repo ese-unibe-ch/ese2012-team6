@@ -162,4 +162,23 @@ class User < Sinatra::Application
 
     redirect back
   end
+
+  # Displays the 'suspend_prov' page
+  get '/suspend_prov' do
+    redirect '/login' unless @user
+
+    haml :suspend_prov
+  end
+
+  # Displays the 'suspend' page
+  get '/suspend' do
+    redirect '/login' unless @user
+
+    @user.active = false
+    @user.logout
+    @user = nil
+    session[:name] = nil
+
+    haml :suspend
+  end
 end

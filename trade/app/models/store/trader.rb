@@ -14,7 +14,7 @@ module Store
   class Trader
     @@last_id = 0
 
-    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path, :pending_purchases
+    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path, :pending_purchases, :active
 
     def initialize
       @@last_id += 1
@@ -27,6 +27,7 @@ module Store
       self.open_item_page_time = Time.now
       self.image_path = "/images/no_image.gif"
       self.pending_purchases = []
+	  self.active = true
     end
 
     # creates a new trader object, options include :description and :credits
@@ -293,7 +294,7 @@ module Store
 
       # returns all traders
       def all
-        User.all.concat(Organization.all).sort { |a,b| a.id <=> b.id }
+        User.all_active.concat(Organization.all).sort { |a,b| a.id <=> b.id }
       end
 
       # returns true if the system includes a certain trader with the name specified
