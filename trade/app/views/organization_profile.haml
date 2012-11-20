@@ -130,10 +130,11 @@
   Members
 %ul
   -for member in viewed_organization.members
-    %li
-      %a{:href => "/user/#{member.name}"}
-        :escaped
-          #{member.name}
+    -if member.active
+      %li
+        %a{:href => "/user/#{member.name}"}
+          :escaped
+            #{member.name}
 %h3
   #{"Description of " + viewed_organization.name}
 -if viewed_organization.description == ""

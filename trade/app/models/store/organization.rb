@@ -50,6 +50,9 @@ module Store
 
     # determine whether a user is a member of this organization
     def has_member?(user)
+      if user.active == false
+        return false
+      end
       self.members.include?(user)
     end
 
