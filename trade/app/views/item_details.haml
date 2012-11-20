@@ -18,8 +18,11 @@
     -#%form{:action => "/user/add_pending/#{item.id}", :method => "POST"}
     -#%input.styled-button.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy/Bid" : "Buy/Bid as #{@user.on_behalf_of.name}"}
     %form{:action => "/user/add_pending/#{item.id}", :method => "POST"}
-      %input.textbox8{:type => "text", :name => "buy_amount", :style => "width: 30px", :value => "1"}
-      %input.styled-button.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy/Bid" : "Buy/Bid as #{@user.on_behalf_of.name}"}
+      -if item.isFixed?
+        %input.textbox8{:type => "text", :name => "buy_amount", :style => "width: 30px", :value => "1"}
+        %input.styled-button.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
+      -elsif item.isAuction?
+        %input.styled-button.buy-color{:type => "submit", :value => @user.working_as_self? ? "Bid" : "Bid as #{@user.on_behalf_of.name}"}
 %h4
   -if item.active?
     This item is currently being traded
