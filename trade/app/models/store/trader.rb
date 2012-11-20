@@ -137,7 +137,7 @@ module Store
         if equal_item == nil
           item.deactivate
           @@pending_items.push(item)
-          user.credits -= item.price * quantity
+          user.credits -= item.price
           item.notify_change
         else
           equal_item.quantity += quantity
