@@ -13,7 +13,8 @@ module Store
   class Trader
     @@last_id = 0
 
-    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path, :pending_items
+    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path
+    @@pending_items = []
 
     def initialize
       @@last_id += 1
@@ -22,7 +23,6 @@ module Store
       self.email = ""
       self.credits = 0
       self.items = []
-      self.pending_items = []
       self.description = ""
       self.open_item_page_time = Time.now
       self.image_path = "/images/no_image.gif"
@@ -39,7 +39,7 @@ module Store
       trader
     end
 
-    #propose a new item with quantity
+    # propose a new item with quantity
     def propose_item_with_quantity(name, price, quantity, selling_mode, increment, end_time, description = "", log = true)
       equal_item = self.check_for_equal_item(name,price,description)
       if equal_item == nil
@@ -77,7 +77,7 @@ module Store
       item.owner = self
     end
 
-    #releases a certain quantity of an item
+    # releases a certain quantity of an item
     def release_quantity_of_item(item, quantity)
       if self.items.include?(item)
         item.quantity -= quantity
@@ -105,14 +105,69 @@ module Store
       Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
     end
 
+    def self.all_pending_items
+      @@pending_items
+    end
+
     # adds the item to buy to the pending list
-    def add_pending_item(item)
-      item.deactivate
-      self.pending_items.push(item)
+    def add_pending_item(item, user, quantity = 1, log = true)
+      item.buyer = user
+      seller = item.owner
+
+      if seller.nil?
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
+        return false, "item_no_owner" #Item does not belong to anybody
+      elsif self.credits < (item.price * quantity)
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
+        return false, "not_enough_credits" #Buyer does not have enough credits
+      elsif !item.active?
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
+        return false, "buy_inactive_item" #Trying to buy inactive item
+      elsif !seller.items.include?(item)
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
+        return false, "seller_not_own_item" #Seller does not own item to buy
+      elsif quantity > item.quantity
+        return false, "invalid_quantity" #Seller doesn't have enough items
+      end
+
+      if quantity == item.quantity
+        item.pending_owner = item.owner
+        seller.release_item(item)
+        equal_item = self.check_for_equal_item(item.name, item.price, item.description)
+        if equal_item == nil
+          item.deactivate
+          @@pending_items.push(item)
+          user.credits -= item.price * quantity
+          item.notify_change
+        else
+          equal_item.quantity += quantity
+          equal_item.deactivate
+          @@pending_items.push(item)
+          user.credits -= item.price * quantity
+          equal_item.notify_change
+        end
+      else
+        item.pending_owner = item.owner
+        @@pending_items.push(item)
+        user.credits -= item.price * quantity
+        seller.release_quantity_of_item(item, quantity)
+        #new_item = self.propose_item_with_quantity(item.name, item.price, quantity, item.selling_mode, item.increment, item.end_time, item.description)
+        #new_item.deactivate
+      end
+      #item.selling_mode = "pending"
     end
 
     # handles the shop of an item , returns true if buy process was successful, false otherwise
-    # also returns error code
+    def validate_item(item, quantity = 1, log = true)
+      new_item = self.propose_item_with_quantity(item.name, item.price, quantity, item.selling_mode, item.increment, item.end_time, item.description)
+      #new_item.deactivate(item)
+      TradingAuthority.settle_item_purchase(item.pending_owner, item, quantity)
+      Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item).log if log
+      @@pending_items.delete(item)
+      item.selling_mode = "fixed"
+      return true, "Transaction successful"
+    end
+
     def buy_item(item, quantity = 1, log = true)
       seller = item.owner
 
@@ -149,7 +204,7 @@ module Store
         new_item = self.propose_item_with_quantity(item.name, item.price, quantity, item.selling_mode, item.increment, item.end_time, item.description)
         new_item.deactivate
       end
-      TradingAuthority.settle_item_purchase(seller, self, item, quantity)
+      TradingAuthority.settle_item_purchase(seller, item, quantity)
 
       Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item).log if log
 

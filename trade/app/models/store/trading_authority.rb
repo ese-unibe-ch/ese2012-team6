@@ -1,3 +1,4 @@
+require_relative '../store/item'
 module Store
 
   # Governs all trading users and watches over user's credits. Swings hammer of doom once every day and reduces
@@ -58,9 +59,8 @@ module Store
       end
 
       # update seller's and buyer's credits according to item pricing and sell bonus
-      def settle_item_purchase(seller, buyer, item, quantity = 1)
+      def settle_item_purchase(seller, item, quantity = 1)
         seller.credits += item.price * quantity + Integer((item.price * quantity * SELL_BONUS).ceil)
-        buyer.credits -= item.price * quantity
       end
     end
   end

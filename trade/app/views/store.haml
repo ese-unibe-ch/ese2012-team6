@@ -32,7 +32,7 @@
               #{item.quantity}
             %td
               -if @user.on_behalf_of.can_buy?(item)
-                %form{:action => "/user/buy/#{item.id}", :method => "POST"}
+                %form{:action => "/user/add_pending/#{item.id}", :method => "POST"}
                   %input.textbox8{:type => "text", :name => "buy_amount", :style => "width: 30px", :value => "1"}
                   %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
 %h3

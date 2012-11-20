@@ -3,6 +3,7 @@ require_relative('../models/store/item')
 require_relative('../models/store/user')
 require_relative('../models/store/organization')
 require_relative('../models/helpers/storage/picture_uploader')
+require_relative('../models/store/trader')
 
 # Handles all requests concerning user display and actions
 class User < Sinatra::Application
@@ -66,13 +67,6 @@ class User < Sinatra::Application
   end
 
   post '/user/add_pending/:item_id' do
-    item = Item.by_id(params[:item_id])
-    @user.on_behalf_of.add_pending_item(item)
-
-  end
-
-  # Handles user buy request
-  post '/user/buy/:item_id' do
     redirect '/login' unless @user
 
     item_id = params[:item_id].to_i
@@ -86,10 +80,19 @@ class User < Sinatra::Application
       redirect "user/bid/#{item_id}"
     end
 
-    buy_success, buy_message = @user.on_behalf_of.buy_item(item, quantity)
+    buy_success, buy_message = @user.on_behalf_of.add_pending_item(item, @user.on_behalf_of, quantity)
 
     redirect url("/error/#{buy_message}") unless buy_success
     redirect back
+  end
+
+  # Handles user buy request
+  post '/user/buy/:item_id' do
+    redirect '/login' unless @user
+
+    item = Item.by_id(params[:item_id].to_i)
+    @user.on_behalf_of.validate_item(item)
+    redirect "/user/#{@user.name}"
   end
 
   get '/user/bid/:item_id' do
