@@ -289,7 +289,7 @@ module Store
 
       # determines whether a string is a valid price for an item
       def valid_price?(price)
-        Security::StringChecker.is_numeric?(price) && price.to_i >= 0
+        Security::StringChecker.is_numeric?(price) && price.to_i > 0
       end
     end
   end
