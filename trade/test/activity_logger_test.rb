@@ -76,11 +76,11 @@ class ActivityLoggerTest < Test::Unit::TestCase
 
     [user, user2].each{ |usr| usr.acknowledge_item_properties! }
 
-    purchase1 = user.purchase(item2)
-    user.confirm_purchase(purchase1)
+    user.purchase(item2)
+    user.confirm_all_pending_purchases
 
-    purchase2 = user2.purchase(item)
-    user2.confirm_purchase(purchase2)
+    user2.purchase(item)
+    user.confirm_all_pending_purchases
 
     recent_purchases = ActivityLogger.get_most_recent_purchases(2)
 

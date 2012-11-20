@@ -143,6 +143,11 @@ module Store
       purchase.confirm
     end
 
+    # confirms all pending purchases
+    def confirm_all_pending_purchases
+      self.pending_purchases.each{|purchase| purchase.confirm}
+    end
+
     def add_to_pending(purchase)
       self.pending_purchases.push(purchase)
     end
