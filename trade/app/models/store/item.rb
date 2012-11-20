@@ -12,7 +12,7 @@ module Store
   # The item is the central trading object within the application. It can be traded in between traders for a certain price.
   class Item
     attr_accessor :name, :id, :price, :owner, :state, :description, :edit_time, :image_path,
-                  :comments, :selling_mode, :end_time, :increment, :bidders, :quantity, :seller
+                  :comments, :selling_mode, :end_time, :increment, :bidders, :quantity
     @@last_id = 0
     @@items = RBTree.new
 
@@ -27,7 +27,6 @@ module Store
       self.selling_mode = "fixed"
       self.bidders = {}
       self.quantity = 1
-      self.seller = nil
     end
 
     # save item to system
@@ -113,7 +112,7 @@ module Store
       old_status = self.state
 
       if old_status != new_status
-        self.state = new_status
+        self.state = new_status ? :active : :inactive
 
         self.notify_change
         Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log

@@ -13,7 +13,7 @@ module Store
   class Trader
     @@last_id = 0
 
-    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path, :pending_items
+    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path, :pending_purchases
 
     def initialize
       @@last_id += 1
@@ -25,7 +25,7 @@ module Store
       self.description = ""
       self.open_item_page_time = Time.now
       self.image_path = "/images/no_image.gif"
-      self.pending_items = []
+      self.pending_purchases = []
     end
 
     # creates a new trader object, options include :description and :credits
@@ -41,24 +41,21 @@ module Store
 
     # propose a new item with quantity
     def propose_item_with_quantity(name, price, quantity, selling_mode, increment, end_time, description = "", log = true)
-      equal_item = self.check_for_equal_item(name,price,description)
-      if equal_item == nil
-        item = self.propose_item(name,price,selling_mode,increment,end_time,description,log)
-        item.quantity = quantity
-      else
-        equal_item.quantity += quantity
-        item = equal_item
-      end
+
+      item = self.propose_item(name,price,selling_mode,increment,end_time, quantity, description,log)
+
+
       item
     end
 
     # propose a new item
-    def propose_item(name, price, selling_mode, increment, end_time, description = "", log = true)
+    def propose_item(name, price, selling_mode, increment, end_time, quantity = 1, description = "", log = true)
       if selling_mode == "fixed"
         item = Item.named_priced_with_owner_fixed(name, price, self, description)
       else
         item = Item.named_priced_with_owner_auction(name, price, self, increment.to_i, end_time, description)
       end
+      item.quantity = quantity
       item.save
 
       self.attach_item(item)
@@ -73,8 +70,16 @@ module Store
     end
 
     def attach_item(item)
-      self.items << item
-      item.owner = self
+      equal_item = self.check_for_equal_item(item.name,item.price,item.description)
+      if equal_item == nil
+        self.items << item
+        item.owner = self
+        item.deactivate
+      else
+        equal_item.quantity += item.quantity
+        equal_item.deactivate
+        item.delete
+      end
     end
 
     # releases a certain quantity of an item
@@ -106,14 +111,14 @@ module Store
     end
 
     # adds the item to buy to the pending list
-    def purchase(purchased_item, quantity = 1, log = true)
-      seller = purchased_item.owner
-      purchased_item.seller = seller
+    def purchase(purchase, log = true)
+      seller = purchase.seller
+      purchased_item = purchase.item
 
       if seller.nil?
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
         return false, "item_no_owner" #Item does not belong to anybody
-      elsif self.credits < (purchased_item.price * quantity)
+      elsif self.credits < (purchased_item.price * purchase.quantity)
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
         return false, "not_enough_credits" #Buyer does not have enough credits
       elsif !purchased_item.active?
@@ -122,36 +127,11 @@ module Store
       elsif !seller.items.include?(purchased_item)
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
         return false, "seller_not_own_item" #Seller does not own item to buy
-      elsif quantity > purchased_item.quantity
+      elsif purchase.quantity > purchased_item.quantity
         return false, "invalid_quantity" #Seller doesn't have enough items
       end
 
-      if quantity == purchased_item.quantity
-        seller.release_item(purchased_item)
-        equal_item = self.check_for_equal_item(purchased_item.name, purchased_item.price, purchased_item.description)
-        if equal_item == nil
-          purchased_item.deactivate
-          self.add_to_pending(purchased_item, quantity)
-          self.credits -= purchased_item.price
-          purchased_item.seller = seller
-          purchased_item.state = :pending
-        else
-          equal_item.quantity += quantity
-          equal_item.deactivate
-          self.add_to_pending(purchased_item, quantity)
-          self.credits -= purchased_item.price * quantity
-          equal_item.seller = seller
-          equal_item.state = :pending
-        end
-      else
-        new_item = self.propose_item_with_quantity(purchased_item.name, purchased_item.price, quantity, purchased_item.selling_mode, purchased_item.increment, purchased_item.end_time, purchased_item.description)
-        self.add_to_pending(new_item, quantity)
-        self.credits -= purchased_item.price * quantity
-        seller.release_quantity_of_item(purchased_item, quantity)
-        new_item.seller = seller
-        new_item.state = :pending
-      end
-      purchased_item.notify_change
+      purchase.prepare
     end
 
     # handles the shop of an item , returns true if buy process was successful, false otherwise
@@ -162,23 +142,12 @@ module Store
       item.deactivate
     end
 
-    def add_to_pending(item, quantity)
-      all_pending = self.pending_items
-      matching_purchase = all_pending.detect {|purchase| purchase[:item] == item}
-
-      if !matching_purchase.nil?
-        matching_purchase[:quantity] +=quantity
-      else
-        self.pending_items.push({:item => item, :quantity => quantity})
-      end
+    def add_to_pending(purchase)
+      self.pending_purchases.push(purchase)
     end
 
-    def delete_pending(item)
-      matching_purchase = self.pending_items.detect {|purchase| purchase[:item] == item}
-
-      unless matching_purchase.nil?
-        self.pending_items.delete(matching_purchase)
-      end
+    def delete_pending(purchase)
+      self.pending_purchases.delete(purchase)
     end
 
     # returns true if an user is allowed to edit

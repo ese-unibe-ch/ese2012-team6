@@ -39,7 +39,7 @@
       Owner
     %p
       :escaped
-        #{item.owner.name}
+        #{item.owner.name unless item.owner == nil}
     -if item.isAuction?
       %h3
         Increment

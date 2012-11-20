@@ -47,7 +47,7 @@ class App < Sinatra::Base
     (peter_griffin = User.named("petergriffin")).save
 
     #add default items
-    (liver = user_ese.propose_item("Liver", 40, 3, "auction", 5, "2013-11-11 20:00:00")).activate
+    (liver = user_ese.propose_item("Liver", 40, "auction", 5, "2013-11-11 20:00:00")).activate
     (heart = umbrella_corp.propose_item("Heart", 80, "fixed", nil, nil)).activate
     (meg = user_ese2.propose_item_with_quantity("Meg", 2, 4, "fixed", nil, nil)).activate
     random = umbrella_corp.propose_item("Random", 50, "fixed", nil, nil)

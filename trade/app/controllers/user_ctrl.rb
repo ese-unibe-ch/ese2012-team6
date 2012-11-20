@@ -4,6 +4,7 @@ require_relative('../models/store/user')
 require_relative('../models/store/organization')
 require_relative('../models/helpers/storage/picture_uploader')
 require_relative('../models/store/trader')
+require_relative('../models/store/purchase')
 
 # Handles all requests concerning user display and actions
 class User < Sinatra::Application
@@ -71,28 +72,30 @@ class User < Sinatra::Application
 
     item_id = params[:item_id].to_i
     item = Item.by_id(item_id)
+    if item.isAuction?
+      redirect "user/bid/#{item_id}"
+    end
 
     redirect '/error/invalid_quantity' unless Store::Item.valid_price?(params[:buy_amount])
     redirect url('/error/item_changed_details') unless @user.on_behalf_of.knows_item_properties?(item)
 
     quantity = params[:buy_amount].to_i
-    if item.isAuction?
-      redirect "user/bid/#{item_id}"
-    end
 
-    @user.on_behalf_of.purchase(item, quantity)
-
+    purchase = Purchase.create(item, quantity, item.owner, @user.on_behalf_of)
+    @user.on_behalf_of.purchase(purchase)
     redirect back
   end
 
   # Handles user buy request
-  post '/user/buy/:item_id' do
+  post '/user/buy/:purchase_id' do
     redirect '/login' unless @user
-    quantity = params[:quantity].to_i
+    purchase_id = params[:purchase_id].to_i
 
-    item = Item.by_id(params[:item_id].to_i)
-    @user.on_behalf_of.confirm_purchase(item, quantity)
-    redirect "/user/#{@user.name}"
+    purchase = @user.on_behalf_of.pending_purchases.detect{|purchase| purchase.id = purchase_id}
+    purchase.confirm
+
+    redirect "/user/#{@user.name}" if @user.working_as_self?
+    redirect "/organization/#{@user.on_behalf_of.name}"
   end
 
   get '/user/bid/:item_id' do

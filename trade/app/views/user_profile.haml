@@ -78,7 +78,7 @@
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
 %h3
   Pending Items:
--if @user.on_behalf_of.pending_items.empty? or not is_my_profile
+-if @user.on_behalf_of.pending_purchases.empty? or not is_my_profile
   %p
     No pending items
 -else
@@ -91,22 +91,22 @@
         %th Seller
         %th
     %tbody
-      -for item_hash in @user.on_behalf_of.pending_items do
-        -item = item_hash[:item]
-        -quantity = item_hash[:quantity]
+      -for purchase in @user.on_behalf_of.pending_purchases do
+        -item = purchase.item
+        -quantity = purchase.quantity
         %tr
           %td
             %a{:href => url("/item/#{item.id}")}
-              =item.name
+              =purchase.item.name
           %td
-            #{item.price}
+            #{purchase.item.price}
           %td
-            #{quantity}
+            #{purchase.quantity}
           %td
-            #{item.seller.name}
+            #{purchase.seller.name}
           %td
             %div.action_button
-              %form{:action => "/user/buy/#{item.id}?quantity=#{quantity}", :method => "POST"}
+              %form{:action => "/user/buy/#{purchase.id}", :method => "POST"}
                 %input.styled-button.small.float_left{:type => "submit", :value => "Validate Reception"}
 
 %h3
