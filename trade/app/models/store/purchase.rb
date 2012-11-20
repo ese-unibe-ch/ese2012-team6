@@ -31,6 +31,7 @@ module Store
         self.seller.release_quantity_of_item(self.item, quantity)
         self.item = self.item.clone
         self.item.id = Item.next_id!
+        self.item.owner = nil
         self.item.quantity = self.quantity
         self.item.save
       end

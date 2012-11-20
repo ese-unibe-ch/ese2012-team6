@@ -48,8 +48,11 @@
     %h3
       Owner
     %p
-      :escaped
-        #{item.owner.name unless item.owner == nil}
+      -if item.owner.nil? && item.state == :pending
+        Pending
+      -else
+        :escaped
+          #{item.owner.name unless item.owner == nil}
     -if item.isAuction?
       %h3
         Increment
