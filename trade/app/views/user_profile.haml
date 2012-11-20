@@ -9,6 +9,7 @@
     -if is_my_profile
       %a.styled-button{:href => "/item/new"} Create new Item
       %a.styled-button{:href => "/user/#{@user.name}/edit"} Edit Profile
+      %a.styled-button.delete-color{:href => "/suspend_prov"} Delete account
 %h3
   :escaped
     #{is_my_profile ? "Your Credits" : "Credits of " + viewed_user.name}:

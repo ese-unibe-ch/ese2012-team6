@@ -44,7 +44,7 @@ module Store
     class << self
       # all credits get reduced in a special time interval
       def check_auctions
-        Store::Item.allAuction.each{ |item|
+        Store::Item.allAuction_of_active_users.each{ |item|
           if item.end_time <= DateTime.now
             finish_auction item
           end
