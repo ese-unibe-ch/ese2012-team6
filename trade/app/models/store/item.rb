@@ -17,8 +17,7 @@ module Store
     @@items = RBTree.new
 
     def initialize
-      @@last_id += 1
-      self.id = @@last_id
+      self.id = Item.next_id!
       self.state = :inactive
       self.description = ""
       self.image_path = "/images/no_image.gif"
@@ -150,7 +149,7 @@ module Store
     def update(new_name, new_price, new_desc, new_selling_mode, new_increment, new_end_time, log = true)
       fail unless self.editable?
 
-      if new_end_time != nil
+      if new_end_time != nil && new_end_time != ""
         if new_end_time.is_a?(Fixnum)
           new_end_time = DateTime.now + new_end_time
         elsif new_end_time.is_a?(String)
@@ -262,6 +261,19 @@ module Store
       Converter::TimeConverter.convert_seconds_to_string self.time_delta
     end
 
+    def clone
+      copy = Item.new
+      copy.id = self.id
+      copy.name = self.name
+      copy.price = self.price
+      copy.owner = self.owner
+      copy.description = self.description
+      copy.edit_time = self.edit_time
+      copy.image_path = self.image_path
+      copy.comments = self.comments
+      copy
+    end
+
     # class methods
     class << self
       # deletes all items of an user
@@ -290,6 +302,10 @@ module Store
       # determines whether a string is a valid price for an item
       def valid_price?(price)
         Security::StringChecker.is_numeric?(price) && price.to_i > 0
+      end
+
+      def next_id!
+        @@last_id += 1
       end
     end
   end
