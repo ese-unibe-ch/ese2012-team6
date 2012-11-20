@@ -76,12 +76,12 @@
                 %form{:action => "/item/#{item.id}", :method => "POST"}
                   %input{:name => "_method", :type => "hidden", :value => "delete"}
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
-%h3
-  Pending Items:
--if @user.on_behalf_of.pending_purchases.empty? or not is_my_profile
+
+
+-if !@user.on_behalf_of.pending_purchases.empty? and is_my_profile
+  %h3
+    Pending Items:
   %p
-    No pending items
--else
   %table.table-minimalistic
     %thead
       %tr
@@ -108,6 +108,11 @@
             %div.action_button
               %form{:action => "/user/buy/#{purchase.id}", :method => "POST"}
                 %input.styled-button.small.float_left{:type => "submit", :value => "Validate Reception"}
+-elsif @user.on_behalf_of.pending_purchases.empty?
+  %h3
+    Pending Items:
+  %p
+    No pending items
 
 %h3
   Member of Organizations:
