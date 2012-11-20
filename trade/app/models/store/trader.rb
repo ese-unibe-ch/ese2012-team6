@@ -113,15 +113,13 @@ module Store
 
     # adds the item to buy to the pending list
     def purchase(item, quantity = 1, log = true)
-      purchase = Purchase.create(item, quantity, item.owner, self)
-
-      seller = purchase.seller
-      purchased_item = purchase.item
+      seller = item.owner
+      purchased_item = item
 
       if seller.nil?
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
         return false, "item_no_owner" #Item does not belong to anybody
-      elsif self.credits < (purchased_item.price * purchase.quantity)
+      elsif self.credits < (purchased_item.price * quantity)
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
         return false, "not_enough_credits" #Buyer does not have enough credits
       elsif !purchased_item.active?
@@ -130,12 +128,12 @@ module Store
       elsif !seller.items.include?(purchased_item)
         Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
         return false, "seller_not_own_item" #Seller does not own item to buy
-      elsif purchase.quantity > purchased_item.quantity
+      elsif quantity > purchased_item.quantity
         return false, "invalid_quantity" #Seller doesn't have enough items
       end
-
+      purchase = Purchase.create(item, quantity, seller, self)
       purchase.prepare
-      purchase
+      return true, "Transaction successful"
     end
 
     # handles the shop of an item , returns true if buy process was successful, false otherwise

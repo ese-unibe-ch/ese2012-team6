@@ -81,7 +81,8 @@ class User < Sinatra::Application
 
     quantity = params[:buy_amount].to_i
 
-    @user.on_behalf_of.purchase(item, quantity)
+    success, success_message = @user.on_behalf_of.purchase(item, quantity)
+    redirect "/error/#{success_message}" unless success
     redirect back
   end
 
