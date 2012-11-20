@@ -109,7 +109,7 @@
             %div.action_button
               %form{:action => "/user/buy/#{purchase.id}", :method => "POST"}
                 %input.styled-button.small.float_left{:type => "submit", :value => "Validate Reception"}
--elsif @user.on_behalf_of.pending_purchases.empty?
+-elsif @user.on_behalf_of.pending_purchases.empty? and is_my_profile
   %h3
     Pending Items:
   %p
