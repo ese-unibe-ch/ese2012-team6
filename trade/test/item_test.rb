@@ -69,7 +69,7 @@ class ItemTest < Test::Unit::TestCase
     item = Item.named_priced_with_owner_fixed("TestItem", 0, nil)
     assert_equal(false, item.active?)
 
-    item.update_status(true)
+    item.update_status(:active)
 
     assert_equal(true, item.active?)
   end

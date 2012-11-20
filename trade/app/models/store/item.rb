@@ -11,15 +11,15 @@ require_relative '../store/comment'
 module Store
   # The item is the central trading object within the application. It can be traded in between traders for a certain price.
   class Item
-    attr_accessor :name, :id, :price, :owner, :active, :description, :edit_time, :image_path, :buyer,
-                  :comments, :selling_mode, :end_time, :increment, :bidders, :quantity, :pending_owner
+    attr_accessor :name, :id, :price, :owner, :state, :description, :edit_time, :image_path,
+                  :comments, :selling_mode, :end_time, :increment, :bidders, :quantity, :seller
     @@last_id = 0
     @@items = RBTree.new
 
     def initialize
       @@last_id += 1
       self.id = @@last_id
-      self.active = false
+      self.state = :inactive
       self.description = ""
       self.image_path = "/images/no_image.gif"
       self.edit_time = Time.now
@@ -27,7 +27,7 @@ module Store
       self.selling_mode = "fixed"
       self.bidders = {}
       self.quantity = 1
-      self.buyer = nil
+      self.seller = nil
     end
 
     # save item to system
@@ -87,15 +87,15 @@ module Store
 
 
     def to_s
-      "#{self.name}, #{self.price}, #{self.owner}, #{self.active ? "active" : "inactive"}"
+      "#{self.name}, #{self.price}, #{self.owner}, #{self.state}"
     end
 
     def activate
-      self.active = true
+      self.state = :active
     end
 
     def deactivate
-      self.active = false
+      self.state = :inactive
       if self.isAuction?
         # pay money back
         if !self.is_finished?
@@ -110,10 +110,10 @@ module Store
 
     # update the item's status
     def update_status(new_status, log = true)
-      old_status = self.active
+      old_status = self.state
 
       if old_status != new_status
-        self.active = new_status
+        self.state = new_status
 
         self.notify_change
         Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log
@@ -122,12 +122,12 @@ module Store
 
     # returns whether the item is active or not
     def active?
-      self.active
+      self.state == :active
     end
 
     # returns whether the item is generally editable
     def editable?
-      !self.active && (self.isFixed? || self.bidders.empty?)
+      !self.active? && (self.isFixed? || self.bidders.empty?)
     end
 
     # returns whether the item is editable by a certain trader
@@ -144,8 +144,7 @@ module Store
     end
 
     def buyable_by?(trader)
-
-      (!self.owner.eql?(trader) && self.active)
+      (!self.owner.eql?(trader) && self.active?)
     end
 
     # update the item's properties, raises error if item is not editable
@@ -279,7 +278,7 @@ module Store
       end
 
       def allFixed
-        @@items.values.select{|val| val.isFixed?}.dup
+        @@items.values.select{|val| val.isFixed? && val.state != :pending}.dup
       end
 
       def allAuction

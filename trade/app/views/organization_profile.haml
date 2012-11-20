@@ -94,6 +94,40 @@
                   %input{:name => "_method", :type => "hidden", :value => "delete"}
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
 %h3
+  Pending Items:
+-if @user.on_behalf_of.pending_items.empty? or !@user.is_member_of?(viewed_organization)
+  %p
+    No pending items
+-else
+  %table.table-minimalistic
+    %thead
+      %tr
+        %th Name
+        %th Price
+        %th Qty
+        %th Seller
+        %th
+    %tbody
+      -for item_hash in @user.on_behalf_of.pending_items do
+        -item = item_hash[:item]
+        -quantity = item_hash[:quantity]
+
+        %tr
+          %td
+            %a{:href => url("/item/#{item.id}")}
+              =item.name
+          %td
+            #{item.price}
+          %td
+            #{quantity}
+          %td
+            #{item.pending_owner.name}
+          %td
+            %div.action_button
+              %form{:action => "/user/buy/#{item.id}?quantity=#{quantity}", :method => "POST"}
+                %input.styled-button.small.float_left{:type => "submit", :value => "Validate Reception"}
+
+%h3
   Members
 %ul
   -for member in viewed_organization.members

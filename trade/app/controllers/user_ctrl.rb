@@ -80,18 +80,18 @@ class User < Sinatra::Application
       redirect "user/bid/#{item_id}"
     end
 
-    buy_success, buy_message = @user.on_behalf_of.add_pending_item(item, @user.on_behalf_of, quantity)
+    @user.on_behalf_of.purchase(item, quantity)
 
-    redirect url("/error/#{buy_message}") unless buy_success
     redirect back
   end
 
   # Handles user buy request
   post '/user/buy/:item_id' do
     redirect '/login' unless @user
+    quantity = params[:quantity].to_i
 
     item = Item.by_id(params[:item_id].to_i)
-    @user.on_behalf_of.validate_item(item)
+    @user.on_behalf_of.confirm_purchase(item, quantity)
     redirect "/user/#{@user.name}"
   end
 

@@ -13,8 +13,7 @@ module Store
   class Trader
     @@last_id = 0
 
-    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path
-    @@pending_items = []
+    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path, :pending_items
 
     def initialize
       @@last_id += 1
@@ -26,6 +25,7 @@ module Store
       self.description = ""
       self.open_item_page_time = Time.now
       self.image_path = "/images/no_image.gif"
+      self.pending_items = []
     end
 
     # creates a new trader object, options include :description and :credits
@@ -105,110 +105,80 @@ module Store
       Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
     end
 
-    def self.all_pending_items
-      @@pending_items
-    end
-
     # adds the item to buy to the pending list
-    def add_pending_item(item, user, quantity = 1, log = true)
-      item.buyer = user
-      seller = item.owner
+    def purchase(purchased_item, quantity = 1, log = true)
+      seller = purchased_item.owner
+      purchased_item.seller = seller
 
       if seller.nil?
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
         return false, "item_no_owner" #Item does not belong to anybody
-      elsif self.credits < (item.price * quantity)
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
+      elsif self.credits < (purchased_item.price * quantity)
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
         return false, "not_enough_credits" #Buyer does not have enough credits
-      elsif !item.active?
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
+      elsif !purchased_item.active?
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
         return false, "buy_inactive_item" #Trying to buy inactive item
-      elsif !seller.items.include?(item)
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
+      elsif !seller.items.include?(purchased_item)
+        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, false).log if log
         return false, "seller_not_own_item" #Seller does not own item to buy
-      elsif quantity > item.quantity
+      elsif quantity > purchased_item.quantity
         return false, "invalid_quantity" #Seller doesn't have enough items
       end
 
-      if quantity == item.quantity
-        item.pending_owner = item.owner
-        seller.release_item(item)
-        equal_item = self.check_for_equal_item(item.name, item.price, item.description)
+      if quantity == purchased_item.quantity
+        seller.release_item(purchased_item)
+        equal_item = self.check_for_equal_item(purchased_item.name, purchased_item.price, purchased_item.description)
         if equal_item == nil
-          item.deactivate
-          @@pending_items.push(item)
-          user.credits -= item.price
-          item.notify_change
+          purchased_item.deactivate
+          self.add_to_pending(purchased_item, quantity)
+          self.credits -= purchased_item.price
+          purchased_item.seller = seller
+          purchased_item.state = :pending
         else
           equal_item.quantity += quantity
           equal_item.deactivate
-          @@pending_items.push(item)
-          user.credits -= item.price * quantity
-          equal_item.notify_change
+          self.add_to_pending(purchased_item, quantity)
+          self.credits -= purchased_item.price * quantity
+          equal_item.seller = seller
+          equal_item.state = :pending
         end
       else
-        item.pending_owner = item.owner
-        @@pending_items.push(item)
-        user.credits -= item.price * quantity
-        seller.release_quantity_of_item(item, quantity)
-        #new_item = self.propose_item_with_quantity(item.name, item.price, quantity, item.selling_mode, item.increment, item.end_time, item.description)
-        #new_item.deactivate
+        new_item = self.propose_item_with_quantity(purchased_item.name, purchased_item.price, quantity, purchased_item.selling_mode, purchased_item.increment, purchased_item.end_time, purchased_item.description)
+        self.add_to_pending(new_item, quantity)
+        self.credits -= purchased_item.price * quantity
+        seller.release_quantity_of_item(purchased_item, quantity)
+        new_item.seller = seller
+        new_item.state = :pending
       end
-      #item.selling_mode = "pending"
+      purchased_item.notify_change
     end
 
     # handles the shop of an item , returns true if buy process was successful, false otherwise
-    def validate_item(item, quantity = 1, log = true)
-      new_item = self.propose_item_with_quantity(item.name, item.price, quantity, item.selling_mode, item.increment, item.end_time, item.description)
-      #new_item.deactivate(item)
-      TradingAuthority.settle_item_purchase(item.pending_owner, item, quantity)
+    def confirm_purchase(item,quantity = 1, log = true)
+      TradingAuthority.settle_item_purchase(item.seller, item, quantity)
       Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item).log if log
-      @@pending_items.delete(item)
-      item.selling_mode = "fixed"
-      return true, "Transaction successful"
+      self.delete_pending(item)
+      item.deactivate
     end
 
-    def buy_item(item, quantity = 1, log = true)
-      seller = item.owner
+    def add_to_pending(item, quantity)
+      all_pending = self.pending_items
+      matching_purchase = all_pending.detect {|purchase| purchase[:item] == item}
 
-      if seller.nil?
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
-        return false, "item_no_owner" #Item does not belong to anybody
-      elsif self.credits < (item.price * quantity)
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
-        return false, "not_enough_credits" #Buyer does not have enough credits
-      elsif !item.active?
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
-        return false, "buy_inactive_item" #Trying to buy inactive item
-      elsif !seller.items.include?(item)
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, false).log if log
-        return false, "seller_not_own_item" #Seller does not own item to buy
-      elsif quantity > item.quantity
-        return false, "invalid_quantity" #Seller doesn't have enough items
-      end
-
-      if quantity == item.quantity
-        seller.release_item(item)
-        equal_item = self.check_for_equal_item(item.name, item.price, item.description)
-        if equal_item == nil
-          self.attach_item(item)
-          item.deactivate
-          item.notify_change
-        else
-          equal_item.quantity += quantity
-          equal_item.deactivate
-          equal_item.notify_change
-        end
+      if !matching_purchase.nil?
+        matching_purchase[:quantity] +=quantity
       else
-        seller.release_quantity_of_item(item, quantity)
-        new_item = self.propose_item_with_quantity(item.name, item.price, quantity, item.selling_mode, item.increment, item.end_time, item.description)
-        new_item.deactivate
+        self.pending_items.push({:item => item, :quantity => quantity})
       end
-      TradingAuthority.settle_item_purchase(seller, item, quantity)
+    end
 
-      Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item).log if log
+    def delete_pending(item)
+      matching_purchase = self.pending_items.detect {|purchase| purchase[:item] == item}
 
-      return true, "Transaction successful"
+      unless matching_purchase.nil?
+        self.pending_items.delete(matching_purchase)
+      end
     end
 
     # returns true if an user is allowed to edit
@@ -325,6 +295,10 @@ module Store
     def check_for_equal_item(name, price, description)
       index = items.index {|x| x.name.eql?(name) and x.price.eql?(price) and x.description.eql?(description)}
       return items[index] unless index == nil
+    end
+
+    def non_pending_items
+      return self.items.select {|item| item.state != :pending}
     end
 
     # class methods

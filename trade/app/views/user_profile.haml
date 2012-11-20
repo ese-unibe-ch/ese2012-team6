@@ -47,7 +47,7 @@
             %td
               %input{:name => "_method", :type => "hidden", :value => "put"}
               %input.styled-button.small{:type => "submit", :value => "Quick Add"}
-      -for item in viewed_user.items
+      -for item in viewed_user.non_pending_items
         %tr
           %td
             %a{:href => url("/item/#{item.id}")}
@@ -78,7 +78,7 @@
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
 %h3
   Pending Items:
--if (Store::Trader.all_pending_items).empty? or not is_my_profile
+-if @user.on_behalf_of.pending_items.empty? or not is_my_profile
   %p
     No pending items
 -else
@@ -91,22 +91,23 @@
         %th Seller
         %th
     %tbody
-      -for item in Store::Trader.all_pending_items do
-        -if item.buyer == @user.on_behalf_of
-          %tr
-            %td
-              %a{:href => url("/item/#{item.id}")}
-                =item.name
-            %td
-              #{item.price}
-            %td
-              #{item.quantity}
-            %td
-              #{item.pending_owner.name}
-            %td
-              %div.action_button
-                %form{:action => "/user/buy/#{item.id}", :method => "POST"}
-                  %input.styled-button.small.float_left{:type => "submit", :value => "Validate Reception"}
+      -for item_hash in @user.on_behalf_of.pending_items do
+        -item = item_hash[:item]
+        -quantity = item_hash[:quantity]
+        %tr
+          %td
+            %a{:href => url("/item/#{item.id}")}
+              =item.name
+          %td
+            #{item.price}
+          %td
+            #{quantity}
+          %td
+            #{item.seller.name}
+          %td
+            %div.action_button
+              %form{:action => "/user/buy/#{item.id}?quantity=#{quantity}", :method => "POST"}
+                %input.styled-button.small.float_left{:type => "submit", :value => "Validate Reception"}
 
 %h3
   Member of Organizations:
