@@ -78,9 +78,7 @@ class Item < Sinatra::Application
     item = Item.by_id(item_id)
     comment_description = params[:item_comment]
 
-    comment = Comment.new_comment(comment_description, @user.on_behalf_of)
-
-    item.update_comments(comment)
+    @user.on_behalf_of.comment(item, comment_description)
 
     redirect "/item/#{item_id}#comments"
   end

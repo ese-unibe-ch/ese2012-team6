@@ -277,6 +277,11 @@ module Store
       return self.items.select {|item| item.state != :pending}
     end
 
+    def comment(item, text)
+      comment = Comment.new_comment(text, self)
+      item.update_comments(comment)
+    end
+
     # class methods
     class << self
       # deletes all users and organizations from the system

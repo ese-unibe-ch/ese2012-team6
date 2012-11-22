@@ -45,7 +45,7 @@ module Store
 
     def to_json(*opt)
       {
-          :author => self.owner,
+          :author => self.owner.name,
           :posted_on => self.time_stamp,
           :text => self.description
       }.to_json(*opt)

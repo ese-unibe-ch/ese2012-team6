@@ -1,6 +1,7 @@
 require 'json'
 require_relative '../models/store/item'
 require_relative '../models/store/trader'
+require_relative '../models/store/user'
 
 class ExternalApi < Sinatra::Application
   include Store
@@ -12,11 +13,11 @@ class ExternalApi < Sinatra::Application
 
     case filter
       when "none"
-        items = Item.all
+        items = Item.allFixed
       when "active"
-        items = Item.all.select {|item| item.state = :active}
+        items = Item.allFixed.select {|item| item.state == :active}
       when "inactive"
-        items = Item.all.select {|item| item.state = :inactive}
+        items = Item.allFixed.select {|item| item.state == :inactive}
     end
 
     items.to_json
@@ -25,7 +26,7 @@ class ExternalApi < Sinatra::Application
   get '/api/items/description' do
     content_type :json
 
-    item = Item.by_id(params[:id])
+    item = Item.by_id(params[:id].to_i)
 
     "no_such_item" if item.nil?
 
@@ -35,7 +36,7 @@ class ExternalApi < Sinatra::Application
   get '/api/items/comments' do
     content_type :json
 
-    item = Item.by_id(params[:id])
+    item = Item.by_id(params[:id].to_i)
 
     "no_such_item" if item.nil?
 
@@ -45,16 +46,20 @@ class ExternalApi < Sinatra::Application
   get '/api/items/buy' do
     content_type :json
 
-    item = Item.by_id(params[:id].to_i)
+    item = Item.by_id(params[:item_id].to_i)
     "no_such_item" if item.nil?
 
-    user = User.by_name(params[:username])
+    auth_token = params[:auth_token].split(",")
+
+    username = auth_token[0].strip
+    password = auth_token[1].strip
+
+    user = User.by_name(username)
     "no_such_user" if user.nil?
-    "authentication_failed" unless user.password_matches?(params[:password])
+    "authentication_failed" unless user.password_matches?(password)
 
-    success, message = user.purchase(item, params[:quantity])
+    success, message = user.purchase(item, params[:quantity].to_i)
 
-    "success" if success
-    message
+    success ? "success" : message
   end
 end
