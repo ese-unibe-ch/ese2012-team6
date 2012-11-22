@@ -1,3 +1,5 @@
+require 'json'
+
 module Store
   # A simple data container that stores information about when the comment was created, what text is assigned to it and
   # the author of the comment
@@ -39,6 +41,14 @@ module Store
           gsub(":,(", '![alternative text](/images/smileys/sad.gif)').gsub(':/', '![alternative text](/images/smileys/double_minded.gif)').
           gsub('8)', '![alternative text](/images/smileys/cool.gif)').gsub(':crazy:', '![alternative text](/images/smileys/crazy.gif)').
           gsub(':yeah:', '![alternative text](/images/smileys/yeah.gif)')
+    end
+
+    def to_json(*opt)
+      {
+          :author => self.owner,
+          :posted_on => self.time_stamp,
+          :text => self.description
+      }.to_json(*opt)
     end
   end
 end

@@ -16,6 +16,7 @@ require_relative('controllers/item_ctrl')
 require_relative('controllers/user_ctrl')
 require_relative('controllers/activity_logger_ctrl')
 require_relative('controllers/organization_ctrl')
+require_relative('controllers/external_api_ctrl')
 
 APP_STARTUP_PATH = File.dirname(__FILE__)
 PUBLIC_FOLDER = File.join(APP_STARTUP_PATH, "public")
@@ -30,6 +31,7 @@ class App < Sinatra::Base
   use User
   use ActivityLogger
   use Organization
+  use ExternalApi
 
   include Store
 

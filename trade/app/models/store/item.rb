@@ -1,5 +1,6 @@
 require 'rbtree'
 require 'parsedate'
+require 'json'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
@@ -85,7 +86,7 @@ module Store
 
 
     def to_s
-      "#{self.name}, #{self.price}, #{self.owner}, #{self.state}"
+      "#{self.name}, #{self.price}, #{self.owner.name}, #{self.state}"
     end
 
     def activate
@@ -274,6 +275,17 @@ module Store
       copy.image_path = self.image_path
       copy.comments = self.comments
       copy
+    end
+
+    def to_json(*opt)
+      {
+          :id => self.id,
+          :name => self.name,
+          :price => self.price,
+          :quantity => self.quantity,
+          :owner => self.owner.name,
+          :state => self.state,
+      }.to_json(*opt)
     end
 
     # class methods

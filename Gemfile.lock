@@ -9,6 +9,7 @@ GEM
     eventmachine (1.0.0)
     eventmachine (1.0.0-x86-mingw32)
     haml (3.1.7)
+    json (1.7.5)
     less (2.2.2)
       commonjs (~> 0.2.6)
     rack (1.4.1)
@@ -47,6 +48,7 @@ PLATFORMS
 DEPENDENCIES
   bcrypt-ruby (~> 3.0.1)
   haml (~> 3.1.7)
+  json
   less (~> 2.2.2)
   rbtree (~> 0.3.0)
   rcov (~> 1.0.0)
