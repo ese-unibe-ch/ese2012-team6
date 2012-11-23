@@ -1,4 +1,5 @@
 require 'json'
+require 'rdiscount'
 require_relative '../models/store/item'
 require_relative '../models/store/trader'
 require_relative '../models/store/user'
@@ -26,11 +27,21 @@ class ExternalApi < Sinatra::Application
   get '/api/items/description' do
     content_type :json
 
+    format = params[:format]
     item = Item.by_id(params[:id].to_i)
 
-    "no_such_item" if item.nil?
-
-    item.description
+    if item.nil?
+      "no_such_item"
+    else
+      case format
+        when "text"
+          item.description
+        when "html"
+          RDiscount.new(item.description, :smart, :filter_html).to_html
+        else
+          item.description
+      end
+    end
   end
 
   get '/api/items/comments' do
@@ -38,12 +49,10 @@ class ExternalApi < Sinatra::Application
 
     item = Item.by_id(params[:id].to_i)
 
-    "no_such_item" if item.nil?
-
-    item.comments.to_json
+    item.nil? ? "no_such_item" : item.comments.to_json
   end
 
-  get '/api/items/buy' do
+  post '/api/items/buy' do
     content_type :json
 
     item = Item.by_id(params[:item_id].to_i)

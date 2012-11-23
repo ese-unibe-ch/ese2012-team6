@@ -56,6 +56,7 @@ class App < Sinatra::Base
     (bender = umbrella_corp.propose_item("Bender", 110, "fixed", nil, nil)).activate
 
     user_ese.comment(meg, "This is a comment by ese")
+    user_ese2.comment(meg, "This is another comment by ese2")
 
     #add default organization
    (organization_mordor_inc = Organization.named("MordorInc", :credits => 200, :admin => user_ese)).save
