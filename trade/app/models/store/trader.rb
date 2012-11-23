@@ -211,7 +211,7 @@ module Store
     def bid(item, amount)
       if canBid?(item, amount)
         previous_winner = item.current_winner
-        previous_selling_price = item.currentSellingPrice
+        previous_selling_price = item.bidders[previous_winner]
 
         if item.highestBid != nil
           previous_maxBid = item.bidders[previous_winner]
@@ -222,12 +222,12 @@ module Store
 
         # reduce money if user is new winner, otherwise nothing happens
         current_winner = item.current_winner
-        current_selling_price = item.currentSellingPrice
+        current_maxBid = item.bidders[current_winner]
 
         if previous_winner != nil
-          previous_winner.credits += previous_selling_price
+          previous_winner.credits += previous_maxBid
         end
-        current_winner.credits -= current_selling_price
+        current_winner.credits -= current_maxBid
 
         if previous_winner != nil && previous_winner != current_winner && previous_winner.email != nil
           # we got a new winner
