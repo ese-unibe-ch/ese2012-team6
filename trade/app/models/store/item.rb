@@ -1,6 +1,7 @@
 require 'rbtree'
 require 'parsedate'
 require 'json'
+require 'orderedhash'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
@@ -278,14 +279,17 @@ module Store
     end
 
     def to_json(*opt)
-      {
-          :id => self.id,
-          :name => self.name,
-          :price => self.price,
-          :quantity => self.quantity,
-          :owner => self.owner.name,
-          :state => self.state,
-      }.to_json(*opt)
+      hash = OrderedHash.new
+
+      hash[:id] = self.id
+      hash[:name] = self.name
+      hash[:price] = self.price
+      hash[:quantity] = self.quantity
+      hash[:owner] = self.owner.name
+      hash[:state] = self.state
+      hash[:image_url] = self.image_path
+
+      hash.to_json(*opt)
     end
 
     # class methods

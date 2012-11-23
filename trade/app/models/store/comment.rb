@@ -1,4 +1,5 @@
 require 'json'
+require 'orderedhash'
 
 module Store
   # A simple data container that stores information about when the comment was created, what text is assigned to it and
@@ -44,11 +45,14 @@ module Store
     end
 
     def to_json(*opt)
-      {
-          :author => self.owner.name,
-          :posted_on => self.time_stamp,
-          :text => self.description
-      }.to_json(*opt)
+      hash = OrderedHash.new
+
+      hash[:id] = self.id
+      hash[:author] = self.owner.name
+      hash[:text] = self.description
+      hash[:posted_on] = self.time_stamp
+
+      hash.to_json(*opt)
     end
   end
 end
