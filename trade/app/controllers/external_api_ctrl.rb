@@ -3,43 +3,54 @@ require 'rdiscount'
 require_relative '../models/store/item'
 require_relative '../models/store/trader'
 require_relative '../models/store/user'
+require_relative '../models/helpers/security/string_checker'
 
 class ExternalApi < Sinatra::Application
   include Store
+  include Security
 
   get '/api/items' do
     content_type :json
 
-    filter = params[:filter]
+    filter = params[:filter].strip
 
-    case filter
-      when "none"
-        items = Item.allFixed
-      when "active"
-        items = Item.allFixed.select {|item| item.state == :active}
-      when "inactive"
-        items = Item.allFixed.select {|item| item.state == :inactive}
+    if filter.nil? || filter = ""
+      "INVALID_REQUEST"
+    else
+      case filter
+        when "none"
+          items = Item.allFixed
+        when "active"
+          items = Item.allFixed.select {|item| item.state == :active}
+        when "inactive"
+          items = Item.allFixed.select {|item| item.state == :inactive}
+      end
+      items.to_json
     end
-
-    items.to_json
   end
 
   get '/api/items/description' do
     content_type :json
 
     format = params[:format]
-    item = Item.by_id(params[:id].to_i)
+    id = params[:id].strip
 
-    if item.nil?
-      "no_such_item"
+    if !StringChecker.is_numeric?(id) || id.to_i < 1
+      "INVALID_REQUEST"
     else
-      case format
-        when "text"
-          item.description
-        when "html"
-          RDiscount.new(item.description, :smart, :filter_html).to_html
-        else
-          item.description
+      item = Item.by_id(id.to_i)
+
+      if item.nil?
+        "no_such_item"
+      else
+        case format
+          when "text"
+            item.description
+          when "html"
+            RDiscount.new(item.description, :smart, :filter_html).to_html
+          else
+            item.description
+        end
       end
     end
   end
@@ -47,9 +58,14 @@ class ExternalApi < Sinatra::Application
   get '/api/items/comments' do
     content_type :json
 
-    item = Item.by_id(params[:id].to_i)
+    if !params[:id] || !StringChecker.is_numeric?(params[:id]) || params[:id].to_i < 1
+      "INVALID_REQUEST"
+    else
+      id = params[:id].to_i
+      item = Item.by_id(id)
 
-    item.nil? ? "no_such_item" : item.comments.to_json
+      item.nil? ? "no_such_item" : item.comments.to_json
+    end
   end
 
   post '/api/items/buy' do
