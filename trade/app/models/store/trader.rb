@@ -27,7 +27,7 @@ module Store
       self.open_item_page_time = Time.now
       self.image_path = "/images/no_image.gif"
       self.pending_purchases = []
-	  self.active = true
+	    self.active = true
     end
 
     # creates a new trader object, options include :description and :credits
@@ -43,10 +43,7 @@ module Store
 
     # propose a new item with quantity
     def propose_item_with_quantity(name, price, quantity, selling_mode, increment, end_time, description = "", log = true)
-
       item = self.propose_item(name,price,selling_mode,increment,end_time, quantity, description,log)
-
-
       item
     end
 
@@ -71,6 +68,7 @@ module Store
       self.items.select { |i| i.active? }       #TODO only fixed or only auction
     end
 
+    # attach a bought item
     def attach_item(item)
       equal_item = self.check_for_equal_item(item.name,item.price,item.description)
       if equal_item == nil
@@ -284,6 +282,7 @@ module Store
         @@last_id = 0
         User.clear_all
         Organization.clear_all
+        Purchase.clear_id
       end
 
       # returns the trader found by name

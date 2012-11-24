@@ -47,9 +47,13 @@ module Store
 
       TradingAuthority.settle_item_purchase(self.seller, self.item, self.quantity)
 
-      #Analytics::ItemBuyActivity.with_buyer_item_price_success(self.buyer, self.item, self.quantity).log
-
       self.buyer.delete_pending(self)
+    end
+
+    class << self
+      def clear_id
+        @@last_id = 0
+      end
     end
   end
 end
