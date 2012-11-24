@@ -1,3 +1,6 @@
+require 'json'
+require 'orderedhash'
+
 module Store
   # A simple data container that stores information about when the comment was created, what text is assigned to it and
   # the author of the comment
@@ -39,6 +42,17 @@ module Store
           gsub(":,(", '![alternative text](/images/smileys/sad.gif)').gsub(':/', '![alternative text](/images/smileys/double_minded.gif)').
           gsub('8)', '![alternative text](/images/smileys/cool.gif)').gsub(':crazy:', '![alternative text](/images/smileys/crazy.gif)').
           gsub(':yeah:', '![alternative text](/images/smileys/yeah.gif)')
+    end
+
+    def to_json(*opt)
+      hash = OrderedHash.new
+
+      hash[:id] = self.id
+      hash[:author] = self.owner.name
+      hash[:text] = self.description
+      hash[:posted_on] = self.time_stamp
+
+      hash.to_json(*opt)
     end
   end
 end
