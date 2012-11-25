@@ -6,12 +6,15 @@ require_relative '../helpers/security/mail_client'
 require_relative '../store/trading_authority'
 require_relative '../store/item'
 require_relative '../store/purchase'
+require_relative '../helpers/exceptions/purchase_error'
 
 # superclass for user and organization
 # A Trader is the main actor in the system. The class provides services for trading items between users and creating new items.
 # Keeps track of its own items
 module Store
   class Trader
+    include Exceptions
+
     @@last_id = 0
 
     attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path, :pending_purchases, :active
@@ -27,7 +30,7 @@ module Store
       self.open_item_page_time = Time.now
       self.image_path = "/images/no_image.gif"
       self.pending_purchases = []
-	  self.active = true
+	    self.active = true
     end
 
     # creates a new trader object, options include :description and :credits
@@ -43,10 +46,7 @@ module Store
 
     # propose a new item with quantity
     def propose_item_with_quantity(name, price, quantity, selling_mode, increment, end_time, description = "", log = true)
-
       item = self.propose_item(name,price,selling_mode,increment,end_time, quantity, description,log)
-
-
       item
     end
 
@@ -71,6 +71,7 @@ module Store
       self.items.select { |i| i.active? }       #TODO only fixed or only auction
     end
 
+    # attach a bought item
     def attach_item(item)
       equal_item = self.check_for_equal_item(item.name,item.price,item.description)
       if equal_item == nil
@@ -112,31 +113,34 @@ module Store
       Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
     end
 
-    # adds the item to buy to the pending list
+    # Purchase the indicated amount of the indicated item. PurchaseError will be raised if an error occured.
+    # Returns purchase reference if purchase was successful
     def purchase(item, quantity = 1, log = true)
       seller = item.owner
       purchased_item = item
 
+      failed = false
+
       if seller.nil?
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
-        return false, "item_no_owner" #Item does not belong to anybody
+        raise PurchaseError, "item_no_owner" #Item does not belong to anybody
       elsif self.credits < (purchased_item.price * quantity)
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
-        return false, "not_enough_credits" #Buyer does not have enough credits
+        raise PurchaseError, "not_enough_credits" #Buyer does not have enough credits
       elsif !purchased_item.active?
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
-        return false, "buy_inactive_item" #Trying to buy inactive item
+        raise PurchaseError, "buy_inactive_item" #Trying to buy inactive item
       elsif !seller.items.include?(purchased_item)
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
-        return false, "seller_not_own_item" #Seller does not own item to buy
+        raise PurchaseError, "seller_not_own_item" #Seller does not own item to buy
       elsif quantity > purchased_item.quantity
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
-        return false, "invalid_quantity" #Seller doesn't have enough items
+        raise PurchaseError, "invalid_quantity" #Seller doesn't have enough items
       end
+
+      Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log && failed
+
       purchase = Purchase.create(item, quantity, seller, self)
       purchase.prepare
+
       Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, quantity).log if log
-      return true, "Transaction successful"
+
+      purchase
     end
 
     # handles the shop of an item , returns true if buy process was successful, false otherwise
@@ -211,7 +215,7 @@ module Store
     def bid(item, amount)
       if canBid?(item, amount)
         previous_winner = item.current_winner
-        previous_selling_price = item.currentSellingPrice
+        previous_selling_price = item.bidders[previous_winner]
 
         if item.highestBid != nil
           previous_maxBid = item.bidders[previous_winner]
@@ -222,12 +226,12 @@ module Store
 
         # reduce money if user is new winner, otherwise nothing happens
         current_winner = item.current_winner
-        current_selling_price = item.currentSellingPrice
+        current_maxBid = item.bidders[current_winner]
 
         if previous_winner != nil
-          previous_winner.credits += previous_selling_price
+          previous_winner.credits += previous_maxBid
         end
-        current_winner.credits -= current_selling_price
+        current_winner.credits -= current_maxBid
 
         if previous_winner != nil && previous_winner != current_winner && previous_winner.email != nil
           # we got a new winner
@@ -289,6 +293,7 @@ module Store
         @@last_id = 0
         User.clear_all
         Organization.clear_all
+        Purchase.clear_id
       end
 
       # returns the trader found by name

@@ -274,7 +274,7 @@ module Store
       copy.description = self.description
       copy.edit_time = self.edit_time
       copy.image_path = self.image_path
-      copy.comments = self.comments
+      copy.comments = self.comments.dup
       copy
     end
 
