@@ -5,6 +5,7 @@ require_relative('../models/store/organization')
 require_relative('../models/helpers/storage/picture_uploader')
 require_relative('../models/store/trader')
 require_relative('../models/store/purchase')
+require_relative('../models/helpers/exceptions/purchase_error')
 
 # Handles all requests concerning user display and actions
 class User < Sinatra::Application
@@ -82,8 +83,12 @@ class User < Sinatra::Application
 
     quantity = params[:buy_amount].to_i
 
-    success, success_message = @user.on_behalf_of.purchase(item, quantity)
-    redirect "/error/#{success_message}" unless success
+    begin
+      @user.on_behalf_of.purchase(item, quantity)
+    rescue Exceptions::PurchaseError => error
+      redirect "/error/#{error.message}" unless success
+    end
+
     redirect "/user/#{@user.name}" if @user.working_as_self?
     redirect "/organization/#{@user.on_behalf_of.name}"
   end
@@ -95,6 +100,7 @@ class User < Sinatra::Application
 
     purchase = @user.on_behalf_of.pending_purchases.detect{|purchase| purchase.id == purchase_id}
     @user.on_behalf_of.confirm_purchase(purchase)
+
     redirect "/user/#{@user.name}" if @user.working_as_self?
     redirect "/organization/#{@user.on_behalf_of.name}"
   end
