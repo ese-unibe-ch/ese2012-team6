@@ -83,6 +83,8 @@ class Main < Sinatra::Application
         error_message = "Your user name must only contain word characters (lower/uppercase letters and underscores)"
       when "trying forget pd for pre saved users"
         error_message = "This user was created for fast program testing, thus it hasn't got an email address"
+      when "delete_failed"
+        error_message = "You cannot delete your account because you have open auctions"
     end
 
     last_page = back
