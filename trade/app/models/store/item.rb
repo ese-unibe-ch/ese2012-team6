@@ -285,7 +285,7 @@ module Store
       hash[:name] = self.name
       hash[:price] = self.price
       hash[:quantity] = self.quantity
-      hash[:owner] = self.owner.name
+      hash[:owner] = self.owner.name if self.state != :pending
       hash[:state] = self.state
       hash[:image_url] = self.image_path
 

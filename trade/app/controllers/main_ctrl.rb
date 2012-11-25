@@ -35,9 +35,9 @@ class Main < Sinatra::Application
         should_refresh = true
       when "item_changed_details"
         should_refresh = true
-      when "not_enough_credits"
+      when "NOT_ENOUGH_CREDITS"
         should_refresh = true
-      when "buy_inactive_item"
+      when "BUY_INACTIVE_ITEM"
         should_refresh = true
       when "user_credit_transfer_failed"
         should_refresh = true
