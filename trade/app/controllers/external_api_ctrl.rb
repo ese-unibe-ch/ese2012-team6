@@ -9,6 +9,10 @@ class ExternalApi < Sinatra::Application
   include Store
   include Security
 
+  def check_id(id_string)
+     !(id_string.nil? || id_string == "" || !StringChecker.is_numeric?(id_string) || id_string.to_i < 1)
+  end
+
   get '/api/items' do
     content_type :json
 
@@ -32,16 +36,16 @@ class ExternalApi < Sinatra::Application
   get '/api/items/description' do
     content_type :json
 
-    format = params[:format]
-    id = params[:id].strip
+    if check_id(params[:id])
+      id = params[:id].strip
 
-    if !StringChecker.is_numeric?(id) || id.to_i < 1
-      "INVALID_REQUEST"
-    else
+      format = params[:format]
+      format = format.strip if format
+
       item = Item.by_id(id.to_i)
 
       if item.nil?
-        "no_such_item"
+        "NO_SUCH_ITEM"
       else
         case format
           when "text"
@@ -52,19 +56,21 @@ class ExternalApi < Sinatra::Application
             item.description
         end
       end
+    else
+      "INVALID_REQUEST"
     end
   end
 
   get '/api/items/comments' do
     content_type :json
 
-    if !params[:id] || !StringChecker.is_numeric?(params[:id]) || params[:id].to_i < 1
-      "INVALID_REQUEST"
-    else
+    if check_id(params[:id])
       id = params[:id].to_i
       item = Item.by_id(id)
 
-      item.nil? ? "no_such_item" : item.comments.to_json
+      item.nil? ? "NO_SUCH_ITEM" : item.comments.to_json
+    else
+      "INVALID_REQUEST"
     end
   end
 
@@ -72,7 +78,7 @@ class ExternalApi < Sinatra::Application
     content_type :json
 
     item = Item.by_id(params[:item_id].to_i)
-    "no_such_item" if item.nil?
+    "NO_SUCH_ITEM" if item.nil?
 
     auth_token = params[:auth_token].split(",")
 
