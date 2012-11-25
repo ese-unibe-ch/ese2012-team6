@@ -68,7 +68,7 @@ class User < Sinatra::Application
     redirect "/user/#{@user.name}"
   end
 
-  post '/user/add_pending/:item_id' do
+  post '/user/buy/:item_id' do
     redirect '/login' unless @user
 
     item_id = params[:item_id].to_i
@@ -86,7 +86,7 @@ class User < Sinatra::Application
     begin
       @user.on_behalf_of.purchase(item, quantity)
     rescue Exceptions::PurchaseError => error
-      redirect "/error/#{error.message}" unless success
+      redirect "/error/#{error.message}"
     end
 
     redirect "/user/#{@user.name}" if @user.working_as_self?
@@ -94,7 +94,7 @@ class User < Sinatra::Application
   end
 
   # Handles user buy request
-  post '/user/buy/:purchase_id' do
+  post '/user/confirm/:purchase_id' do
     redirect '/login' unless @user
     purchase_id = params[:purchase_id].to_i
 
