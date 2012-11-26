@@ -6,8 +6,9 @@
       %form{:action => "/item/#{item.id}/update_status?activate=false", :method => "POST"}
         %input.styled-button{:type => "submit", :value => "Deactivate", :text => "deacBtn"}
     -else
-      %form{:action => "/item/#{item.id}/update_status?activate=true", :method => "POST"}
+      %form{:action => "/item/#{item.id}/update_status?activate=true&new_end_date=end_date", :method => "POST"}
         %input.styled-button{:type => "submit", :value => "Activate", :text => "deacBtn"}
+        %input.texbox8{:type => "text", :name => "end_date", :style => "width: 80px", :value => "dd-mm-yyyy"}
   -if @user.on_behalf_of.can_edit?(item)
     %a.styled-button{:href => "/item/#{item.id}/edit"} Edit
   -if @user.on_behalf_of.can_delete?(item)
@@ -45,6 +46,11 @@
       Quantity
     %p
       #{item.quantity}
+    -if !item.end_time.nil?
+      %h3
+        End Time
+      %p
+        #{item.end_time.to_s}
     %h3
       Owner
     %p

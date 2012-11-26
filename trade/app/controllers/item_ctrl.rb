@@ -137,6 +137,7 @@ class Item < Sinatra::Application
     redirect '/login' unless @user
 
     activate = (params[:activate] == "true")
+    new_end_time = (params[:new_end_time])
 
     item = Item.by_id(Integer(params[:item_id]))
 

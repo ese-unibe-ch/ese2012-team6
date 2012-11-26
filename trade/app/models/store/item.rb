@@ -90,6 +90,30 @@ module Store
       "#{self.name}, #{self.price}, #{self.owner.name}, #{self.state}"
     end
 
+    #activates item with end_time, if end_time is set else activates normally
+    def activate_with_end_time(new_end_time)
+
+      if new_end_time != nil && new_end_time != ""
+        if new_end_time.is_a?(Fixnum)
+          new_end_time = DateTime.now + new_end_time
+        elsif new_end_time.is_a?(String)
+          new_end_time = Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime
+        elsif new_end_time.is_a?(DateTime)
+          new_end_time = new_end_time
+        end
+      else
+        new_end_time = nil
+      end
+
+      self.state =:activate
+    end
+
+    def check_endTimes
+      if end_time<DateTime.now
+        self.deactivate
+      end
+    end
+
     def activate
       self.state = :active
     end
@@ -106,6 +130,8 @@ module Store
         end
         self.bidders = {}
       end
+      self.selling_mode="fixed"
+      self.end_time=nil
     end
 
     # update the item's status
@@ -113,7 +139,11 @@ module Store
       old_status = self.state
 
       if old_status != new_status
-        self.state = new_status ? :active : :inactive
+        if new_status== :active
+          self.activate_with_end_time(new_end_time)
+        else
+          self.deactivate
+        end
 
         self.notify_change
         Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log
