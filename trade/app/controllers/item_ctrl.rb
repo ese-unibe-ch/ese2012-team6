@@ -137,7 +137,8 @@ class Item < Sinatra::Application
     redirect '/login' unless @user
 
     activate = (params[:activate] == "true")
-    new_end_time = (params[:new_end_time])
+    new_end_time = (params[:new_end_time].to_s)
+    puts new_end_time
 
     item = Item.by_id(Integer(params[:item_id]))
 
@@ -146,7 +147,7 @@ class Item < Sinatra::Application
     redirect url('/error/not_owner_of_item') if changed_owner
     redirect "/item/#{params[:item_id]}" unless @user.on_behalf_of.can_activate?(item)
 
-    item.update_status(activate)
+    item.update_status(activate,new_end_time)
 
     redirect back
   end

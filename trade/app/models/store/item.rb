@@ -130,17 +130,18 @@ module Store
         end
         self.bidders = {}
       end
-      self.selling_mode="fixed"
-      self.end_time=nil
+      #self.selling_mode="fixed"
+      #self.end_time=nil
     end
 
     # update the item's status
-    def update_status(new_status, log = true)
+    def update_status(new_status,log = true)
+
       old_status = self.state
 
       if old_status != new_status
         if new_status== :active
-          self.activate_with_end_time(new_end_time)
+          self.activate
         else
           self.deactivate
         end
