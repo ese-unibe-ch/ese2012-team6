@@ -109,8 +109,10 @@ module Store
 
     end
 
+    #checks if the endTime is reached and deactivates the item if true
     def check_endTimes
-      if end_time<DateTime.now
+      if !self.end_time.nil? self.end_time<DateTime.now
+        self.end_time= nil
         self.deactivate
       end
     end
