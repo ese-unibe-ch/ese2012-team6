@@ -101,11 +101,12 @@ module Store
         elsif new_end_time.is_a?(DateTime)
           new_end_time = new_end_time
         end
+        self.end_time = new_end_time
       else
         new_end_time = nil
       end
+        self.update_status(activate)
 
-      self.state =:activate
     end
 
     def check_endTimes
@@ -135,16 +136,11 @@ module Store
     end
 
     # update the item's status
-    def update_status(new_status,log = true)
-
+    def update_status(new_status, log = true)
       old_status = self.state
 
       if old_status != new_status
-        if new_status== :active
-          self.activate
-        else
-          self.deactivate
-        end
+        self.state = new_status ? :active : :inactive
 
         self.notify_change
         Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log
