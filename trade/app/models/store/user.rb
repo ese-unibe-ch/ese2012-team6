@@ -14,7 +14,10 @@ module Store
     # up to now only using IDs for efficient sorted storing
     @@users = {}
 
-    attr_accessor :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email
+    #TIME_UNTIL_DELETION = 24*60*60*30  # 30 days
+    TIME_UNTIL_DELETION = 10  # 10 seconds
+
+    attr_accessor :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email, :suspend_time
 
     def initialize
       super
@@ -106,6 +109,10 @@ module Store
       @@users.delete(self.name)
     end
 
+    def delete_suspended_user?
+      Time.now > (self.suspend_time + TIME_UNTIL_DELETION)
+    end
+
     # reset a user's password and send email with new password if desired
     def reset_password(sendMail = true)
       new_password = Security::PasswordGenerator.generate_new_password()
@@ -139,6 +146,11 @@ module Store
       def all_active
         all_users = self.all
         all_users.select {|a| a.active == true}
+      end
+
+      def all_inactive
+        all_users = self.all
+        all_users.select {|a| a.active == false}
       end
     end
   end

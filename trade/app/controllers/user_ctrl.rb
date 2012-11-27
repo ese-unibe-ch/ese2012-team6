@@ -173,6 +173,14 @@ class User < Sinatra::Application
   get '/suspend_prov' do
     redirect '/login' unless @user
 
+    active_auctions = false
+
+    @user.items.each do |item|
+      if item.isAuction?
+        redirect '/error/delete_failed'
+      end
+    end
+
     haml :suspend_prov
   end
 
@@ -182,6 +190,7 @@ class User < Sinatra::Application
 
     @user.active = false
     @user.logout
+    @user.suspend_time = Time.now
     @user = nil
     session[:name] = nil
 
