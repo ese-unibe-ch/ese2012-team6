@@ -184,6 +184,7 @@ class User < Sinatra::Application
 
     @user.active = false
     @user.logout
+    @user.suspend_time = Time.now
     @user = nil
     session[:name] = nil
 
