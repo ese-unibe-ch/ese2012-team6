@@ -14,7 +14,8 @@
     -else
       %form{:action => "/item/#{item.id}/update_status?activate=true", :method => "POST"}
         %input.styled-button{:type => "submit", :value => "Activate", :text => "deacBtn"}
-        %input.textbox8{:type => "text", :id => "datetimepicker", :name => "new_end_time", :style => "width: 60px", :value => nil}
+        -if item.isFixed?
+          %input.textbox8{:type => "text", :id => "datetimepicker", :name => "new_end_time", :style => "width: 60px", :value => nil}
   -if @user.on_behalf_of.can_edit?(item)
     %a.styled-button{:href => "/item/#{item.id}/edit"} Edit
   -if @user.on_behalf_of.can_delete?(item)
@@ -50,7 +51,7 @@
       Quantity
     %p
       #{item.quantity}
-    -if !item.end_time.nil?
+    -unless item.end_time.nil?
       %h3
         End Time
       %p
