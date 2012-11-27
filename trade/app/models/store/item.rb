@@ -122,7 +122,7 @@ module Store
         if !self.is_finished?
           buyer = self.current_winner
           if buyer != nil
-            buyer.credits += self.currentSellingPrice
+            buyer.credits += self.bidders[buyer]
           end
         end
         self.bidders = {}

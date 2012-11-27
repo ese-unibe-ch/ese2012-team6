@@ -72,7 +72,9 @@ module Store
         selling_price = item.currentSellingPrice
         buyers_bid = item.bidders[buyer]
 
+
         seller.credits += selling_price # + Integer((price * SELL_BONUS).ceil)
+        buyer.credits += buyers_bid - selling_price
 
         item.deactivate
         buyer.attach_item(item)
