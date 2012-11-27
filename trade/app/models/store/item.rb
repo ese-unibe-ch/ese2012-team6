@@ -110,12 +110,14 @@ module Store
     end
 
     #checks if the endTime is reached and deactivates the item if true
+=begin
     def check_endTimes
-      if !self.end_time.nil? self.end_time<DateTime.now
+      if !self.end_time.nil? self.end_time<=DateTime.now
         self.end_time= nil
         self.deactivate
       end
     end
+=end
 
     def activate
       self.state = :active
@@ -132,6 +134,9 @@ module Store
           end
         end
         self.bidders = {}
+        if !end_time.nil? and self.isFixed?
+          self.end_time=nil
+        end
       end
       #self.selling_mode="fixed"
       #self.end_time=nil
