@@ -139,18 +139,14 @@ class Item < Sinatra::Application
     activate =        (params[:activate] == "true")
     new_end_time  =   (params[:new_end_time])
 
-
-
     item = Item.by_id(Integer(params[:item_id]))
 
     changed_owner = @user.on_behalf_of.open_item_page_time < item.edit_time && !@user.on_behalf_of.can_activate?(item)
 
-
     redirect url('/error/not_owner_of_item') if changed_owner
-    puts "not yet redirected"
     redirect "/item/#{params[:item_id]}" unless @user.on_behalf_of.can_activate?(item)
-    puts "Hallo"
-    if item.selling_mode == "fixed" and activate#and new_end_time != nil
+
+    if item.selling_mode == "fixed" and activate
       item.activate_with_end_time(new_end_time)
     else
       item.update_status(activate)
