@@ -100,24 +100,16 @@ module Store
           new_end_time = Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime
         elsif new_end_time.is_a?(DateTime)
           new_end_time = new_end_time
+        else
+          new_end_time=nil
         end
         self.end_time = new_end_time
       else
-        new_end_time = nil
+        self.end_time=nil
       end
         self.update_status(activate)
 
     end
-
-    #checks if the endTime is reached and deactivates the item if true
-=begin
-    def check_endTimes
-      if !self.end_time.nil? self.end_time<=DateTime.now
-        self.end_time= nil
-        self.deactivate
-      end
-    end
-=end
 
     def activate
       self.state = :active
@@ -134,12 +126,10 @@ module Store
           end
         end
         self.bidders = {}
-        if !end_time.nil? and self.isFixed?
-          self.end_time=nil
-        end
+
       end
-      #self.selling_mode="fixed"
-      #self.end_time=nil
+      self.selling_mode="fixed"
+      self.end_time=nil
     end
 
     # update the item's status
@@ -148,6 +138,10 @@ module Store
 
       if old_status != new_status
         self.state = new_status ? :active : :inactive
+
+        if !self.active? and self.isFixed?
+          self.end_time=nil
+        end
 
         self.notify_change
         Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log

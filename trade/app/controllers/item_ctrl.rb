@@ -150,7 +150,7 @@ class Item < Sinatra::Application
     puts "not yet redirected"
     redirect "/item/#{params[:item_id]}" unless @user.on_behalf_of.can_activate?(item)
     puts "Hallo"
-    if item.selling_mode == "fixed" and new_end_time != nil
+    if item.selling_mode == "fixed" and activate#and new_end_time != nil
       item.activate_with_end_time(new_end_time)
     else
       item.update_status(activate)
