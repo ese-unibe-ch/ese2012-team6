@@ -158,7 +158,7 @@ class Item < Sinatra::Application
   # handles new item creation, must be PUT request
   put '/item' do
     redirect '/login' unless @user
-    redirect back if params[:item_name] == "" or params[:item_price] == ""
+    redirect back if params[:item_name] == "" or params[:item_price] == "" or params[:item_quantity] == ""
 
     file = params[:file_upload]
     redirect '/error/wrong_size' if file && file[:tempfile].size > 400*1024
