@@ -22,8 +22,6 @@
       %input{:name => "_method", :type => "hidden", :value => "delete"}
       %input.styled-button.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
   -if @user.on_behalf_of.can_buy?(item)
-    -#%form{:action => "/user/add_pending/#{item.id}", :method => "POST"}
-    -#%input.styled-button.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy/Bid" : "Buy/Bid as #{@user.on_behalf_of.name}"}
     %form{:action => "/user/buy/#{item.id}", :method => "POST"}
       -if item.isFixed?
         %input.textbox8{:type => "text", :name => "buy_amount", :style => "width: 30px", :value => "1"}
