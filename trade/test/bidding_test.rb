@@ -95,18 +95,18 @@ class AuctionTest < Test::Unit::TestCase
     @userB.bid(item,20)
     assert item.currentSellingPrice == 5
     assert @userA.credits == 1000
-    assert @userB.credits == 995
+    assert @userB.credits == 980
     assert @userC.credits == 1000
     @userC.bid(item,15)
     assert item.currentSellingPrice == 17
     assert @userA.credits == 1000
-    assert @userB.credits == 983
+    assert @userB.credits == 980
     assert @userC.credits == 1000
     @userC.bid(item,25)
     assert item.currentSellingPrice == 22
     assert @userA.credits == 1000
     assert @userB.credits == 1000
-    assert @userC.credits == 978
+    assert @userC.credits == 975
   end
 
   def test_cant_edit_after_bidding
@@ -130,7 +130,7 @@ class AuctionTest < Test::Unit::TestCase
     @userC.bid(item,30)
     assert @userA.credits == 1000
     assert @userB.credits == 1000
-    assert @userC.credits == 978
+    assert @userC.credits == 970
     AuctionTimer.finish_auction(item)
     assert item.bidders == {}
     assert @userA.credits == 1022
@@ -160,7 +160,7 @@ class AuctionTest < Test::Unit::TestCase
     @userC.bid(item,30)
     assert @userA.credits == 1000
     assert @userB.credits == 1000
-    assert @userC.credits == 978
+    assert @userC.credits == 970
     item.deactivate
     assert item.bidders == {}
     assert @userA.credits == 1000

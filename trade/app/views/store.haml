@@ -1,5 +1,8 @@
-%h2
-  Store
+%div#actionbar
+  %h2.float_left
+    Store
+  %div.action_buttons.float_right
+    %a.styled-button{:href => "/item/new"} Propose new Item
 %h3
   Items currently in store:
 %table.table-minimalistic
@@ -32,7 +35,7 @@
               #{item.quantity}
             %td
               -if @user.on_behalf_of.can_buy?(item)
-                %form{:action => "/user/add_pending/#{item.id}", :method => "POST"}
+                %form{:action => "/user/buy/#{item.id}", :method => "POST"}
                   %input.textbox8{:type => "text", :name => "buy_amount", :style => "width: 30px", :value => "1"}
                   %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
 %h3

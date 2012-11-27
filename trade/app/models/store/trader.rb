@@ -6,12 +6,16 @@ require_relative '../helpers/security/mail_client'
 require_relative '../store/trading_authority'
 require_relative '../store/item'
 require_relative '../store/purchase'
+require_relative '../helpers/exceptions/purchase_error'
 
 # superclass for user and organization
 # A Trader is the main actor in the system. The class provides services for trading items between users and creating new items.
 # Keeps track of its own items
 module Store
   class Trader
+    include Exceptions
+    include Analytics
+
     @@last_id = 0
 
     attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path, :pending_purchases, :active
@@ -58,7 +62,7 @@ module Store
       item.save
 
       self.attach_item(item)
-      Analytics::ItemAddActivity.with_creator_item(self, item).log if log
+      ItemAddActivity.with_creator_item(self, item).log if log
 
       item
     end
@@ -107,34 +111,38 @@ module Store
       item.owner.release_item(item)
       item.delete
 
-      Analytics::ItemDeleteActivity.with_remover_item(self, item).log if log
+      ItemDeleteActivity.with_remover_item(self, item).log if log
     end
 
-    # adds the item to buy to the pending list
+    # Purchase the indicated amount of the indicated item. PurchaseError will be raised if an error occured.
+    # Returns purchase reference if purchase was successful
     def purchase(item, quantity = 1, log = true)
       seller = item.owner
       purchased_item = item
 
       if seller.nil?
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
-        return false, "item_no_owner" #Item does not belong to anybody
-      elsif self.credits < (purchased_item.price * quantity)
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
-        return false, "not_enough_credits" #Buyer does not have enough credits
-      elsif !purchased_item.active?
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
-        return false, "buy_inactive_item" #Trying to buy inactive item
-      elsif !seller.items.include?(purchased_item)
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
-        return false, "seller_not_own_item" #Seller does not own item to buy
+        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        raise PurchaseError, "ITEM_NO_OWNER" #Item does not belong to anybody
       elsif quantity > purchased_item.quantity
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
-        return false, "invalid_quantity" #Seller doesn't have enough items
+        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        raise PurchaseError, "INVALID_QUANTITY" #Seller doesn't have enough items
+      elsif !purchased_item.active?
+        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        raise PurchaseError, "BUY_INACTIVE_ITEM" #Trying to buy inactive item
+      elsif !seller.items.include?(purchased_item)
+        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        raise PurchaseError, "SELLER_NOT_ITEM_OWNER" #Seller does not own item to buy
+      elsif self.credits < (purchased_item.price * quantity)
+        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        raise PurchaseError, "NOT_ENOUGH_CREDITS" #Buyer does not have enough credits
       end
+
       purchase = Purchase.create(item, quantity, seller, self)
       purchase.prepare
-      Analytics::ItemBuyActivity.with_buyer_item_price_success(self, item, quantity).log if log
-      return true, "Transaction successful"
+
+      ItemBuyActivity.with_buyer_item_price_success(self, item, quantity).log if log
+
+      purchase
     end
 
     # handles the shop of an item , returns true if buy process was successful, false otherwise

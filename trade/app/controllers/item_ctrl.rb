@@ -136,16 +136,25 @@ class Item < Sinatra::Application
   post '/item/:item_id/update_status' do
     redirect '/login' unless @user
 
-    activate = (params[:activate] == "true")
+    activate =        (params[:activate] == "true")
+    new_end_time  =   (params[:new_end_time])
+
+
 
     item = Item.by_id(Integer(params[:item_id]))
 
     changed_owner = @user.on_behalf_of.open_item_page_time < item.edit_time && !@user.on_behalf_of.can_activate?(item)
 
-    redirect url('/error/not_owner_of_item') if changed_owner
-    redirect "/item/#{params[:item_id]}" unless @user.on_behalf_of.can_activate?(item)
 
-    item.update_status(activate)
+    redirect url('/error/not_owner_of_item') if changed_owner
+    puts "not yet redirected"
+    redirect "/item/#{params[:item_id]}" unless @user.on_behalf_of.can_activate?(item)
+    puts "Hallo"
+    if item.selling_mode == "fixed" and activate#and new_end_time != nil
+      item.activate_with_end_time(new_end_time)
+    else
+      item.update_status(activate)
+    end
 
     redirect back
   end

@@ -7,6 +7,7 @@ require_relative '../app/models/store/trader'
 require_relative '../app/models/store/organization'
 require_relative '../app/models/store/item'
 require_relative '../app/models/store/purchase'
+require_relative '../app/models/helpers/exceptions/purchase_error'
 
 class PurchaseTest < Test::Unit::TestCase
   include Store
@@ -32,8 +33,7 @@ class PurchaseTest < Test::Unit::TestCase
     you = Trader.named("You", :credits => 100)
     (my_item = me.propose_item_with_quantity("One", 7, 1, "fixed", nil, nil)).activate
 
-    you.purchase(my_item, 1)
-    purchase = you.pending_purchases.detect{|purchase| purchase.id == 1}
+    purchase = you.purchase(my_item, 1)
 
     assert(my_item.state == :pending)
     assert(my_item.quantity == 1)
@@ -47,8 +47,7 @@ class PurchaseTest < Test::Unit::TestCase
     you = Trader.named("You", :credits => 100)
     (my_item = me.propose_item_with_quantity("One", 7, 1, "fixed", nil, nil)).activate
 
-    you.purchase(my_item, 1)
-    purchase = you.pending_purchases.detect{|purchase| purchase.id == 1}
+    purchase = you.purchase(my_item, 1)
     you.confirm_purchase(purchase)
 
     assert(my_item.state == :inactive)
@@ -63,8 +62,7 @@ class PurchaseTest < Test::Unit::TestCase
     you = Trader.named("You", :credits => 100)
     (your_item = you.propose_item_with_quantity("Four", 11, 4, "fixed", nil, nil)).activate
 
-    me.purchase(your_item, 2)
-    purchase = me.pending_purchases.detect{|purchase| purchase.id == 1}
+    purchase = me.purchase(your_item, 2)
 
     assert(your_item.state == :active)
     assert(your_item.quantity == 2)
@@ -78,8 +76,7 @@ class PurchaseTest < Test::Unit::TestCase
     you = Trader.named("You", :credits => 100)
     (your_item = you.propose_item_with_quantity("Four", 11, 4, "fixed", nil, nil)).activate
 
-    me.purchase(your_item, 2)
-    purchase = me.pending_purchases.detect{|purchase| purchase.id == 1}
+    purchase = me.purchase(your_item, 2)
     me.confirm_purchase(purchase)
 
     assert(your_item.state == :active)
@@ -95,12 +92,9 @@ class PurchaseTest < Test::Unit::TestCase
     (my_item = me.propose_item_with_quantity("One", 7, 1, "fixed", nil, nil)).activate
     (your_item = you.propose_item_with_quantity("Four", 11, 4, "fixed", nil, nil)).activate
 
-    me.purchase(your_item, 2)
-    purchase1 = me.pending_purchases.detect{|purchase| purchase.id == 1}
-    me.purchase(your_item, 1)
-    purchase2 = me.pending_purchases.detect{|purchase| purchase.id == 2}
-    you.purchase(my_item, 1)
-    purchase3 = you.pending_purchases.detect{|purchase| purchase.id == 3}
+    purchase1 = me.purchase(your_item, 2)
+    purchase2 = me.purchase(your_item, 1)
+    purchase3 = you.purchase(my_item, 1)
 
     assert(your_item.state == :active)
     assert(my_item.state == :pending)
@@ -118,12 +112,10 @@ class PurchaseTest < Test::Unit::TestCase
     (my_item = me.propose_item_with_quantity("One", 7, 1, "fixed", nil, nil)).activate
     (your_item = you.propose_item_with_quantity("Three", 11, 3, "fixed", nil, nil)).activate
 
-    me.purchase(your_item, 2)
-    purchase1 = me.pending_purchases.detect{|purchase| purchase.id == 1}
-    me.purchase(your_item, 1)
-    purchase2 = me.pending_purchases.detect{|purchase| purchase.id == 2}
-    you.purchase(my_item, 1)
-    purchase3 = you.pending_purchases.detect{|purchase| purchase.id == 3}
+    purchase1 = me.purchase(your_item, 2)
+    purchase2 = me.purchase(your_item, 1)
+    purchase3 = you.purchase(my_item, 1)
+
     me.confirm_purchase(purchase1)
     me.confirm_purchase(purchase2)
     you.confirm_purchase(purchase3)
@@ -146,13 +138,13 @@ class PurchaseTest < Test::Unit::TestCase
 
     buyer.acknowledge_item_properties!
 
-    transaction_result, transaction_message = buyer.purchase(item)
-    assert(transaction_result, "Transaction failed when it should have succeeded\nReason: #{transaction_message}")
+    purchase = nil
+
+    assert_nothing_raised(Exceptions::PurchaseError) { purchase = buyer.purchase(item) }
 
     assert_equal(0, buyer.credits, "Buyer has too many credits left")
     assert_equal(100, seller.credits, "Seller has too few credits")
 
-    purchase = buyer.pending_purchases.detect{|purchase| purchase.id == 1}
     buyer.confirm_purchase(purchase)
     assert_equal(205, seller.credits)
 
@@ -171,9 +163,7 @@ class PurchaseTest < Test::Unit::TestCase
     buyer.acknowledge_item_properties!
     assert(!item.active?)
 
-    transaction_result, transaction_message = buyer.purchase(item)
-
-    assert(transaction_result == false, "Transaction should have failed but it did not")
+    assert_raise(Exceptions::PurchaseError) { buyer.purchase(item) }
 
     assert_equal(100, buyer.credits, "Buyer's credits changed when they should not have")
     assert_equal(100, seller.credits, "Seller's credits changed when they should not have")
@@ -192,9 +182,7 @@ class PurchaseTest < Test::Unit::TestCase
     buyer.acknowledge_item_properties!
     assert(item.active?)
 
-    transaction_result, transaction_message = buyer.purchase(item)
-
-    assert(transaction_result == false,"Transaction should have failed but it did not")
+    assert_raise(Exceptions::PurchaseError) { buyer.purchase(item) }
 
     assert_equal(100, buyer.credits, "Buyer has wrong amount of credits")
     assert_equal(100, seller.credits, "Seller has wrong amount of credits")
@@ -213,8 +201,7 @@ class PurchaseTest < Test::Unit::TestCase
 
     buyer.acknowledge_item_properties!
 
-    transaction_result, transaction_message = buyer.purchase(item, 2)
-    assert(transaction_result == false,"Transaction should have failed but it did not")
+    assert_raise(Exceptions::PurchaseError) { buyer.purchase(item, 2) }
 
     assert_equal(100, buyer.credits, "Buyer has wrong amount of credits")
     assert_equal(100, seller.credits, "Seller has wrong amount of credits")

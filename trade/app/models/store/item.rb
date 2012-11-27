@@ -90,6 +90,27 @@ module Store
       "#{self.name}, #{self.price}, #{self.owner.name}, #{self.state}"
     end
 
+    #activates item with end_time, if end_time is set else activates normally
+    def activate_with_end_time(new_end_time)
+
+      if new_end_time != nil && new_end_time != ""
+        if new_end_time.is_a?(Fixnum)
+          new_end_time = DateTime.now + new_end_time
+        elsif new_end_time.is_a?(String)
+          new_end_time = Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime
+        elsif new_end_time.is_a?(DateTime)
+          new_end_time = new_end_time
+        else
+          new_end_time=nil
+        end
+        self.end_time = new_end_time
+      else
+        self.end_time=nil
+      end
+        self.update_status(activate)
+
+    end
+
     def activate
       self.state = :active
     end
@@ -101,11 +122,14 @@ module Store
         if !self.is_finished?
           buyer = self.current_winner
           if buyer != nil
-            buyer.credits += self.currentSellingPrice
+            buyer.credits += self.bidders[buyer]
           end
         end
         self.bidders = {}
+
       end
+      self.selling_mode="fixed"
+      self.end_time=nil
     end
 
     # update the item's status
@@ -114,6 +138,10 @@ module Store
 
       if old_status != new_status
         self.state = new_status ? :active : :inactive
+
+        if !self.active? and self.isFixed?
+          self.end_time=nil
+        end
 
         self.notify_change
         Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log
@@ -274,7 +302,7 @@ module Store
       copy.description = self.description
       copy.edit_time = self.edit_time
       copy.image_path = self.image_path
-      copy.comments = self.comments
+      copy.comments = self.comments.dup
       copy
     end
 
@@ -285,7 +313,7 @@ module Store
       hash[:name] = self.name
       hash[:price] = self.price
       hash[:quantity] = self.quantity
-      hash[:owner] = self.owner.name
+      hash[:owner] = self.owner.name if self.state != :pending
       hash[:state] = self.state
       hash[:image_url] = self.image_path
 

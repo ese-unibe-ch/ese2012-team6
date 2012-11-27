@@ -1,6 +1,12 @@
 %h2
   Item Details
 %div.action_buttons.float_right
+  :javascript
+      //addListener();
+      $(document).ready(function() {
+        $('#datetimepicker').datetimepicker({ dateFormat: 'dd-mm-yy', minDate: 0 });
+        updateForm();
+      });
   -if @user.on_behalf_of.can_activate?(item)
     -if item.active?
       %form{:action => "/item/#{item.id}/update_status?activate=false", :method => "POST"}
@@ -8,6 +14,7 @@
     -else
       %form{:action => "/item/#{item.id}/update_status?activate=true", :method => "POST"}
         %input.styled-button{:type => "submit", :value => "Activate", :text => "deacBtn"}
+        %input.textbox8{:type => "text", :id => "datetimepicker", :name => "new_end_time", :style => "width: 60px", :value => nil}
   -if @user.on_behalf_of.can_edit?(item)
     %a.styled-button{:href => "/item/#{item.id}/edit"} Edit
   -if @user.on_behalf_of.can_delete?(item)
@@ -17,7 +24,7 @@
   -if @user.on_behalf_of.can_buy?(item)
     -#%form{:action => "/user/add_pending/#{item.id}", :method => "POST"}
     -#%input.styled-button.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy/Bid" : "Buy/Bid as #{@user.on_behalf_of.name}"}
-    %form{:action => "/user/add_pending/#{item.id}", :method => "POST"}
+    %form{:action => "/user/buy/#{item.id}", :method => "POST"}
       -if item.isFixed?
         %input.textbox8{:type => "text", :name => "buy_amount", :style => "width: 30px", :value => "1"}
         %input.styled-button.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
@@ -45,6 +52,11 @@
       Quantity
     %p
       #{item.quantity}
+    -if !item.end_time.nil?
+      %h3
+        End Time
+      %p
+        #{item.end_time.to_s}
     %h3
       Owner
     %p

@@ -44,10 +44,17 @@ module Store
     class << self
       # all credits get reduced in a special time interval
       def check_auctions
+        Store::Item.allFixed.each{|item|
+          if !item.end_time.nil? and item.end_time<=DateTime.now
+            item.deactivate
+          end
+
+        }
         Store::Item.allAuction_of_active_users.each{ |item|
           if item.end_time <= DateTime.now
             finish_auction item
           end
+
         }
       end
 
@@ -65,7 +72,9 @@ module Store
         selling_price = item.currentSellingPrice
         buyers_bid = item.bidders[buyer]
 
+
         seller.credits += selling_price # + Integer((price * SELL_BONUS).ceil)
+        buyer.credits += buyers_bid - selling_price
 
         item.deactivate
         buyer.attach_item(item)
