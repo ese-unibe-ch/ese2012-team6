@@ -8,11 +8,12 @@
       %th Pic
       %th Name
       %th Price
+      %th Qty
       %th Owner
       %th Active
       %th
   %tbody
-    -for item in Store::Item.all
+    -for item in Store::Item.allFixed_of_active_users
       %tr
         %td
           %img{:src => item.image_path, :height => "40px"}
@@ -22,8 +23,10 @@
               #{item.name}
         %td.ralign
           #{item.price}
+        %td.ralign
+          #{item.quantity}
         %td
-          %a{:href => url("/user/#{item.owner.name}")}
+          %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
             :escaped
               #{item.owner.name}
         %td

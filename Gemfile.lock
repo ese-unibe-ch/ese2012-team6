@@ -9,14 +9,15 @@ GEM
     eventmachine (1.0.0)
     eventmachine (1.0.0-x86-mingw32)
     haml (3.1.7)
+    json (1.7.5)
     less (2.2.2)
       commonjs (~> 0.2.6)
+    orderedhash (0.0.6)
     rack (1.4.1)
     rack-protection (1.2.0)
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
-    rand62 (0.1.0)
     rbtree (0.3.0)
     rcov (1.0.0)
     rdiscount (1.6.8)
@@ -48,8 +49,9 @@ PLATFORMS
 DEPENDENCIES
   bcrypt-ruby (~> 3.0.1)
   haml (~> 3.1.7)
+  json
   less (~> 2.2.2)
-  rand62
+  orderedhash
   rbtree (~> 0.3.0)
   rcov (~> 1.0.0)
   rdiscount (~> 1.6.8)

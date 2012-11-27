@@ -1,9 +1,9 @@
+require_relative '../store/item'
 module Store
 
   # Governs all trading users and watches over user's credits. Swings hammer of doom once every day and reduces
   # user's credits by a certain percentage. Handles user's credits after item trade
   class TradingAuthority
-
 
     CREDIT_REDUCE_RATE = 0.05 unless defined? CREDIT_REDUCE_RATE
     SELL_BONUS = 0.05 unless defined? SELL_BONUS
@@ -16,12 +16,14 @@ module Store
       self.last_refresh = Time.now
     end
 
+    # create new TradingAuthority with a timeout
     def self.timed(time)
       ta = TradingAuthority.new
       ta.credit_reduce_time = time
       ta
     end
 
+    # start governing trader's credits
     def start
       Thread.abort_on_exception = true
       self.last_refresh = Time.now
@@ -47,7 +49,7 @@ module Store
     class << self
       # all credits get reduced in a special time interval
       def swing_hammer_of_doom
-        all_users = SystemUser.all
+        all_users = Trader.all
         all_users.each { |user| self.reduce_credits(user) }
       end
 
@@ -57,9 +59,8 @@ module Store
       end
 
       # update seller's and buyer's credits according to item pricing and sell bonus
-      def settle_item_purchase(seller, buyer, item)
-        seller.credits += item.price + Integer((item.price * SELL_BONUS).ceil)
-        buyer.credits -= item.price
+      def settle_item_purchase(seller, item, quantity = 1)
+        seller.credits += item.price * quantity + Integer((item.price * quantity * SELL_BONUS).ceil)
       end
     end
   end

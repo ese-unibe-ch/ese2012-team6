@@ -1,22 +1,28 @@
+require 'rbtree'
+
 module Analytics
   # Responsible for storing activities and performing operations (e.g sorting) on said activities
   class ActivityLogger
 
-    @@activities = {}
+    @@activities = RBTree.new
+    @@last_id = 0
 
     # clear all logged activities
     def self.clear
       @@activities.clear
+      @@last_id = 0
     end
 
     # log an activity
     def self.log(activity)
+      @@last_id += 1
+      activity.id = @@last_id
       @@activities[activity.id] = activity
     end
 
     # get all stored activities in descending order by timestamp (more recent come first)
     def self.get_all_activities
-      @@activities.values.sort! { |a, b| b.timestamp <=> a.timestamp }
+      @@activities.values.reverse
     end
 
     # retrieve activity by id
@@ -25,6 +31,7 @@ module Analytics
     end
 
     # get the previous description of an item
+    # returns empty string if no previous description was found
     def self.get_previous_description(item)
       activities = @@activities.values
       edit_activities = activities.select { |act| act.type == ActivityType::ITEM_EDIT && act.item_id == item.id }
@@ -48,7 +55,7 @@ module Analytics
       activities = @@activities.values
       buy_activities = activities.select { |act| act.type == ActivityType::ITEM_BUY }
       buy_activities = buy_activities.select { |act| act.success == true }
-      sorted = buy_activities.sort! { |a, b| b.timestamp <=> a.timestamp }
+      sorted = buy_activities.sort! { |a, b| b.id <=> a.id }
       sorted[0..amount-1]
     end
   end

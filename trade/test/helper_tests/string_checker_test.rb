@@ -1,9 +1,9 @@
 require 'test/unit'
 require 'rubygems'
 require 'require_relative'
-require_relative '../app/models/security/string_checker'
+require_relative '../../app/models/helpers/security/string_checker'
 
-class Password_Handler_Test < Test::Unit::TestCase
+class StringCheckerTest < Test::Unit::TestCase
   include Security
 
   def test_length

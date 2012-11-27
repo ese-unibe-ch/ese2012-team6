@@ -1,22 +1,35 @@
 %h2
   Item Details
 %div.action_buttons.float_right
-  -if @user.can_activate?(item)
+  :javascript
+      //addListener();
+      $(document).ready(function() {
+        $('#datetimepicker').datetimepicker({ dateFormat: 'dd-mm-yy', minDate: 0 });
+        updateForm();
+      });
+  -if @user.on_behalf_of.can_activate?(item)
     -if item.active?
       %form{:action => "/item/#{item.id}/update_status?activate=false", :method => "POST"}
         %input.styled-button{:type => "submit", :value => "Deactivate", :text => "deacBtn"}
     -else
       %form{:action => "/item/#{item.id}/update_status?activate=true", :method => "POST"}
         %input.styled-button{:type => "submit", :value => "Activate", :text => "deacBtn"}
-  -if @user.can_edit?(item)
+        %input.textbox8{:type => "text", :id => "datetimepicker", :name => "new_end_time", :style => "width: 60px", :value => nil}
+  -if @user.on_behalf_of.can_edit?(item)
     %a.styled-button{:href => "/item/#{item.id}/edit"} Edit
-  -if @user.can_delete?(item)
+  -if @user.on_behalf_of.can_delete?(item)
     %form{:action => "/item/#{item.id}", :method => "POST"}
       %input{:name => "_method", :type => "hidden", :value => "delete"}
       %input.styled-button.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
-  -if @user.can_buy?(item)
+  -if @user.on_behalf_of.can_buy?(item)
+    -#%form{:action => "/user/add_pending/#{item.id}", :method => "POST"}
+    -#%input.styled-button.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy/Bid" : "Buy/Bid as #{@user.on_behalf_of.name}"}
     %form{:action => "/user/buy/#{item.id}", :method => "POST"}
-      %input.styled-button.buy-color{:type => "submit", :value => @user.on_behalf_of == @user ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
+      -if item.isFixed?
+        %input.textbox8{:type => "text", :name => "buy_amount", :style => "width: 30px", :value => "1"}
+        %input.styled-button.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
+      -elsif item.isAuction?
+        %input.styled-button.buy-color{:type => "submit", :value => @user.working_as_self? ? "Bid" : "Bid as #{@user.on_behalf_of.name}"}
 %h4
   -if item.active?
     This item is currently being traded
@@ -36,10 +49,36 @@
     %p
       #{item.price}
     %h3
+      Quantity
+    %p
+      #{item.quantity}
+    -if !item.end_time.nil?
+      %h3
+        End Time
+      %p
+        #{item.end_time.to_s}
+    %h3
       Owner
     %p
-      :escaped
-        #{item.owner.name}
+      -if item.owner.nil? && item.state == :pending
+        Pending
+      -else
+        :escaped
+          #{item.owner.name unless item.owner == nil}
+    -if item.isAuction?
+      %h3
+        Increment
+      %p
+        #{item.increment}
+      %h3
+        Current winner
+      %p
+        -if item.current_winner != nil
+          :escaped
+            #{item.current_winner.name}
+        -else
+          No winner yet
+
 %h3
   Description
 -if item.description == ""
@@ -60,11 +99,11 @@
         %td
           %div.comment_picture_container
             %img{:src => "#{comment.owner.image_path}", :width => "50", :height => "50"}
-          -if comment.owner == @user.on_behalf_of
+          -if @user.working_on_behalf_of?(comment.owner)
             %form{:action => "/item/#{item.id}/delete_comment/#{comment.id}", :method => "POST"}
               %input.styled-button.float_right.delete-color{:type => "submit", :value => "Delete"}
           %h4
-            %a{:href => url("#{comment.owner.is_organization? ? "/organization/" : "/user/"}#{comment.owner.name}")}
+            %a{:href => url("#{comment.owner.class == Store::User ? "/user/" : "/organization/"}#{comment.owner.name}")}
               :escaped
                 #{comment.owner.name}
             wrote at: #{comment.time_stamp}

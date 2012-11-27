@@ -1,0 +1,22 @@
+%form{:action => action_url, :method => "POST", :enctype => "multipart/form-data"}
+  %h3
+    How much do you want to bid for #{item.name}?
+  %p
+    Minimal price: #{item.price}
+  %p
+    Increment: #{item.increment}
+  -if item.current_winner != nil
+    %p Current winner: #{item.current_winner.name}
+  -else
+    %p No winner yet
+  -if item.currentSellingPrice != nil
+    %p Current price: #{item.currentSellingPrice}
+  -else
+    %p No current price yet
+  %h3.no_top_margin
+    Amount
+  %p
+    %input.textbox8{:type => "text", :name => "amount", :style => "width: 60px"}
+  %div.button_container
+    %input.styled-button{:type => "submit", :value => "Bid"}
+  %br

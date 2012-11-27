@@ -28,7 +28,7 @@
         %th Name
         %th Add
     %tbody
-      -for user in Store::User.all
+      -for user in Store::User.all_active
         -if not viewed_organization.has_member?(user)
           %tr
             %td
@@ -67,7 +67,7 @@
         %th Name
         %th
     %tbody
-      -for user in Store::User.all
+      -for user in Store::User.all_active
         %tr
           %td
             %a{:href => url("/user/#{user.name}")}

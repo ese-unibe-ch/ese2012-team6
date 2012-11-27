@@ -10,7 +10,7 @@
       %th Credits
       %th No. of items
   %tbody
-    -for user in Store::User.all
+    -for user in Store::User.all_active
       %tr
         %td
           %img{:src => user.image_path, :height => "40px"}
