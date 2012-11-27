@@ -51,7 +51,7 @@
       Quantity
     %p
       #{item.quantity}
-    -unless item.end_time.nil?
+    -unless item.end_time.nil? or !item.active?
       %h3
         End Time
       %p
