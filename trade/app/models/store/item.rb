@@ -96,7 +96,7 @@ module Store
     #activates item with end_time, if end_time is set else activates normally
     def activate_with_end_time(new_end_time)
       self.end_time = new_end_time
-      self.update_status(activate)
+      self.update_status(:active)
     end
 
     def activate
@@ -254,8 +254,7 @@ module Store
     
     def time_delta
       current_time = elapsed_seconds = DateTime.now
-      end_time = self.end_time
-      delta_in_seconds = ((end_time - current_time) * 24 * 60 * 60).to_i
+      delta_in_seconds = ((self.end_time - current_time) * 24 * 60 * 60).to_i
       delta_in_seconds
     end
     

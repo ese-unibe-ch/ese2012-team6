@@ -180,7 +180,6 @@ class Item < Sinatra::Application
     item_owner = Trader.by_name(params[:owner])
     item = item_owner.propose_item_with_quantity(item_name, item_price, item_quantity, item_selling_mode, item_increment, item_end_time, item_description)
 
-
     uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/items")
     item.image_path = uploader.upload(file, item.id)
 
