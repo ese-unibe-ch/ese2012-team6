@@ -16,7 +16,7 @@ class ActivityTest < Test::Unit::TestCase
 
   def test_buy_activity
     buyer = User.named("Buyer")
-    item = buyer.propose_item("TestItem", 100, "fixed", nil, nil)
+    item = buyer.propose_item("TestItem", 100, :fixed, nil, nil)
     buy_activity = ItemBuyActivity.with_buyer_item_price_success(buyer, item)
     assert_equal(ActivityType::ITEM_BUY, buy_activity.type)
     assert_equal(buyer.name, buy_activity.actor_name)
@@ -26,7 +26,7 @@ class ActivityTest < Test::Unit::TestCase
 
   def test_add_activity
     creator = User.named("Creator")
-    item = creator.propose_item("TestItem", 100, "fixed", nil, nil)
+    item = creator.propose_item("TestItem", 100, :fixed, nil, nil)
     edit_activity = ItemAddActivity.with_creator_item(creator, item)
     assert_equal(ActivityType::ITEM_ADD, edit_activity.type)
     assert_equal(creator.name, edit_activity.actor_name)
@@ -35,7 +35,7 @@ class ActivityTest < Test::Unit::TestCase
 
   def test_edit_activity
     editor = User.named("Editor")
-    item = editor.propose_item("TestItem", 100, "fixed", nil, nil)
+    item = editor.propose_item("TestItem", 100, :fixed, nil, nil)
     old_vals = {:name => item.name, :price => item.price, :description => item.description}
     new_vals = {:name => "new_name", :price => 120, :description => "new_desc"}
     edit_activity = ItemEditActivity.with_editor_item_old_new_vals(editor, item, old_vals, new_vals)
@@ -48,7 +48,7 @@ class ActivityTest < Test::Unit::TestCase
 
   def test_status_change_activity
     editor = User.named("Editor")
-    item = editor.propose_item("TestItem", 100, "fixed", nil, nil)
+    item = editor.propose_item("TestItem", 100, :fixed, nil, nil)
     edit_activity = ItemStatusChangeActivity.with_editor_item_status(editor, item, true)
     assert_equal(ActivityType::ITEM_STATUS_CHANGE, edit_activity.type)
     assert_equal(editor.name, edit_activity.actor_name)
@@ -58,7 +58,7 @@ class ActivityTest < Test::Unit::TestCase
 
   def test_delete_activity
     remover = User.named("Remover")
-    item = remover.propose_item("TestItem", 100, "fixed", nil, nil)
+    item = remover.propose_item("TestItem", 100, :fixed, nil, nil)
     edit_activity = ItemDeleteActivity.with_remover_item(remover, item)
     assert_equal(ActivityType::ITEM_DELETE, edit_activity.type)
     assert_equal(remover.name, edit_activity.actor_name)

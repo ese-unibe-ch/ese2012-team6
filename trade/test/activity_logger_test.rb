@@ -20,7 +20,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
 
   def test_log_activity
     user = User.named("Hans")
-    item = user.propose_item("Test", 100, "fixed", nil, nil, "", false) #don't log item creation
+    item = user.propose_item("Test", 100, :fixed, nil, nil, "", false) #don't log item creation
 
     act1 = ItemAddActivity.with_creator_item(user, item)
     act2 = ItemDeleteActivity.with_remover_item(user, item)
@@ -41,7 +41,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
 
   def test_get_all_activities
     user = User.named("Hans")
-    item = user.propose_item("Test", 100, "fixed", nil, nil, 1, "", false) #don't log item creation
+    item = user.propose_item("Test", 100, :fixed, nil, nil, 1, "", false) #don't log item creation
 
     act1 = ItemDeleteActivity.with_remover_item(user, item)
     act2 = ItemAddActivity.with_creator_item(user, item)
@@ -58,9 +58,9 @@ class ActivityLoggerTest < Test::Unit::TestCase
 
   def test_previous_description
     user = User.named("Hans")
-    item = user.propose_item("Test", 100, "fixed", nil, nil, "Previous Description", false)
+    item = user.propose_item("Test", 100, :fixed, nil, nil, "Previous Description", false)
 
-    item.update("Test", 100, "New Description", "fixed", nil, nil)
+    item.update("Test", 100, "New Description", :fixed, nil, nil)
 
     assert("Previous Description", ActivityLogger.get_previous_description(item))
   end
@@ -68,8 +68,8 @@ class ActivityLoggerTest < Test::Unit::TestCase
   def test_recent_purchases
     user = User.named("Hansli")
     user2 = User.named("Fritzli")
-    item = user.propose_item("Test1", 100, "fixed", nil, nil,1, "", false)
-    item2 = user2.propose_item("Test2", 100, "fixed", nil, nil,1, "", false)
+    item = user.propose_item("Test1", 100, :fixed, nil, nil,1, "", false)
+    item2 = user2.propose_item("Test2", 100, :fixed, nil, nil,1, "", false)
 
     item.activate
     item2.activate

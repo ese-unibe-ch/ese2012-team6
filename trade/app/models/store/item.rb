@@ -25,7 +25,7 @@ module Store
       self.image_path = "/images/no_image.gif"
       self.edit_time = Time.now
       self.comments = []
-      self.selling_mode = "fixed"
+      self.selling_mode = :fixed
       self.bidders = {}
       self.quantity = 1
     end
@@ -52,24 +52,24 @@ module Store
     end
 
     # create a new item object for fixpriced sale with a name, price and owner
-    def self.named_priced_with_owner_fixed(name, price, owner, description = "")
+    def self.fixed(name, price, owner, description = "")
       item = Item.new
       item.name = name
       item.price = price
       item.owner = owner
       item.description = description
-      item.selling_mode = "fixed"
+      item.selling_mode = :fixed
       item
     end
 
     # create a new item object for auction with a name, price and owner
-    def self.named_priced_with_owner_auction(name, price, owner, increment, endTime, description = "")
+    def self.auction(name, price, owner, increment, endTime, description = "")
       item = Item.new
       item.name = name
       item.price = price
       item.owner = owner
       item.description = description
-      item.selling_mode = "auction"
+      item.selling_mode = :auction
       item.increment = increment != nil ? increment.to_i : nil
       if endTime != nil
         if endTime.is_a?(Fixnum)
@@ -218,11 +218,11 @@ module Store
     end
 
     def isAuction?
-      self.selling_mode == "auction"
+      self.selling_mode == :auction
     end
 
     def isFixed?
-      self.selling_mode == "fixed"
+      self.selling_mode == :fixed
     end
 
     # gets the highest Bidder/Amount pair out of bidders

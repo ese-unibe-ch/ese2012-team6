@@ -53,10 +53,10 @@ module Store
 
     # propose a new item
     def propose_item(name, price, selling_mode, increment, end_time, quantity = 1, description = "", log = true)
-      if selling_mode == "fixed"
-        item = Item.named_priced_with_owner_fixed(name, price, self, description)
+      if selling_mode == :fixed
+        item = Item.fixed(name, price, self, description)
       else
-        item = Item.named_priced_with_owner_auction(name, price, self, increment.to_i, end_time, description)
+        item = Item.auction(name, price, self, increment.to_i, end_time, description)
       end
       item.quantity = quantity
       item.save

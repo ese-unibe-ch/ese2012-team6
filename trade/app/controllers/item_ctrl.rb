@@ -146,7 +146,7 @@ class Item < Sinatra::Application
     redirect url('/error/not_owner_of_item') if changed_owner
     redirect "/item/#{params[:item_id]}" unless @user.on_behalf_of.can_activate?(item)
 
-    if item.selling_mode == "fixed" and activate
+    if item.selling_mode == :fixed and activate
       item.activate_with_end_time(new_end_time)
     else
       item.update_status(activate)
@@ -200,7 +200,7 @@ class Item < Sinatra::Application
     redirect '/error/invalid_quantity' unless Item.valid_price?(params[:item_quantity])
     item_quantity = params[:item_quantity].to_i
 
-    item = @user.on_behalf_of.propose_item_with_quantity(item_name, item_price, item_quantity, "fixed", nil, nil)
+    item = @user.on_behalf_of.propose_item_with_quantity(item_name, item_price, item_quantity, :fixed, nil, nil)
 
 
     redirect "/item/#{item.id}" if back == url('/item/new')
