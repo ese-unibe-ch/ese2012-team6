@@ -71,20 +71,23 @@ module Store
       item.description = description
       item.selling_mode = :auction
       item.increment = increment != nil ? increment.to_i : nil
-      if endTime != nil
-        if endTime.is_a?(Fixnum)
-          item.end_time = DateTime.now + endTime
-        elsif endTime.is_a?(String)
-          item.end_time = Time.mktime(*ParseDate.parsedate(endTime)).to_datetime
-        elsif endTime.is_a?(DateTime)
-          item.end_time = endTime
-        end
-      else
-        item.end_time = nil
-      end
+      item.end_time = endTime
       item
     end
 
+    def end_time=(end_time)
+      if end_time != nil && end_time != ""
+        if end_time.is_a?(Fixnum)
+          @end_time = DateTime.now + end_time
+        elsif end_time.is_a?(String)
+          @end_time = Time.mktime(*ParseDate.parsedate(end_time)).to_datetime
+        elsif end_time.is_a?(DateTime)
+          @end_time = end_time
+        end
+      else
+        @end_time = nil
+      end    
+    end
 
     def to_s
       "#{self.name}, #{self.price}, #{self.owner.name}, #{self.state}"
@@ -92,22 +95,8 @@ module Store
 
     #activates item with end_time, if end_time is set else activates normally
     def activate_with_end_time(new_end_time)
-
-      if new_end_time != nil && new_end_time != ""
-        if new_end_time.is_a?(Fixnum)
-          new_end_time = DateTime.now + new_end_time
-        elsif new_end_time.is_a?(String)
-          new_end_time = Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime
-        elsif new_end_time.is_a?(DateTime)
-          new_end_time = new_end_time
-        else
-          new_end_time=nil
-        end
-        self.end_time = new_end_time
-      else
-        self.end_time=nil
-      end
-        self.update_status(activate)
+      self.end_time = new_end_time
+      self.update_status(activate)
     end
 
     def activate
@@ -171,18 +160,6 @@ module Store
     # update the item's properties, raises error if item is not editable
     def update(new_name, new_price, new_desc, new_selling_mode, new_increment, new_end_time, log = true)
       fail unless self.editable?
-
-      if new_end_time != nil && new_end_time != ""
-        if new_end_time.is_a?(Fixnum)
-          new_end_time = DateTime.now + new_end_time
-        elsif new_end_time.is_a?(String)
-          new_end_time = Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime
-        elsif new_end_time.is_a?(DateTime)
-          new_end_time = new_end_time
-        end
-      else
-        new_end_time = nil
-      end
 
       old_vals = {:name => self.name, :price => self.price, :description => self.description,
         :selling_mode => self.selling_mode, :increment => self.increment, end_time => self.end_time}
