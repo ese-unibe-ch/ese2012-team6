@@ -5,6 +5,7 @@ require_relative '../analytics/activity'
 require_relative '../store/trader'
 require_relative '../helpers/security/password_generator'
 require_relative '../helpers/security/mail_client'
+require_relative '../store/suspender'
 
 module Store
   # Models a user that can log into the system and perform actions on items. It is able to create organizations which
@@ -14,10 +15,7 @@ module Store
     # up to now only using IDs for efficient sorted storing
     @@users = {}
 
-    #TIME_UNTIL_DELETION = 24*60*60*30  # 30 days
-    TIME_UNTIL_DELETION = 10  # 10 seconds
-
-    attr_accessor :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email, :suspend_time
+    attr_accessor :pwd_hash, :pwd_salt, :on_behalf_of, :organizations, :email
 
     def initialize
       super
@@ -109,16 +107,18 @@ module Store
       @@users.delete(self.name)
     end
 
-    def delete_suspended_user?
-      Time.now > (self.suspend_time + TIME_UNTIL_DELETION)
-    end
-
     # reset a user's password and send email with new password if desired
     def reset_password(sendMail = true)
       new_password = Security::PasswordGenerator.generate_new_password()
       self.change_password(new_password)
       Security::MailClient.send_password_mail(self.email, new_password) if sendMail
       new_password
+    end
+
+    def suspend
+      self.active = false
+      self.items.each {|item| item.deactivate}
+      Suspender.suspend_user self
     end
 
     class << self
