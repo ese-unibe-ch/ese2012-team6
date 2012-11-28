@@ -116,11 +116,18 @@ class PurchaseTest < Test::Unit::TestCase
     purchase2 = me.purchase(your_item, 1)
     purchase3 = you.purchase(my_item, 1)
 
+    purchased_item = purchase1.item
+
     me.confirm_purchase(purchase1)
     me.confirm_purchase(purchase2)
     you.confirm_purchase(purchase3)
 
-    assert(my_item.state == :inactive)
+    assert_equal(nil, Item.by_id(your_item.id))
+    assert_equal(:inactive, purchased_item.state)
+    assert_equal(:inactive, my_item.state)
+    assert_equal(3, purchased_item.quantity)
+    assert_equal(purchase2.item, your_item)
+
     assert_equal(my_item.owner, you)
     assert(me.credits == 75)
     assert(you.credits == 129)
