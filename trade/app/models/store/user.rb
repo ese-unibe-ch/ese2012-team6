@@ -55,6 +55,7 @@ module Store
     # log in the user
     def login
       Analytics::UserLoginActivity.with_username(name).log
+      Store::Suspender.release_suspension_of self
     end
 
     # log out the user
@@ -118,7 +119,7 @@ module Store
     def suspend
       self.active = false
       self.items.each {|item| item.deactivate}
-      #Store::Suspender.suspend_user self
+      Store::Suspender.suspend_user self
     end
 
     class << self

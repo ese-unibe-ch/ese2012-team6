@@ -13,10 +13,10 @@ module Store
     end
 
     def self.check_suspended_users
-      @@suspended_users.delete_if { |user, suspend_time|
+      @@suspended_users.delete_if { |username, suspend_time|
         if Time.now >= suspend_time + SUSPEND_TIMEOUT
-          puts "Deleting user #{user}"
-          User.by_name(user).delete
+          puts "Deleting user #{username}"
+          User.by_name(username).delete
           true
         else
           false
@@ -25,7 +25,15 @@ module Store
     end
 
     def self.suspend_user(user)
+      puts "Suspending user #{user.name}"
       @@suspended_users[user.name] = Time.now
+    end
+
+    def self.release_suspension_of(user)
+      if @@suspended_users.has_key? user.name
+        puts "Releasing suspension of user #{user.name}"
+        @@suspended_users.delete user.name
+      end
     end
   end
 end
