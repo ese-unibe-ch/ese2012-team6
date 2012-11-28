@@ -173,7 +173,7 @@ class Item < Sinatra::Application
     item_quantity = params[:item_quantity].to_i
     item_description = params[:item_description] ? params[:item_description] : ""
 
-    item_selling_mode = params[:selling_mode]
+    item_selling_mode = params[:selling_mode] == "auction" ? :auction : :fixed
     item_increment = params[:item_increment]
     item_end_time = params[:auction_end]
 

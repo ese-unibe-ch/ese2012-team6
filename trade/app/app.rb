@@ -8,8 +8,7 @@ require_relative('models/store/user')
 require_relative('models/store/organization')
 require_relative('models/store/trading_authority')
 require_relative('models/store/auction_timer')
-require_relative('models/store/suspender')
-require_relative('models/analytics/activity_logger')
+#require_relative('models/store/suspender')
 
 require_relative('controllers/authentication_ctrl')
 require_relative('controllers/main_ctrl')
@@ -69,7 +68,7 @@ class App < Sinatra::Base
     TradingAuthority.timed(1000).start
     AuctionTimer.check_auctions
     AuctionTimer.timed(10).start
-    Suspender.timed('1s')
+    #Suspender.timed('1s')
     super
   end
 end

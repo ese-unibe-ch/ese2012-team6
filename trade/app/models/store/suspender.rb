@@ -1,6 +1,4 @@
-require 'rubygems'
 require 'rufus/scheduler'
-require_relative '../store/user'
 
 module Store
   class Suspender

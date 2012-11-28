@@ -118,7 +118,7 @@ module Store
     def suspend
       self.active = false
       self.items.each {|item| item.deactivate}
-      Suspender.suspend_user self
+      #Store::Suspender.suspend_user self
     end
 
     class << self
