@@ -54,13 +54,13 @@ module Store
 
     # log in the user
     def login
-      Analytics::UserLoginActivity.with_username(name).log
+      Analytics::UserLoginActivity.create(name).log
       Store::Suspender.release_suspension_of self
     end
 
     # log out the user
     def logout
-      Analytics::UserLogoutActivity.with_username(name).log
+      Analytics::UserLogoutActivity.create(name).log
     end
 
     # tell user to work on behalf of an organization

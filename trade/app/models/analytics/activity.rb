@@ -1,26 +1,11 @@
 module Analytics
-
-  # a module containing a predefined set of Activity Types
-  module ActivityType
-    if not defined? ITEM_BUY
-      ITEM_BUY = "ItemBuy"
-      ITEM_EDIT = "ItemEdit"
-      ITEM_ADD = "ItemAdd"
-      ITEM_STATUS_CHANGE = "ItemStatusChange"
-      ITEM_DELETE = "ItemDelete"
-      USER_LOGIN = "UserLogin"
-      USER_LOGOUT = "UserLogout"
-      NONE = "None"
-    end
-  end
-
   # Provides the skeleton for all derived activities, stores information about when it was created or what type this activity is made of
   class Activity
     attr_accessor :id, :type, :timestamp
 
     def initialize
       self.id = -1
-      self.type = ActivityType::NONE
+      self.type = :NONE
       self.timestamp = Time.now
     end
 
@@ -71,14 +56,14 @@ module Analytics
 
     def initialize
       super
-      self.type = ActivityType::ITEM_BUY
+      self.type = :ITEM_BUY
       self.price = -1
       self.quantity = -1
       self.success = false
     end
 
     # creates a new ItemBuyActivity, with a buyer, item, and whether the buy process was successful
-    def self.with_buyer_item_price_success(buyer, item, quantity = 1, success = true)
+    def self.create(buyer, item, quantity = 1, success = true)
       buy_activity = ItemBuyActivity.new
 
       buy_activity.actor_name = buyer.name
@@ -103,13 +88,13 @@ module Analytics
 
     def initialize
       super
-      self.type = ActivityType::ITEM_EDIT
+      self.type = :ITEM_EDIT
       self.old_values = {}
       self.new_values = {}
     end
 
     # creates a new ItemEditActivity, with an editor, item, and both old and new edit values
-    def self.with_editor_item_old_new_vals(editor, item, old_vals, new_vals)
+    def self.create(editor, item, old_vals, new_vals)
       edit_activity = ItemEditActivity.new
 
       edit_activity.actor_name = editor.name unless editor.nil?
@@ -132,11 +117,11 @@ module Analytics
 
     def initialize
       super
-      self.type = ActivityType::ITEM_ADD
+      self.type = :ITEM_ADD
     end
 
     # creates a new ItemAddActivity with the creator of the created item and the item itself
-    def self.with_creator_item(creator, item)
+    def self.create(creator, item)
       add_activity = ItemAddActivity.new
 
       add_activity.actor_name = creator.name
@@ -157,12 +142,12 @@ module Analytics
 
     def initialize
       super
-      self.type = ActivityType::ITEM_STATUS_CHANGE
+      self.type = :ITEM_STATUS_CHANGE
       self.new_status = nil
     end
 
     # Creates new ItemStatusChangeActivity with the user that initiated the status change, the item itself and the new status of the item
-    def self.with_editor_item_status(editor, item, new_status)
+    def self.create(editor, item, new_status)
       status_change_activity = ItemStatusChangeActivity.new
 
       status_change_activity.actor_name = editor.name unless editor.nil?
@@ -183,11 +168,11 @@ module Analytics
   class ItemDeleteActivity < ItemActivity
     def initialize
       super
-      self.type = ActivityType::ITEM_DELETE
+      self.type = :ITEM_DELETE
     end
 
     # Creates new ItemDeleteActivity with the remover of the item, and the item itself
-    def self.with_remover_item(remover, item)
+    def self.create(remover, item)
       delete_activity = ItemDeleteActivity.new
 
       delete_activity.actor_name = remover.name
@@ -206,11 +191,11 @@ module Analytics
   class UserLoginActivity < UserActivity
     def initialize
       super
-      self.type = ActivityType::USER_LOGIN
+      self.type = :USER_LOGIN
     end
 
     # Creates new UserLoginActivity with the newly logged in user
-    def self.with_username(user_name)
+    def self.create(user_name)
       login_act = UserLoginActivity.new
       login_act.user_name = user_name
       login_act
@@ -225,11 +210,11 @@ module Analytics
   class UserLogoutActivity < UserActivity
     def initialize
       super
-      self.type = ActivityType::USER_LOGOUT
+      self.type = :USER_LOGOUT
     end
 
     # Creates new UserLoginActivity with the newly logged out user
-    def self.with_username(user_name)
+    def self.create(user_name)
       logout_act = UserLogoutActivity.new
       logout_act.user_name = user_name
       logout_act

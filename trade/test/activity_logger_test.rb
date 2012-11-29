@@ -22,19 +22,19 @@ class ActivityLoggerTest < Test::Unit::TestCase
     user = User.named("Hans")
     item = user.propose_item("Test", 100, :fixed, nil, nil, "", false) #don't log item creation
 
-    act1 = ItemAddActivity.with_creator_item(user, item)
-    act2 = ItemDeleteActivity.with_remover_item(user, item)
+    act1 = ItemAddActivity.create(user, item)
+    act2 = ItemDeleteActivity.create(user, item)
 
     ActivityLogger.log(act1)
     ActivityLogger.log(act2)
 
     logged_activities = ActivityLogger.get_all_activities
 
-    assert_equal(ActivityType::ITEM_ADD, logged_activities[1].type)
+    assert_equal(:ITEM_ADD, logged_activities[1].type)
     assert_equal(item.id, logged_activities[1].item_id)
     assert_equal(user.name, logged_activities[1].actor_name)
 
-    assert_equal(ActivityType::ITEM_DELETE, logged_activities[0].type)
+    assert_equal(:ITEM_DELETE, logged_activities[0].type)
     assert_equal(item.id, logged_activities[0].item_id)
     assert_equal(user.name, logged_activities[0].actor_name)
   end
@@ -43,10 +43,10 @@ class ActivityLoggerTest < Test::Unit::TestCase
     user = User.named("Hans")
     item = user.propose_item("Test", 100, :fixed, nil, nil, 1, "", false) #don't log item creation
 
-    act1 = ItemDeleteActivity.with_remover_item(user, item)
-    act2 = ItemAddActivity.with_creator_item(user, item)
-    act3 = ItemEditActivity.with_editor_item_old_new_vals(user, item, {}, {})
-    act4 = ItemBuyActivity.with_buyer_item_price_success(user, item)
+    act1 = ItemDeleteActivity.create(user, item)
+    act2 = ItemAddActivity.create(user, item)
+    act3 = ItemEditActivity.create(user, item, {}, {})
+    act4 = ItemBuyActivity.create(user, item)
 
     ActivityLogger.log(act1)
     ActivityLogger.log(act2)

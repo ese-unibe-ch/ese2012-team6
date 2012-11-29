@@ -126,7 +126,7 @@ module Store
         self.state = new_status ? :active : :inactive
 
         self.notify_change
-        Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log
+        Analytics::ItemStatusChangeActivity.create(self.owner, self, new_status).log if log
       end
     end
 
@@ -175,7 +175,7 @@ module Store
         self.end_time = new_end_time
 
         self.notify_change
-        Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals).log if log
+        Analytics::ItemEditActivity.create(self.owner, self, old_vals, new_vals).log if log
 
         unless self.owner == nil
          equal_item = self.owner.check_for_equal_item(new_name, new_price, new_desc, self)

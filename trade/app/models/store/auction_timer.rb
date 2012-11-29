@@ -81,7 +81,7 @@ module Store
 
         item.notify_change
 
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(buyer, item).log
+        Analytics::ItemBuyActivity.create(buyer, item).log
       end
     end
   end

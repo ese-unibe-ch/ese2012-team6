@@ -34,7 +34,7 @@ module Analytics
     # returns empty string if no previous description was found
     def self.get_previous_description(item)
       activities = @@activities.values
-      edit_activities = activities.select { |act| act.type == ActivityType::ITEM_EDIT && act.item_id == item.id }
+      edit_activities = activities.select { |act| act.type == :ITEM_EDIT && act.item_id == item.id }
 
       most_recent_activity = nil
       most_recent_timestamp = Time.utc(2000, "jan", 1, 20, 15, 1)
@@ -53,7 +53,7 @@ module Analytics
     # get a list of most recent buy activities
     def self.get_most_recent_purchases(amount)
       activities = @@activities.values
-      buy_activities = activities.select { |act| act.type == ActivityType::ITEM_BUY }
+      buy_activities = activities.select { |act| act.type == :ITEM_BUY }
       buy_activities = buy_activities.select { |act| act.success == true }
       sorted = buy_activities.sort! { |a, b| b.id <=> a.id }
       sorted[0..amount-1]

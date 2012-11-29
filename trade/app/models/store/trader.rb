@@ -62,7 +62,7 @@ module Store
       item.save
 
       self.attach_item(item)
-      ItemAddActivity.with_creator_item(self, item).log if log
+      ItemAddActivity.create(self, item).log if log
 
       item
     end
@@ -111,7 +111,7 @@ module Store
       item.owner.release_item(item)
       item.delete
 
-      ItemDeleteActivity.with_remover_item(self, item).log if log
+      ItemDeleteActivity.create(self, item).log if log
     end
 
     # Purchase the indicated amount of the indicated item. PurchaseError will be raised if an error occured.
@@ -121,26 +121,26 @@ module Store
       purchased_item = item
 
       if seller.nil?
-        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        ItemBuyActivity.create(self, purchased_item, quantity, false).log if log
         raise PurchaseError, "ITEM_NO_OWNER" #Item does not belong to anybody
       elsif quantity > purchased_item.quantity
-        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        ItemBuyActivity.create(self, purchased_item, quantity, false).log if log
         raise PurchaseError, "INVALID_QUANTITY" #Seller doesn't have enough items
       elsif !purchased_item.active?
-        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        ItemBuyActivity.create(self, purchased_item, quantity, false).log if log
         raise PurchaseError, "BUY_INACTIVE_ITEM" #Trying to buy inactive item
       elsif !seller.items.include?(purchased_item)
-        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        ItemBuyActivity.create(self, purchased_item, quantity, false).log if log
         raise PurchaseError, "SELLER_NOT_ITEM_OWNER" #Seller does not own item to buy
       elsif self.credits < (purchased_item.price * quantity)
-        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        ItemBuyActivity.create(self, purchased_item, quantity, false).log if log
         raise PurchaseError, "NOT_ENOUGH_CREDITS" #Buyer does not have enough credits
       end
 
       purchase = Purchase.create(item, quantity, seller, self)
       purchase.prepare
 
-      ItemBuyActivity.with_buyer_item_price_success(self, item, quantity).log if log
+      ItemBuyActivity.create(self, item, quantity).log if log
 
       purchase
     end
