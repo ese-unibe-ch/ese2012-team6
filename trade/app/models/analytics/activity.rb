@@ -51,8 +51,8 @@ module Analytics
   end
 
   # Activity that stores information about buy actions
-  class ItemBuyActivity < ItemActivity
-    attr_accessor :price, :quantity, :success
+  class PurchaseActivity < ItemActivity
+    attr_accessor :price, :quantity, :success, :bought_from
 
     def initialize
       super
@@ -60,20 +60,36 @@ module Analytics
       self.price = -1
       self.quantity = -1
       self.success = false
+      self.bought_from = nil
     end
 
     # creates a new ItemBuyActivity, with a buyer, item, and whether the buy process was successful
-    def self.create(buyer, item, quantity = 1, success = true)
-      buy_activity = ItemBuyActivity.new
+    def self.successful(purchase)
+      purchase_activity = PurchaseActivity.new
 
-      buy_activity.actor_name = buyer.name
-      buy_activity.item_id = item.id
-      buy_activity.item_name = item.name
-      buy_activity.price = item.price
-      buy_activity.success = success
-      buy_activity.quantity = quantity
+      purchase_activity.actor_name = purchase.buyer.name
+      purchase_activity.item_id = purchase.item.id
+      purchase_activity.item_name = purchase.item.name
+      purchase_activity.price = purchase.item.price
+      purchase_activity.quantity = purchase.quantity
+      purchase_activity.success = true
 
-      buy_activity
+      purchase_activity
+    end
+
+    # creates a new ItemBuyActivity, with a buyer, item, and whether the buy process was successful
+    def self.failed(buyer, item, quantity)
+      purchase_activity = PurchaseActivity.new
+
+      purchase_activity.actor_name = purchase.buyer.name
+      purchase_activity.item_id = purchase.item.id
+      purchase_activity.item_name = purchase.item.name
+      purchase_activity.price = purchase.item.price
+      purchase_activity.success = success
+      purchase_activity.quantity = quantity
+      purchase_activity.success = false
+
+      purchase_activity
     end
 
     def what_happened

@@ -17,7 +17,7 @@ class ActivityTest < Test::Unit::TestCase
   def test_buy_activity
     buyer = User.named("Buyer")
     item = buyer.propose_item("TestItem", 100, :fixed, nil, nil)
-    buy_activity = ItemBuyActivity.create(buyer, item)
+    buy_activity = PurchaseActivity.successful(buyer, item)
     assert_equal(:ITEM_BUY, buy_activity.type)
     assert_equal(buyer.name, buy_activity.actor_name)
     assert_equal(item.id, buy_activity.item_id)

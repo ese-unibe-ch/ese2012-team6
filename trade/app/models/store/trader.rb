@@ -45,6 +45,9 @@ module Store
       trader
     end
 
+    def propose_item()
+
+    end
     # propose a new item with quantity
     def propose_item_with_quantity(name, price, quantity, selling_mode, increment, end_time, description = "", log = true)
       item = self.propose_item(name,price,selling_mode,increment,end_time, quantity, description,log)
@@ -121,26 +124,26 @@ module Store
       purchased_item = item
 
       if seller.nil?
-        ItemBuyActivity.create(self, purchased_item, quantity, false).log if log
+        PurchaseActivity.failed(self, purchased_item, quantity).log if log
         raise PurchaseError, "ITEM_NO_OWNER" #Item does not belong to anybody
       elsif quantity > purchased_item.quantity
-        ItemBuyActivity.create(self, purchased_item, quantity, false).log if log
+        PurchaseActivity.failed(self, purchased_item, quantity).log if log
         raise PurchaseError, "INVALID_QUANTITY" #Seller doesn't have enough items
       elsif !purchased_item.active?
-        ItemBuyActivity.create(self, purchased_item, quantity, false).log if log
+        PurchaseActivity.failed(self, purchased_item, quantity).log if log
         raise PurchaseError, "BUY_INACTIVE_ITEM" #Trying to buy inactive item
       elsif !seller.items.include?(purchased_item)
-        ItemBuyActivity.create(self, purchased_item, quantity, false).log if log
+        PurchaseActivity.failed(self, purchased_item, quantity).log if log
         raise PurchaseError, "SELLER_NOT_ITEM_OWNER" #Seller does not own item to buy
       elsif self.credits < (purchased_item.price * quantity)
-        ItemBuyActivity.create(self, purchased_item, quantity, false).log if log
+        PurchaseActivity.failed(self, purchased_item, quantity).log if log
         raise PurchaseError, "NOT_ENOUGH_CREDITS" #Buyer does not have enough credits
       end
 
       purchase = Purchase.create(item, quantity, seller, self)
       purchase.prepare
 
-      ItemBuyActivity.create(self, item, quantity).log if log
+      PurchaseActivity.successful(purchase).log if log
 
       purchase
     end

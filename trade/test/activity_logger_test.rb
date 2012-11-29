@@ -2,6 +2,7 @@ require 'test/unit'
 require 'rubygems'
 require 'require_relative'
 require_relative '../app/models/analytics/activity'
+require_relative '../app/models/analytics/activity_logger'
 require_relative '../app/models/store/user'
 require_relative '../app/models/store/item'
 require_relative '../app/models/store/purchase'
@@ -46,7 +47,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
     act1 = ItemDeleteActivity.create(user, item)
     act2 = ItemAddActivity.create(user, item)
     act3 = ItemEditActivity.create(user, item, {}, {})
-    act4 = ItemBuyActivity.create(user, item)
+    act4 = PurchaseActivity.successful(user, item)
 
     ActivityLogger.log(act1)
     ActivityLogger.log(act2)
@@ -90,5 +91,25 @@ class ActivityLoggerTest < Test::Unit::TestCase
     assert_equal(item2.id, recent_purchases[1].item_id)
     assert_equal("Fritzli", recent_purchases[0].actor_name)
     assert_equal(item.id, recent_purchases[0].item_id)
+  end
+
+  def test_purchase_statistics
+    user = User.named("Hansli")
+    user2 = User.named("Fritzli")
+    item = user.propose_item("Test1", 100, :fixed, nil, nil,1, "", false)
+    item2 = user2.propose_item("Test2", 100, :fixed, nil, nil,1, "", false)
+
+    item.activate
+    item2.activate
+
+    [user, user2].each{ |usr| usr.acknowledge_item_properties! }
+
+    user.purchase(item2)
+    user2.purchase(item)
+
+    cnt, sum = ActivityLogger.get_transaction_statistics_of_last '1s'
+
+    assert_equal(2, cnt)
+    assert_equal(200, sum)
   end
 end
