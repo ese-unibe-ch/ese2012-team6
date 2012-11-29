@@ -81,11 +81,10 @@ module Analytics
     def self.failed(buyer, item, quantity)
       purchase_activity = PurchaseActivity.new
 
-      purchase_activity.actor_name = purchase.buyer.name
-      purchase_activity.item_id = purchase.item.id
-      purchase_activity.item_name = purchase.item.name
-      purchase_activity.price = purchase.item.price
-      purchase_activity.success = success
+      purchase_activity.actor_name = buyer.name
+      purchase_activity.item_id = item.id
+      purchase_activity.item_name = item.name
+      purchase_activity.price = item.price
       purchase_activity.quantity = quantity
       purchase_activity.success = false
 
