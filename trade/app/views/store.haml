@@ -70,7 +70,7 @@
               %p #{item.time_delta_string}
             %td
               -if @user.on_behalf_of.can_buy?(item)
-                %form{:action => "/user/add_pending/#{item.id}", :method => "POST"}
+                %form{:action => "/user/buy/#{item.id}", :method => "POST"}
                   %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Bid" : "Bid as #{@user.on_behalf_of.name}"}
 
 %h3

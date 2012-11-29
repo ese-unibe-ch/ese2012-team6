@@ -43,7 +43,6 @@ class Main < Sinatra::Application
         should_refresh = true
       when "organization_credit_transfer_failed"
         should_refresh = true
-<<<<<<< HEAD
       when "wrong_transfer_amount"
         error_message = "You must transfer a positive integral amount of credits"
       when "invalid_username"
@@ -52,8 +51,6 @@ class Main < Sinatra::Application
         error_message = "This user was created for fast program testing, thus it hasn't got an email address"
       when "delete_failed"
         error_message = "You cannot delete your account because you have active auctions"
-=======
->>>>>>> 87c57e2ccfc98b828ace71ee747cc04d0ceb7512
     end
 
     error_message = Exceptions::ExceptionText.get(params[:error_msg])

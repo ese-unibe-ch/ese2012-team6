@@ -14,7 +14,8 @@
     -else
       %form{:action => "/item/#{item.id}/update_status?activate=true", :method => "POST"}
         %input.styled-button{:type => "submit", :value => "Activate", :text => "deacBtn"}
-        %input.textbox8{:type => "text", :id => "datetimepicker", :name => "new_end_time", :style => "width: 60px", :value => nil}
+        -if item.isFixed?
+          %input.textbox8{:type => "text", :id => "datetimepicker", :name => "new_end_time", :style => "width: 60px", :value => nil}
   -if @user.on_behalf_of.can_edit?(item)
     %a.styled-button{:href => "/item/#{item.id}/edit"} Edit
   -if @user.on_behalf_of.can_delete?(item)
@@ -22,8 +23,6 @@
       %input{:name => "_method", :type => "hidden", :value => "delete"}
       %input.styled-button.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
   -if @user.on_behalf_of.can_buy?(item)
-    -#%form{:action => "/user/add_pending/#{item.id}", :method => "POST"}
-    -#%input.styled-button.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy/Bid" : "Buy/Bid as #{@user.on_behalf_of.name}"}
     %form{:action => "/user/buy/#{item.id}", :method => "POST"}
       -if item.isFixed?
         %input.textbox8{:type => "text", :name => "buy_amount", :style => "width: 30px", :value => "1"}
@@ -52,7 +51,7 @@
       Quantity
     %p
       #{item.quantity}
-    -if !item.end_time.nil?
+    -unless item.end_time.nil? or !item.active?
       %h3
         End Time
       %p

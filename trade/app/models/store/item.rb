@@ -108,7 +108,6 @@ module Store
         self.end_time=nil
       end
         self.update_status(activate)
-
     end
 
     def activate
@@ -128,8 +127,6 @@ module Store
         self.bidders = {}
 
       end
-      self.selling_mode="fixed"
-      self.end_time=nil
     end
 
     # update the item's status
@@ -138,10 +135,6 @@ module Store
 
       if old_status != new_status
         self.state = new_status ? :active : :inactive
-
-        if !self.active? and self.isFixed?
-          self.end_time=nil
-        end
 
         self.notify_change
         Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log
