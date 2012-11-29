@@ -46,6 +46,10 @@ class Authentication < Sinatra::Application
     @user.active = true
     # Timer stoppen, falls es ein suspend war
 
+    if @user.name == "admin"
+      redirect "/admin/"
+    end
+
     redirect '/'
   end
 

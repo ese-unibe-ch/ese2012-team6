@@ -55,6 +55,9 @@
                 %a{:href => url("/organization/#{@user.on_behalf_of.name}")} Profile
             %li
               %a{:href => url("/activities")} Activities
+            %li
+              -if @user.name == 'admin'
+                %a{:href => url("/admin/")} Admin
           %div#context_switch
             %p
               Work on behalf of:

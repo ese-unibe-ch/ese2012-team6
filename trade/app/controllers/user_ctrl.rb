@@ -6,6 +6,7 @@ require_relative('../models/helpers/storage/picture_uploader')
 require_relative('../models/store/trader')
 require_relative('../models/store/purchase')
 require_relative('../models/helpers/exceptions/purchase_error')
+require_relative('../models/store/trading_authority')
 
 # Handles all requests concerning user display and actions
 class User < Sinatra::Application
@@ -192,4 +193,23 @@ class User < Sinatra::Application
 
     haml :suspend
   end
+
+  get '/admin/' do
+    redirect '/login' unless @user.name =='admin'
+    haml :admin
+  end
+
+  post '/admin/changeParams/' do
+
+    frequency     =(params[:frequency])
+    tax           =(params[:tax])
+    bonus         =(params[:bonus])
+
+    @@timer.credit_reduce_rate = tax.to_i/100 unless tax.nil?
+    @@timer.bonus_on_sell      = bonus.to_i/100 unless bonus.nil?
+    @@timer.credit_reduce_time = frequency.to_i unless frequency.nil?
+
+    redirect '/admin/'
+  end
+
 end

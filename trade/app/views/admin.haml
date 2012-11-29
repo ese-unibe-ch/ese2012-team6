@@ -1,0 +1,28 @@
+%h2
+  System Parameters
+%h3
+  Change Tax and Tax frequency.
+%form{:action => "/admin/changeParams/", :method => "POST",}
+  %table
+    %tr
+      %td
+        %label Frequency in seconds
+      %td
+        %input.textbox8{:type => "text", :name => "frequency"}
+      %td
+    %tr
+      %td
+        %label Tax per Cycle
+      %td
+        %input.textbox8{:type => "text", :name => "tax", }
+    %tr
+      %td
+        %label Bonus on sell
+      %td
+        %input.textbox8{:type => "text", :name => "bonus"}
+    %tr
+      %td
+      %td{:align => "right"}
+        %input.styled-button{:type => "submit", :text => "submit", :value => "Save"}
+      %td
+%h3
