@@ -2,7 +2,7 @@
   Users
 %h3
   The following users are registered by the system
-%table.table-minimalistic
+%table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
   %thead
     %tr
       %th Pic
@@ -22,3 +22,4 @@
           #{user.credits}
         %td.ralign
           #{user.items.size}
+=haml :'partials/pagination'

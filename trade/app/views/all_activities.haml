@@ -2,7 +2,7 @@
   Activities
 %h3
   Monitor the latest activities
-%table.table-minimalistic
+%table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
   %thead
     %tr
       %th Timestamp
@@ -20,3 +20,4 @@
           =activity.what_happened
         -#%td
         -#  %a{:href => "/activity/#{activity.id}"} Details
+=haml :'partials/pagination'

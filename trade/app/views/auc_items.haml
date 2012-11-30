@@ -16,10 +16,10 @@
     }
   });
 %h2
-  Items
+  Auctions
 %h3
   The following auctions are registered by the system
-%table.table-minimalistic
+%table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
   %thead
     %tr
       %th Pic
@@ -51,3 +51,4 @@
             %input{:type => "checkbox", :disabled => "disabled"}
         %td{:title => item.end_time.strftime("%Y-%m-%d %H:%M"), :id => "remaining_"+item.id.to_s, :class => "time-remaining"}
           %p #{item.time_delta_string}
+=haml :'partials/pagination'

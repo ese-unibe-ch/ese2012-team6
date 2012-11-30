@@ -45,6 +45,13 @@ class App < Sinatra::Base
     (user_ese = User.named("ese")).save
     (user_ese2 = User.named("ese2")).save
     (user_ese3 = User.named("ese3")).save
+    (user_ese4 = User.named("ese4")).save
+    (user_ese5 = User.named("ese5")).save
+    (user_ese6 = User.named("ese6")).save
+    (user_ese7 = User.named("ese7")).save
+    (user_ese8 = User.named("ese8")).save
+    (user_ese9 = User.named("ese9")).save
+    (user_ese10 = User.named("ese10")).save
     (umbrella_corp = User.named("umbrellacorp")).save
     (peter_griffin = User.named("petergriffin")).save
 

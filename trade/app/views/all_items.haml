@@ -2,7 +2,7 @@
   Items
 %h3
   The following items are registered by the system
-%table.table-minimalistic
+%table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
   %thead
     %tr
       %th Pic
@@ -11,7 +11,6 @@
       %th Qty
       %th Owner
       %th Active
-      %th
   %tbody
     -for item in Store::Item.allFixed_of_active_users
       %tr
@@ -34,3 +33,4 @@
             %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
           -else
             %input{:type => "checkbox", :disabled => "disabled"}
+=haml :'partials/pagination'
