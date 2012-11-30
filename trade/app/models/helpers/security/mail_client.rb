@@ -53,7 +53,34 @@ EOF
         }
       end
     end
+
+    def self.send_notice_seller_mail(to, buyer_name, buyer_email, item)  #to = seller.email
+      from = 'awesome.trading.app@gmail.com' #insert a gmail address
+      pw = 'our_app_is_awesome' #and the password to the corresponding account
+
+      content = <<EOF
+From: #{from}
+To: #{to}
+subject: Your #{item.name} has been sold
+
+      The following item has been sold: #{item.name}
+      Contact information:
+      Name of buyer: #{buyer_name}
+      Email of buyer: #{buyer_email}
+
+Sincerely,
+Awesome Trading App
+EOF
+
+      Net::SMTP.enable_tls(OpenSSL::SSL::VERIFY_NONE)
+      Net::SMTP.start('smtp.gmail.com', 587, 'gmail.com', from, pw, :login) do |smtp|
+        to.each {|recipient|
+          smtp.send_message content, from, recipient
+        }
+      end
+    end
   end
 end
+
 
 

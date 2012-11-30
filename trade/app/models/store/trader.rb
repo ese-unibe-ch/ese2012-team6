@@ -142,6 +142,8 @@ module Store
 
       ItemBuyActivity.with_buyer_item_price_success(self, item, quantity).log if log
 
+      Security::MailClient.send_notice_seller_mail(seller.email, self.name, self.email, item)
+
       purchase
     end
 
