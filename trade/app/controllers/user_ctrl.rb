@@ -173,12 +173,8 @@ class User < Sinatra::Application
   get '/suspend_prov' do
     redirect '/login' unless @user
 
-    active_auctions = false
-
     @user.items.each do |item|
-      if item.isAuction?
-        redirect '/error/delete_failed'
-      end
+      redirect '/error/delete_failed' if item.isAuction? && item.active?
     end
 
     haml :suspend_prov
