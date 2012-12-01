@@ -26,6 +26,9 @@
             -unless @user.working_as_self?
               || #{@user.on_behalf_of.name}: Credits: $#{@user.on_behalf_of.credits} | Items: #{@user.on_behalf_of.items.size}
           %span.login_status
+            %form{:action => "/search/items", :method => "GET", :onsubmit => "return validate_search(this);"}
+              %input.textbox8{:type => "text", :name => "search_desc", :style => "width: 60px"}
+              %input{:type => "submit", :value => "Search"}
             Logged in as
             %a{:href => url("/user/#{@user.name}")}
               :escaped

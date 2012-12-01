@@ -115,3 +115,15 @@ function validate_gift_transfer(form) {
 
     return true;
 }
+
+function validate_search(form) {
+    form.search_desc.value = form.search_desc.value.trim();
+
+    if (form.search_desc.value == "") {
+        form.search_desc.style.backgroundColor = "rgba(245, 106, 82, 0.41)";
+        document.getElementById('error_message').innerHTML = "Please enter something";
+        return false;
+    }
+
+    return true;
+}

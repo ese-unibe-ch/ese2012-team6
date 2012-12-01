@@ -1,11 +1,17 @@
 module Storage
+  #Allows user to look for an item
   class Search
 
+    #Returns all items, which match the input of the user.
     def self.search(description)
-      items = Store::Item.all
-      pattern = "(?i)(\w+)?#{description}(\w+)?"
-      items.select {|x| x.description.match(pattern) or x.name.match(pattern)}
-    end
 
+      items = Store::Item.all
+      pattern = "(?i)(\w+)?(#{description})(\w+)?"
+      begin
+        return items.select {|x| x.description.match(pattern) or x.name.match(pattern)}
+      rescue Exception
+        return []
+      end
+    end
   end
 end

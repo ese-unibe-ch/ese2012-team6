@@ -4,6 +4,7 @@ require 'rdiscount'
 require_relative '../models/helpers/storage/picture_uploader'
 require_relative '../models/helpers/security/string_checker'
 require_relative '../models/store/comment'
+require_relative '../models/helpers/storage/search'
 
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
@@ -228,5 +229,12 @@ class Item < Sinatra::Application
     if item != nil
       Haml::Filters::Plain.render(item.time_delta_string)
     end
+  end
+
+  get '/search/items' do
+    redirect '/login' unless @user
+    description = params[:search_desc]
+    matched_items = Search.search(description)
+    haml :search_items, :locals => {:matched_items => matched_items}
   end
 end
