@@ -5,28 +5,22 @@ module Store
   # user's credits by a certain percentage. Handles user's credits after item trade
   class TradingAuthority
 
-
     # public for testing
-    attr_accessor :credit_reduce_time, :last_refresh, :reduce_thread, :credit_reduce_rate, :sell_bonus
-    @@timer=nil
-
-    def initialize
-      self.credit_reduce_time = 24*60*60 # 24 Hours
-      self.last_refresh = Time.now
+    class << self
+      attr_accessor :credit_reduce_time, :last_refresh, :reduce_thread, :credit_reduce_rate, :sell_bonus
     end
+
+    @sell_bonus=0.05
+    @credit_reduce_rate = 0.05
+    @credit_reduce_time = 60*60*24
 
     # create new TradingAuthority with a timeout
     def self.timed(time)
-      ta = TradingAuthority.new
-      ta.credit_reduce_time = time
-      ta.credit_reduce_rate=0.05
-      ta.sell_bonus=0.05
-      @@timer=ta
-      ta
+      @credit_reduce_time = time
     end
 
     # start governing trader's credits
-    def start
+    def self.start
       Thread.abort_on_exception = true
       self.last_refresh = Time.now
 
@@ -51,7 +45,7 @@ module Store
     end
 
     # stop governing user's credits
-    def stop
+    def self.stop
       self.reduce_thread.kill if self.reduce_thread
     end
 
@@ -64,12 +58,12 @@ module Store
 
       # reduce credit of each user
       def reduce_credits(user)
-        user.credits -= Integer(user.credits * credit_reduce_rate)
+        user.credits -= Integer(user.credits * @credit_reduce_rate)
       end
 
       # update seller's and buyer's credits according to item pricing and sell bonus
       def settle_item_purchase(seller, item, quantity = 1)
-        seller.credits += item.price * quantity + Integer((item.price * quantity * sell_bonus).ceil)
+        seller.credits += item.price * quantity + Integer((item.price * quantity * @sell_bonus).ceil)
       end
     end
   end

@@ -9,29 +9,22 @@ require_relative '../app/models/store/trading_authority'
 class TradingAuthorityTest < Test::Unit::TestCase
   include Store
 
-  def test_creation_default_timeout
-    ta = TradingAuthority.new
-    assert_equal(24*60*60, ta.credit_reduce_time)
-    assert_equal(nil, ta.reduce_thread)
-    ta.stop
-  end
-
   def test_creation
-    ta = TradingAuthority.timed(3)
-    assert_equal(3, ta.credit_reduce_time)
-    assert_equal(nil, ta.reduce_thread)
-    ta.stop
+    TradingAuthority.timed(3)
+    assert_equal(3, TradingAuthority.credit_reduce_time)
+    assert_equal(nil, TradingAuthority.reduce_thread)
+    TradingAuthority.stop
   end
 
   def test_start
-    ta = TradingAuthority.timed(3)
-    ta.start
+    TradingAuthority.timed(3)
+    TradingAuthority.start
 
-    assert_equal(true, ta.reduce_thread.alive?)
+    assert_equal(true, TradingAuthority.reduce_thread.alive?)
 
-    ta.stop
+    TradingAuthority.stop
 
-    assert_equal(false, ta.reduce_thread.alive?)
+    assert_equal(false, TradingAuthority.reduce_thread.alive?)
   end
 
   def test_reduce_credits
@@ -43,8 +36,8 @@ class TradingAuthorityTest < Test::Unit::TestCase
 
     TradingAuthority.swing_hammer_of_doom
 
-    assert_equal(100-Integer(100*TradingAuthority::CREDIT_REDUCE_RATE), user.credits)
-    assert_equal(100-Integer(100*TradingAuthority::CREDIT_REDUCE_RATE), org.credits)
+    assert_equal(100-Integer(100*TradingAuthority.credit_reduce_rate), user.credits)
+    assert_equal(100-Integer(100*TradingAuthority.credit_reduce_rate), org.credits)
   end
 
   # time dependent unit test, result dependent on machine
@@ -55,15 +48,15 @@ class TradingAuthorityTest < Test::Unit::TestCase
     user.save
     org.save
 
-    ta = TradingAuthority.timed(1)
+    TradingAuthority.timed(1)
 
-    ta.start
+    TradingAuthority.start
 
     sleep 1.5
 
-    assert_equal(100-Integer(100*TradingAuthority::CREDIT_REDUCE_RATE), user.credits)
-    assert_equal(100-Integer(100*TradingAuthority::CREDIT_REDUCE_RATE), org.credits)
+    assert_equal(100-Integer(100*TradingAuthority.credit_reduce_rate), user.credits)
+    assert_equal(100-Integer(100*TradingAuthority.credit_reduce_rate), org.credits)
 
-    ta.stop
+    TradingAuthority.stop
   end
 end

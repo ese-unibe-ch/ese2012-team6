@@ -195,19 +195,37 @@ class User < Sinatra::Application
   end
 
   get '/admin/' do
+    redirect '/login' unless @user
     redirect '/login' unless @user.name =='admin'
     haml :admin
   end
 
   post '/admin/changeParams/' do
 
-    frequency     =(params[:frequency])
-    tax           =(params[:tax])
-    bonus         =(params[:bonus])
+    frequency     =(params[:frequency].to_s)
+    tax           =(params[:tax].to_s)
+    bonus         =(params[:bonus].to_s)
 
-    @@timer.credit_reduce_rate = tax.to_i/100 unless tax.nil?
-    @@timer.bonus_on_sell      = bonus.to_i/100 unless bonus.nil?
-    @@timer.credit_reduce_time = frequency.to_i unless frequency.nil?
+    put frequency
+    put tax
+    put bonus
+
+    frequency.to_i if frequency.match(/^\d+$/)
+    tax.to_i if tax.match(/^\d+$/)
+    bonus.to_i if bonus.match(/^\d+$/)
+
+    if tax.kind_of? Integer and tax >= 0 and tax <100
+      TradingAuthority.credit_reduce_rate = tax.to_i/100 unless tax.nil?
+    end
+
+
+    if bonus.kind_of? Integer and bonus >= 0 and bonus <100
+      TradingAuthority.bonus_on_sell = bonus.to_i/100 unless bonus.nil?
+    end
+
+    if frequency.kind_of? Integer
+      TradingAuthority.credit_reduce_time = frequency.to_i unless frequency.nil?
+    end
 
     redirect '/admin/'
   end
