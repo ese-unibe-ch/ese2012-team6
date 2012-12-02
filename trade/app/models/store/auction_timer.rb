@@ -67,21 +67,16 @@ module Store
           return
         end
 
-        seller.release_item(item)
-
-        selling_price = item.current_selling_price
+        item.price = item.current_selling_price
+        # unfreeze money
         buyers_bid = item.bidders[buyer]
+        buyer.credits += buyers_bid
 
+        purchase = Purchase.create(item, item.quantity, seller, buyer)
+        purchase.prepare
+        purchase.confirm
 
-        seller.credits += selling_price # + Integer((price * SELL_BONUS).ceil)
-        buyer.credits += buyers_bid - selling_price
-
-        item.deactivate
-        buyer.attach_item(item)
-
-        item.notify_change
-
-        Analytics::PurchaseActivity.successful(Purchase.create(item, item.quantity, seller, buyer)).log
+        Analytics::PurchaseActivity.successful(purchase).log
       end
     end
   end

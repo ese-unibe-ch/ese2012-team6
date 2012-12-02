@@ -27,10 +27,10 @@ class AuctionTest < Test::Unit::TestCase
   end
 
   def test_canBid
-    initialPrice = 5
+    initial_price = 5
     increment = 2
     item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
-    item = Item.auction(item_name, initialPrice, @userA, increment, 0, nil)
+    item = Item.auction(item_name, initial_price, @userA, increment, 0, nil)
     assert item.is_auction?
     assert !item.is_fixed?
     assert(!@userD.can_bid?(item,1)) # bid not high enough
@@ -41,10 +41,10 @@ class AuctionTest < Test::Unit::TestCase
   end
 
   def test_createAuction
-    initialPrice = 5
+    initial_price = 5
     increment = 2
     item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
-    item = Item.auction(item_name, initialPrice, @userA, increment, 0, nil)
+    item = Item.auction(item_name, initial_price, @userA, increment, 0, nil)
     assert(item.owner == @userA)
     assert(item.current_selling_price == nil)
 
@@ -76,10 +76,10 @@ class AuctionTest < Test::Unit::TestCase
   end
 
   def test_current_winner
-    initialPrice = 5
+    initial_price = 5
     increment = 2
     item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
-    item = Item.auction(item_name, initialPrice, @userA, increment, 0, nil)
+    item = Item.auction(item_name, initial_price, @userA, increment, 0, nil)
     assert item.current_winner == nil
     @userB.bid(item, 10)
     assert item.current_winner == @userB
@@ -88,10 +88,10 @@ class AuctionTest < Test::Unit::TestCase
   end
 
   def test_get_money_back_if_overbidden
-    initialPrice = 5
+    initial_price = 5
     increment = 2
     item_name = "TestItem"
-    item = Item.auction(item_name, initialPrice, @userA, increment, "2015-10-15 18:00:00", nil)
+    item = Item.auction(item_name, initial_price, @userA, increment, "2015-10-15 18:00:00", nil)
     @userB.bid(item,20)
     assert item.current_selling_price == 5
     assert @userA.credits == 1000
@@ -110,20 +110,20 @@ class AuctionTest < Test::Unit::TestCase
   end
 
   def test_cant_edit_after_bidding
-    initialPrice = 5
+    initial_price = 5
     increment = 2
     item_name = "TestItem"
-    item = Item.auction(item_name, initialPrice, @userA, increment, 0, nil)
+    item = Item.auction(item_name, initial_price, @userA, increment, 0, nil)
     assert item.editable?
     @userB.bid(item,20)
     assert !item.editable?
   end
 
   def test_finish_transaction
-    initialPrice = 5
+    initial_price = 5
     increment = 2
     item_name = "TestItem"
-    item = Item.auction(item_name, initialPrice, @userA, increment, "2009-10-15 18:00:00", nil)
+    item = Item.auction(item_name, initial_price, @userA, increment, "2009-10-15 18:00:00", nil)
     @userB.bid(item,20)
     @userC.bid(item,15)
     @userC.bid(item,25)
@@ -133,16 +133,17 @@ class AuctionTest < Test::Unit::TestCase
     assert @userC.credits == 970
     AuctionTimer.finish_auction(item)
     assert item.bidders == {}
-    assert @userA.credits == 1022
+    assert_equal(22, item.price)
+    assert_equal(1024, @userA.credits)
     assert @userB.credits == 1000
-    assert @userC.credits == 978
+    assert_equal(978, @userC.credits)
   end
 
   def test_finish_transaction_no_bidder
-    initialPrice = 5
+    initial_price = 5
     increment = 2
     item_name = "TestItem"
-    item = Item.auction(item_name, initialPrice, @userA, increment, "2009-10-15 18:00:00", nil)
+    item = Item.auction(item_name, initial_price, @userA, increment, "2009-10-15 18:00:00", nil)
     item.activate
     AuctionTimer.finish_auction(item)
     assert @userA.credits == 1000
@@ -150,10 +151,10 @@ class AuctionTest < Test::Unit::TestCase
   end
 
   def test_get_money_back_when_deactivated
-    initialPrice = 5
+    initial_price = 5
     increment = 2
     item_name = "TestItem"
-    item = Item.auction(item_name, initialPrice, @userA, increment, "2015-10-15 18:00:00", nil)
+    item = Item.auction(item_name, initial_price, @userA, increment, "2015-10-15 18:00:00", nil)
     @userB.bid(item,20)
     @userC.bid(item,15)
     @userC.bid(item,25)

@@ -28,7 +28,7 @@ module Store
       if self.item.quantity == self.quantity
         self.seller.release_item(self.item)
       else
-        self.seller.release_quantity_of_item(self.item, quantity)
+        self.seller.release_quantity_of_item(self.item, self.quantity)
         self.item = self.item.clone
         self.item.id = Item.next_id!
         self.item.owner = nil
@@ -39,7 +39,7 @@ module Store
 
       self.item.notify_change
       self.buyer.add_to_pending(self)
-      self.buyer.credits -= self.item.price * quantity
+      self.buyer.credits -= self.item.price * self.quantity
     end
 
     def confirm
