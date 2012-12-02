@@ -67,7 +67,7 @@ class App < Sinatra::Base
     user_ese2.comment(meg, "This is another comment by ese2")
 
     #add default organization
-   (organization_mordor_inc = Organization.named("MordorInc", :credits => 200, :admin => user_ese, :email => "awesome.trading.app@gmail.com")).save
+   (organization_mordor_inc = Organization.named("MordorInc", :credits => 200, :admin => user_ese)).save
     organization_mordor_inc.add_member(peter_griffin)
   end
 
