@@ -1,3 +1,9 @@
+:javascript
+  $(document).ready(function() {
+     $('.powertip').powerTip({
+          placement: 's' // north-east tooltip positio
+     });
+  })
 %h2
   Items
 %h3
@@ -17,7 +23,7 @@
         %td
           %img{:src => item.image_path, :height => "40px"}
         %td
-          %a{:href => url("/item/#{item.id}")}
+          %a.powertip{:href => url("/item/#{item.id}"), "data-powertip" => RDiscount.new(item.description, :smart, :filter_html).to_html}
             :escaped
               #{item.name}
         %td.ralign
