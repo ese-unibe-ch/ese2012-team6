@@ -8,6 +8,7 @@ GEM
     daemons (1.1.9)
     eventmachine (1.0.0)
     eventmachine (1.0.0-x86-mingw32)
+    fastercsv (1.5.5)
     haml (3.1.7)
     json (1.7.5)
     less (2.2.2)
@@ -51,6 +52,7 @@ PLATFORMS
 
 DEPENDENCIES
   bcrypt-ruby (~> 3.0.1)
+  fastercsv
   haml (~> 3.1.7)
   json
   less (~> 2.2.2)

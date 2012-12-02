@@ -2,6 +2,7 @@ require 'haml'
 require_relative '../models/analytics/activity_logger'
 require_relative '../models/store/user'
 require_relative '../models/store/item'
+require_relative '../models/store/purchase'
 
 # handles requests concerning activities and activity logging
 class ActivityLogger < Sinatra::Application
@@ -43,5 +44,11 @@ class ActivityLogger < Sinatra::Application
         :actor_still_in_system => actor_still_in_system,
         :item_still_in_system => item_still_in_system
     }
+  end
+
+  post '/purchases/dump' do
+    redirect '/login' unless @user
+    Store::Purchase.dump("purchases_#{Time.now.asctime}")
+    redirect back
   end
 end
