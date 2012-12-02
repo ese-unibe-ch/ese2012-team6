@@ -108,6 +108,7 @@ class User < Sinatra::Application
   get '/user/bid/:item_id' do
     item_id = params[:item_id].to_i
     item = Item.by_id(item_id)
+    @user.on_behalf_of.acknowledge_item_properties!
     haml :bid, :locals => {:action_url => "/user/bid/#{params[:item_id]}", :item => item}
   end
 
