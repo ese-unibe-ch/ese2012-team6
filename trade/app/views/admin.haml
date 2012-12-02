@@ -2,24 +2,24 @@
   System Parameters
 %h3
   Change Tax and Tax frequency.
-%form{:action => "/admin/changeParams/", :method => "POST",}
+%form{:action => "/admin/changeParams/", :method => "POST", :onsubmit => ""}
   %table
     %tr
       %td
         %label Frequency in seconds
       %td
-        %input.textbox8{:type => "text", :name => "frequency"}
+        %input.textbox8{:type => "text", :name => "frequency", :value => TradingAuthority.credit_reduce_time}
       %td
     %tr
       %td
         %label Tax per Cycle
       %td
-        %input.textbox8{:type => "text", :name => "tax", }
+        %input.textbox8{:type => "text", :name => "tax", :value => TradingAuthority.credit_reduce_rate }
     %tr
       %td
         %label Bonus on sell
       %td
-        %input.textbox8{:type => "text", :name => "bonus"}
+        %input.textbox8{:type => "text", :name => "bonus", :value => TradingAuthority.sell_bonus}
     %tr
       %td
       %td{:align => "right"}

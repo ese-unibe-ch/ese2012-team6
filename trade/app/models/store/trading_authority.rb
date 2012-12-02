@@ -10,8 +10,8 @@ module Store
       attr_accessor :credit_reduce_time, :last_refresh, :reduce_thread, :credit_reduce_rate, :sell_bonus
     end
 
-    @sell_bonus=0.05
-    @credit_reduce_rate = 0.05
+    @sell_bonus=5
+    @credit_reduce_rate = 5
     @credit_reduce_time = 60*60*24
 
     # create new TradingAuthority with a timeout
@@ -27,6 +27,7 @@ module Store
       self.reduce_thread = Thread.new {
         while true do
           if Time.now - self.last_refresh >= self.credit_reduce_time
+            puts "swing hammer of doom"
             TradingAuthority.swing_hammer_of_doom
             self.last_refresh = Time.now
           end
@@ -51,12 +52,12 @@ module Store
 
       # reduce credit of each user
       def reduce_credits(user)
-        user.credits -= Integer(user.credits * @credit_reduce_rate)
+        user.credits -= Integer(user.credits * @credit_reduce_rate*0.01)
       end
 
       # update seller's and buyer's credits according to item pricing and sell bonus
       def settle_item_purchase(seller, item, quantity = 1)
-        seller.credits += item.price * quantity + Integer((item.price * quantity * @sell_bonus).ceil)
+        seller.credits += item.price * quantity + Integer((item.price * quantity * @sell_bonus*0.01).ceil)
       end
     end
   end

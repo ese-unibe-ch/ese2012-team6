@@ -200,32 +200,31 @@ class User < Sinatra::Application
 
   post '/admin/changeParams/' do
 
-    frequency     =(params[:frequency].to_s)
-    tax           =(params[:tax].to_s)
-    bonus         =(params[:bonus].to_s)
+    redirect '/error/wrong_transfer_amount' unless (StringChecker.is_numeric?(params[:frequency]) )
+    redirect '/error/wrong_transfer_amount' unless (StringChecker.is_numeric?(params[:tax])        )
+    redirect '/error/wrong_transfer_amount' unless (StringChecker.is_numeric?(params[:bonus])       )
 
-    put frequency
-    put tax
-    put bonus
+    frequency     =(params[:frequency]).to_i
+    tax           =(params[:tax]).to_i
+    bonus         =(params[:bonus]).to_i
 
-    frequency.to_i if frequency.match(/^\d+$/)
-    tax.to_i if tax.match(/^\d+$/)
-    bonus.to_i if bonus.match(/^\d+$/)
 
-    if tax.kind_of? Integer and tax >= 0 and tax <100
-      TradingAuthority.credit_reduce_rate = tax.to_i/100 unless tax.nil?
+
+
+    if !tax.nil? and tax >= 0 and tax <100
+      TradingAuthority.credit_reduce_rate = tax
     end
 
 
-    if bonus.kind_of? Integer and bonus >= 0 and bonus <100
-      TradingAuthority.bonus_on_sell = bonus.to_i/100 unless bonus.nil?
+    if !bonus.nil? and bonus >= 0 and bonus <100
+      TradingAuthority.sell_bonus = bonus
     end
 
-    if frequency.kind_of? Integer
-      TradingAuthority.credit_reduce_time = frequency.to_i unless frequency.nil?
+    if !frequency.nil?
+      TradingAuthority.credit_reduce_time = frequency
     end
 
     redirect '/admin/'
   end
-
 end
+

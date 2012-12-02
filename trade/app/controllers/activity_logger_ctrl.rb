@@ -15,7 +15,7 @@ class ActivityLogger < Sinatra::Application
 
   # show list of all stored activities
   get '/activities' do
-    redirect '/login' unless @user
+    redirect '/login' unless @user and @user.name=='admin'
 
     activities = ActivityLogger.get_all_activities
 
