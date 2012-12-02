@@ -116,8 +116,8 @@ module Store
       new_password
     end
 
-    def suspend
-      self.active = false
+    def suspend!
+      self.state = :suspended
       self.items.each {|item| item.deactivate}
       Store::Suspender.suspend_user self
     end

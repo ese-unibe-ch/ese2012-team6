@@ -47,7 +47,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
     act1 = ItemDeleteActivity.create(user, item)
     act2 = ItemAddActivity.create(user, item)
     act3 = ItemEditActivity.create(user, item, {}, {})
-    act4 = PurchaseActivity.successful(user, item)
+    act4 = PurchaseActivity.successful(Purchase.create(item, 1, user, user))
 
     ActivityLogger.log(act1)
     ActivityLogger.log(act2)

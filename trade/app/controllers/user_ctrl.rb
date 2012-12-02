@@ -182,7 +182,7 @@ class User < Sinatra::Application
   # Displays the 'suspend' page
   get '/suspend' do
     redirect '/login' unless @user
-    @user.suspend
+    @user.suspend!
     @user.logout
     @user = nil
     session[:name] = nil
