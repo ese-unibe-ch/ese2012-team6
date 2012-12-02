@@ -35,7 +35,6 @@ module Store
       def release_suspension_of(user)
         if self.suspended_users.has_key? user.name
           puts "Releasing suspension of user #{user.name}"
-          user.state = :active
           self.suspended_users.delete user.name
         end
       end

@@ -45,9 +45,6 @@ module Store
       trader
     end
 
-    def propose_item()
-
-    end
     # propose a new item with quantity
     def propose_item_with_quantity(name, price, quantity, selling_mode, increment, end_time, description = "", log = true)
       item = self.propose_item(name,price,selling_mode,increment,end_time, quantity, description,log)
@@ -58,7 +55,7 @@ module Store
     def propose_item(name, price, selling_mode, increment, end_time, quantity = 1, description = "", log = true)
       if selling_mode == :fixed
         item = Item.fixed(name, price, self, description)
-      else
+      elsif selling_mode == :auction
         item = Item.auction(name, price, self, increment.to_i, end_time, description)
       end
       item.quantity = quantity

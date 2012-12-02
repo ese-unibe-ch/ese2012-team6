@@ -133,7 +133,7 @@
   Members
 %ul
   -for member in viewed_organization.members
-    -if member.active
+    -if member.state == :active
       %li
         %a{:href => "/user/#{member.name}"}
           :escaped

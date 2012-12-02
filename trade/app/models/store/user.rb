@@ -55,6 +55,7 @@ module Store
     # log in the user
     def login
       Analytics::UserLoginActivity.create(name).log
+      self.state = :active
       Store::Suspender.release_suspension_of self
     end
 
@@ -146,12 +147,12 @@ module Store
       # returns all users in the system that are active
       def all_active
         all_users = self.all
-        all_users.select {|a| a.active == true}
+        all_users.select {|a| a.state == :active}
       end
 
       def all_inactive
         all_users = self.all
-        all_users.select {|a| a.active == false}
+        all_users.select {|a| a.state == :active}
       end
     end
   end
