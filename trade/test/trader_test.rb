@@ -33,7 +33,7 @@ class TraderTest < Test::Unit::TestCase
 
   def test_user_proposes_item
     user = Trader.named("User")
-    item = user.propose_item("TestItem", 100, "fixed", nil, nil)
+    item = user.propose_item("TestItem", 100, :fixed, nil, nil)
 
     assert_equal(false, item.active?, "Newly created items must be inactive!")
     assert_equal(user, item.owner , "Item with no assigned owner created!")
@@ -67,10 +67,10 @@ class TraderTest < Test::Unit::TestCase
   def test_user_active_items_list
     user = Trader.named("User")
 
-    user.propose_item("TestItem1", 1, "fixed", nil, nil)
-    item2 = user.propose_item("TestItem2", 2, "fixed", nil, nil)
-    user.propose_item("TestItem3", 3, "fixed", nil, nil)
-    item4 = user.propose_item("TestItem4", 4, "fixed", nil, nil)
+    user.propose_item("TestItem1", 1, :fixed, nil, nil)
+    item2 = user.propose_item("TestItem2", 2, :fixed, nil, nil)
+    user.propose_item("TestItem3", 3, :fixed, nil, nil)
+    item4 = user.propose_item("TestItem4", 4, :fixed, nil, nil)
 
     item2.activate
     item4.activate
@@ -94,7 +94,7 @@ class TraderTest < Test::Unit::TestCase
 
   def test_user_can_buy_own_item
     user = Trader.named("Hans")
-    item = user.propose_item("TestItem", 100, "fixed", nil, nil, "", false)
+    item = user.propose_item("TestItem", 100, :fixed, nil, nil, "", false)
     assert_equal(false, user.can_buy?(item), "Should not be able to buy own items")
   end
 
@@ -102,7 +102,7 @@ class TraderTest < Test::Unit::TestCase
     user = Trader.named("Hans")
     other = Trader.named("Herbert")
 
-    item = other.propose_item("TestItem", 100, "fixed", nil, nil, "", false)
+    item = other.propose_item("TestItem", 100, :fixed, nil, nil, "", false)
     assert_equal(false, user.can_buy?(item))
     item.activate
     assert_equal(true, user.can_buy?(item))
@@ -110,7 +110,7 @@ class TraderTest < Test::Unit::TestCase
 
   def test_can_edit_own_item
     user = Trader.named("Hans")
-    item = user.propose_item("TestItem", 100, "fixed", nil, nil, "", false)
+    item = user.propose_item("TestItem", 100, :fixed, nil, nil, "", false)
     assert_equal(true, user.can_edit?(item))
     item.activate
     assert_equal(false, user.can_edit?(item))
@@ -119,7 +119,7 @@ class TraderTest < Test::Unit::TestCase
   def test_can_edit_other_item
     user = Trader.named("Hans")
     other = Trader.named("Herbert")
-    item = other.propose_item("TestItem", 100, "fixed", nil, nil, "", false)
+    item = other.propose_item("TestItem", 100, :fixed, nil, nil, "", false)
 
     assert_equal(false, user.can_edit?(item))
     assert_equal(true, other.can_edit?(item))
@@ -131,7 +131,7 @@ class TraderTest < Test::Unit::TestCase
 
   def test_can_delete_own_item
     user = Trader.named("Hans")
-    item = user.propose_item("TestItem", 100, "fixed", nil, nil, "", false)
+    item = user.propose_item("TestItem", 100, :fixed, nil, nil, "", false)
     assert_equal(true, user.can_delete?(item))
     item.activate
     assert_equal(false, user.can_edit?(item))
@@ -139,7 +139,7 @@ class TraderTest < Test::Unit::TestCase
 
   def test_delete_item
     user = Trader.named("Hans")
-    item = user.propose_item("TestItem", 100, "fixed", nil, nil, "", false)
+    item = user.propose_item("TestItem", 100, :fixed, nil, nil, "", false)
     assert_equal(true, user.can_delete?(item))
 
     user.delete_item(item.id, false)

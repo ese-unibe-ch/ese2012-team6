@@ -30,7 +30,7 @@ class AuctionTest < Test::Unit::TestCase
     initialPrice = 5
     increment = 2
     item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
-    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, 0, nil)
+    item = Item.auction(item_name, initialPrice, @userA, increment, 0, nil)
     assert item.isAuction?
     assert !item.isFixed?
     assert(!@userD.canBid?(item,1)) # bid not high enough
@@ -44,7 +44,7 @@ class AuctionTest < Test::Unit::TestCase
     initialPrice = 5
     increment = 2
     item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
-    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, 0, nil)
+    item = Item.auction(item_name, initialPrice, @userA, increment, 0, nil)
     assert(item.owner == @userA)
     assert(item.currentSellingPrice == nil)
 
@@ -79,7 +79,7 @@ class AuctionTest < Test::Unit::TestCase
     initialPrice = 5
     increment = 2
     item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
-    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, 0, nil)
+    item = Item.auction(item_name, initialPrice, @userA, increment, 0, nil)
     assert item.current_winner == nil
     @userB.bid(item, 10)
     assert item.current_winner == @userB
@@ -91,7 +91,7 @@ class AuctionTest < Test::Unit::TestCase
     initialPrice = 5
     increment = 2
     item_name = "TestItem"
-    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, "2015-10-15 18:00:00", nil)
+    item = Item.auction(item_name, initialPrice, @userA, increment, "2015-10-15 18:00:00", nil)
     @userB.bid(item,20)
     assert item.currentSellingPrice == 5
     assert @userA.credits == 1000
@@ -113,7 +113,7 @@ class AuctionTest < Test::Unit::TestCase
     initialPrice = 5
     increment = 2
     item_name = "TestItem"
-    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, 0, nil)
+    item = Item.auction(item_name, initialPrice, @userA, increment, 0, nil)
     assert item.editable?
     @userB.bid(item,20)
     assert !item.editable?
@@ -123,7 +123,7 @@ class AuctionTest < Test::Unit::TestCase
     initialPrice = 5
     increment = 2
     item_name = "TestItem"
-    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, "2009-10-15 18:00:00", nil)
+    item = Item.auction(item_name, initialPrice, @userA, increment, "2009-10-15 18:00:00", nil)
     @userB.bid(item,20)
     @userC.bid(item,15)
     @userC.bid(item,25)
@@ -142,7 +142,7 @@ class AuctionTest < Test::Unit::TestCase
     initialPrice = 5
     increment = 2
     item_name = "TestItem"
-    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, "2009-10-15 18:00:00", nil)
+    item = Item.auction(item_name, initialPrice, @userA, increment, "2009-10-15 18:00:00", nil)
     item.activate
     AuctionTimer.finish_auction(item)
     assert @userA.credits == 1000
@@ -153,7 +153,7 @@ class AuctionTest < Test::Unit::TestCase
     initialPrice = 5
     increment = 2
     item_name = "TestItem"
-    item = Item.named_priced_with_owner_auction(item_name, initialPrice, @userA, increment, "2015-10-15 18:00:00", nil)
+    item = Item.auction(item_name, initialPrice, @userA, increment, "2015-10-15 18:00:00", nil)
     @userB.bid(item,20)
     @userC.bid(item,15)
     @userC.bid(item,25)

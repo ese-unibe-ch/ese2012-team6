@@ -19,8 +19,8 @@ class PurchaseTest < Test::Unit::TestCase
   def test_create_item_with_quantity
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
-    (my_item = me.propose_item_with_quantity("One", 7, 1, "fixed", nil, nil)).activate
-    (your_item = you.propose_item_with_quantity("Four", 11, 4, "fixed", nil, nil)).activate
+    (my_item = me.propose_item_with_quantity("One", 7, 1, :fixed, nil, nil)).activate
+    (your_item = you.propose_item_with_quantity("Four", 11, 4, :fixed, nil, nil)).activate
 
     assert_equal(me.items, [my_item])
     assert(my_item.quantity == 1)
@@ -31,7 +31,7 @@ class PurchaseTest < Test::Unit::TestCase
   def test_make_a_purchase
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
-    (my_item = me.propose_item_with_quantity("One", 7, 1, "fixed", nil, nil)).activate
+    (my_item = me.propose_item_with_quantity("One", 7, 1, :fixed, nil, nil)).activate
 
     purchase = you.purchase(my_item, 1)
 
@@ -45,7 +45,7 @@ class PurchaseTest < Test::Unit::TestCase
   def test_confirm_purchase
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
-    (my_item = me.propose_item_with_quantity("One", 7, 1, "fixed", nil, nil)).activate
+    (my_item = me.propose_item_with_quantity("One", 7, 1, :fixed, nil, nil)).activate
 
     purchase = you.purchase(my_item, 1)
     you.confirm_purchase(purchase)
@@ -60,7 +60,7 @@ class PurchaseTest < Test::Unit::TestCase
   def test_make_several_purchases
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
-    (your_item = you.propose_item_with_quantity("Four", 11, 4, "fixed", nil, nil)).activate
+    (your_item = you.propose_item_with_quantity("Four", 11, 4, :fixed, nil, nil)).activate
 
     purchase = me.purchase(your_item, 2)
 
@@ -74,7 +74,7 @@ class PurchaseTest < Test::Unit::TestCase
   def test_confirm_several_purchases
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
-    (your_item = you.propose_item_with_quantity("Four", 11, 4, "fixed", nil, nil)).activate
+    (your_item = you.propose_item_with_quantity("Four", 11, 4, :fixed, nil, nil)).activate
 
     purchase = me.purchase(your_item, 2)
     me.confirm_purchase(purchase)
@@ -89,8 +89,8 @@ class PurchaseTest < Test::Unit::TestCase
   def test_make_different_purchases
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
-    (my_item = me.propose_item_with_quantity("One", 7, 1, "fixed", nil, nil)).activate
-    (your_item = you.propose_item_with_quantity("Four", 11, 4, "fixed", nil, nil)).activate
+    (my_item = me.propose_item_with_quantity("One", 7, 1, :fixed, nil, nil)).activate
+    (your_item = you.propose_item_with_quantity("Four", 11, 4, :fixed, nil, nil)).activate
 
     purchase1 = me.purchase(your_item, 2)
     purchase2 = me.purchase(your_item, 1)
@@ -109,8 +109,8 @@ class PurchaseTest < Test::Unit::TestCase
   def test_confirm_different_purchases
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
-    (my_item = me.propose_item_with_quantity("One", 7, 1, "fixed", nil, nil)).activate
-    (your_item = you.propose_item_with_quantity("Three", 11, 3, "fixed", nil, nil)).activate
+    (my_item = me.propose_item_with_quantity("One", 7, 1, :fixed, nil, nil)).activate
+    (your_item = you.propose_item_with_quantity("Three", 11, 3, :fixed, nil, nil)).activate
 
     purchase1 = me.purchase(your_item, 2)
     purchase2 = me.purchase(your_item, 1)
@@ -140,7 +140,7 @@ class PurchaseTest < Test::Unit::TestCase
     buyer = Trader.named("Buyer", :credits => 100)
     seller = Trader.named("Seller", :credits => 100)
 
-    item = seller.propose_item("piece of crap", 100, "fixed", nil, nil)
+    item = seller.propose_item("piece of crap", 100, :fixed, nil, nil)
     item.activate
 
     buyer.acknowledge_item_properties!
@@ -166,7 +166,7 @@ class PurchaseTest < Test::Unit::TestCase
     buyer = Trader.named("Buyer", :credits => 100)
     seller = Trader.named("Seller", :credits => 100)
 
-    item = seller.propose_item("piece of crap", 100, "fixed", nil, nil)
+    item = seller.propose_item("piece of crap", 100, :fixed, nil, nil)
     buyer.acknowledge_item_properties!
     assert(!item.active?)
 
@@ -184,7 +184,7 @@ class PurchaseTest < Test::Unit::TestCase
     buyer = Trader.named("Buyer", :credits => 100)
     seller = Trader.named("Seller", :credits => 100)
 
-    item = seller.propose_item("big piece of crap", 9001, "fixed", nil, nil) #item price is over 9000!
+    item = seller.propose_item("big piece of crap", 9001, :fixed, nil, nil) #item price is over 9000!
     item.activate
     buyer.acknowledge_item_properties!
     assert(item.active?)
@@ -203,7 +203,7 @@ class PurchaseTest < Test::Unit::TestCase
     buyer = Trader.named("Buyer", :credits => 100)
     seller = Trader.named("Seller", :credits => 100)
 
-    item = seller.propose_item_with_quantity("piece of crap", 50, 1, "fixed", nil, nil)
+    item = seller.propose_item_with_quantity("piece of crap", 50, 1, :fixed, nil, nil)
     item.activate
 
     buyer.acknowledge_item_properties!
@@ -222,7 +222,7 @@ class PurchaseTest < Test::Unit::TestCase
     seller = User.named("seller", :credits => 100)
     buyer = User.named("buyer", :credits => 100)
 
-    item = seller.propose_item("item", 50, "fixed", nil, nil)
+    item = seller.propose_item("item", 50, :fixed, nil, nil)
     TradingAuthority.settle_item_purchase(seller, item)
 
     assert_equal(153, seller.credits)

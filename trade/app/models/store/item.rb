@@ -25,7 +25,7 @@ module Store
       self.image_path = "/images/no_image.gif"
       self.edit_time = Time.now
       self.comments = []
-      self.selling_mode = "fixed"
+      self.selling_mode = :fixed
       self.bidders = {}
       self.quantity = 1
     end
@@ -52,39 +52,42 @@ module Store
     end
 
     # create a new item object for fixpriced sale with a name, price and owner
-    def self.named_priced_with_owner_fixed(name, price, owner, description = "")
+    def self.fixed(name, price, owner, description = "")
       item = Item.new
       item.name = name
       item.price = price
       item.owner = owner
       item.description = description
-      item.selling_mode = "fixed"
+      item.selling_mode = :fixed
       item
     end
 
     # create a new item object for auction with a name, price and owner
-    def self.named_priced_with_owner_auction(name, price, owner, increment, endTime, description = "")
+    def self.auction(name, price, owner, increment, endTime, description = "")
       item = Item.new
       item.name = name
       item.price = price
       item.owner = owner
       item.description = description
-      item.selling_mode = "auction"
+      item.selling_mode = :auction
       item.increment = increment != nil ? increment.to_i : nil
-      if endTime != nil
-        if endTime.is_a?(Fixnum)
-          item.end_time = DateTime.now + endTime
-        elsif endTime.is_a?(String)
-          item.end_time = Time.mktime(*ParseDate.parsedate(endTime)).to_datetime
-        elsif endTime.is_a?(DateTime)
-          item.end_time = endTime
-        end
-      else
-        item.end_time = nil
-      end
+      item.end_time = endTime
       item
     end
 
+    def end_time=(end_time)
+      if end_time != nil && end_time != ""
+        if end_time.is_a?(Fixnum)
+          @end_time = DateTime.now + end_time
+        elsif end_time.is_a?(String)
+          @end_time = Time.mktime(*ParseDate.parsedate(end_time)).to_datetime
+        elsif end_time.is_a?(DateTime)
+          @end_time = end_time
+        end
+      else
+        @end_time = nil
+      end    
+    end
 
     def to_s
       "#{self.name}, #{self.price}, #{self.owner.name}, #{self.state}"
@@ -92,22 +95,8 @@ module Store
 
     #activates item with end_time, if end_time is set else activates normally
     def activate_with_end_time(new_end_time)
-
-      if new_end_time != nil && new_end_time != ""
-        if new_end_time.is_a?(Fixnum)
-          new_end_time = DateTime.now + new_end_time
-        elsif new_end_time.is_a?(String)
-          new_end_time = Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime
-        elsif new_end_time.is_a?(DateTime)
-          new_end_time = new_end_time
-        else
-          new_end_time=nil
-        end
-        self.end_time = new_end_time
-      else
-        self.end_time=nil
-      end
-        self.update_status(activate)
+      self.end_time = new_end_time
+      self.update_status(:active)
     end
 
     def activate
@@ -137,7 +126,7 @@ module Store
         self.state = new_status ? :active : :inactive
 
         self.notify_change
-        Analytics::ItemStatusChangeActivity.with_editor_item_status(self.owner, self, new_status).log if log
+        Analytics::ItemStatusChangeActivity.create(self.owner, self, new_status).log if log
       end
     end
 
@@ -172,18 +161,6 @@ module Store
     def update(new_name, new_price, new_desc, new_selling_mode, new_increment, new_end_time, log = true)
       fail unless self.editable?
 
-      if new_end_time != nil && new_end_time != ""
-        if new_end_time.is_a?(Fixnum)
-          new_end_time = DateTime.now + new_end_time
-        elsif new_end_time.is_a?(String)
-          new_end_time = Time.mktime(*ParseDate.parsedate(new_end_time)).to_datetime
-        elsif new_end_time.is_a?(DateTime)
-          new_end_time = new_end_time
-        end
-      else
-        new_end_time = nil
-      end
-
       old_vals = {:name => self.name, :price => self.price, :description => self.description,
         :selling_mode => self.selling_mode, :increment => self.increment, end_time => self.end_time}
       new_vals = {:name => new_name, :price => new_price, :description => new_desc,
@@ -198,7 +175,7 @@ module Store
         self.end_time = new_end_time
 
         self.notify_change
-        Analytics::ItemEditActivity.with_editor_item_old_new_vals(self.owner, self, old_vals, new_vals).log if log
+        Analytics::ItemEditActivity.create(self.owner, self, old_vals, new_vals).log if log
 
         unless self.owner == nil
          equal_item = self.owner.check_for_equal_item(new_name, new_price, new_desc, self)
@@ -218,11 +195,11 @@ module Store
     end
 
     def isAuction?
-      self.selling_mode == "auction"
+      self.selling_mode == :auction
     end
 
     def isFixed?
-      self.selling_mode == "fixed"
+      self.selling_mode == :fixed
     end
 
     # gets the highest Bidder/Amount pair out of bidders
@@ -277,8 +254,7 @@ module Store
     
     def time_delta
       current_time = elapsed_seconds = DateTime.now
-      end_time = self.end_time
-      delta_in_seconds = ((end_time - current_time) * 24 * 60 * 60).to_i
+      delta_in_seconds = ((self.end_time - current_time) * 24 * 60 * 60).to_i
       delta_in_seconds
     end
     

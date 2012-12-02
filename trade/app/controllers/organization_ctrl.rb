@@ -51,6 +51,7 @@ class Organization < Sinatra::Application
     redirect '/login' unless @user
 
     viewed_organization = Organization.by_name(params[:organization_name])
+
     is_my_organization = @user.is_member_of?(viewed_organization)
     i_am_admin = @user.is_admin_of?(viewed_organization)
     marked_down_description = RDiscount.new(viewed_organization.description, :smart, :filter_html)
