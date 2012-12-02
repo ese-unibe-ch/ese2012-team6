@@ -254,7 +254,7 @@ module Store
       elsif self.bidders.size == 1
         self.price
       else
-        self.secondInLineBid.values[0].to_i + increment.to_i
+        (self.secondInLineBid.values[0].to_i + increment.to_i > self.highestBid.values[0].to_i ? self.highestBid.values[0].to_i : self.secondInLineBid.values[0].to_i + increment.to_i)
       end
     end
 
