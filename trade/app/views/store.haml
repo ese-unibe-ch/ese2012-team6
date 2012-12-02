@@ -17,7 +17,7 @@
   %tbody
     -for user in Store::Trader.all
       -for item in user.get_active_items
-        -if item.isFixed?
+        -if item.is_fixed?
           %tr
             %td
               %img{:src => item.image_path, :height => "40px"}
@@ -53,7 +53,7 @@
   %tbody
     -for user in Store::Trader.all
       -for item in user.get_active_items
-        -if item.isAuction?
+        -if item.is_auction?
           %tr
             %td
               %img{:src => item.image_path, :height => "40px"}
@@ -62,7 +62,7 @@
                 :escaped
                   #{item.name}
             %td
-              #{item.currentAuctionPriceToShow}
+              #{item.current_auction_price_to_show}
             %td
               %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
                 :escaped

@@ -152,7 +152,7 @@ module Store
 
       def all_inactive
         all_users = self.all
-        all_users.select {|a| a.state == :active}
+        all_users.select {|a| a.state == :suspended}
       end
     end
   end

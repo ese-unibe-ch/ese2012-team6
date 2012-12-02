@@ -31,13 +31,13 @@ class AuctionTest < Test::Unit::TestCase
     increment = 2
     item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
     item = Item.auction(item_name, initialPrice, @userA, increment, 0, nil)
-    assert item.isAuction?
-    assert !item.isFixed?
-    assert(!@userD.canBid?(item,1)) # bid not high enough
-    assert(!@userD.canBid?(item,2)) # not enough money
+    assert item.is_auction?
+    assert !item.is_fixed?
+    assert(!@userD.can_bid?(item,1)) # bid not high enough
+    assert(!@userD.can_bid?(item,2)) # not enough money
 
-    assert(!@userA.canBid?(item,4)) # bid not high enough
-    assert(@userA.canBid?(item,5))  # bid high enough & enough money
+    assert(!@userA.can_bid?(item,4)) # bid not high enough
+    assert(@userA.can_bid?(item,5))  # bid high enough & enough money
   end
 
   def test_createAuction
@@ -46,33 +46,33 @@ class AuctionTest < Test::Unit::TestCase
     item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
     item = Item.auction(item_name, initialPrice, @userA, increment, 0, nil)
     assert(item.owner == @userA)
-    assert(item.currentSellingPrice == nil)
+    assert(item.current_selling_price == nil)
 
-    assert(@userB.canBid?(item, 10))
+    assert(@userB.can_bid?(item, 10))
 
     ###### FIRST BID :: Price = nil
     @userB.bid(item, 10)
     ### AFTER :: Bidders = [10], Price = 5
-    assert(item.currentSellingPrice == 5)
+    assert(item.current_selling_price == 5)
 
-    assert(!@userC.canBid?(item, 3))
-    assert(!@userC.canBid?(item, 4))
-    assert(@userC.canBid?(item, 5))
+    assert(!@userC.can_bid?(item, 3))
+    assert(!@userC.can_bid?(item, 4))
+    assert(@userC.can_bid?(item, 5))
 
     ###### SECOND BID :: Price = 5, Minimal Bid = 5 ######
     @userC.bid(item, 5)
     ### AFTER :: Bidders = [5, 10], Price = 7
-    assert(item.currentSellingPrice == 7)
+    assert(item.current_selling_price == 7)
 
-    assert(!@userC.canBid?(item, 5))
-    assert(!@userC.canBid?(item, 6))
-    assert(@userC.canBid?(item, 7))
+    assert(!@userC.can_bid?(item, 5))
+    assert(!@userC.can_bid?(item, 6))
+    assert(@userC.can_bid?(item, 7))
 
     ###### THIRD BID :: Price = 7, Minimal Bid = 7 ######
     @userC.bid(item, 7)
     ### AFTER :: Bidders = [7, 10], Price = 9
 
-    assert(item.currentSellingPrice == 9)
+    assert(item.current_selling_price == 9)
   end
 
   def test_current_winner
@@ -93,17 +93,17 @@ class AuctionTest < Test::Unit::TestCase
     item_name = "TestItem"
     item = Item.auction(item_name, initialPrice, @userA, increment, "2015-10-15 18:00:00", nil)
     @userB.bid(item,20)
-    assert item.currentSellingPrice == 5
+    assert item.current_selling_price == 5
     assert @userA.credits == 1000
     assert @userB.credits == 980
     assert @userC.credits == 1000
     @userC.bid(item,15)
-    assert item.currentSellingPrice == 17
+    assert item.current_selling_price == 17
     assert @userA.credits == 1000
     assert @userB.credits == 980
     assert @userC.credits == 1000
     @userC.bid(item,25)
-    assert item.currentSellingPrice == 22
+    assert item.current_selling_price == 22
     assert @userA.credits == 1000
     assert @userB.credits == 1000
     assert @userC.credits == 975

@@ -105,7 +105,7 @@ module Store
 
     def deactivate
       self.state = :inactive
-      if self.isAuction?
+      if self.is_auction?
         # pay money back
         if !self.is_finished?
           buyer = self.current_winner
@@ -137,7 +137,7 @@ module Store
 
     # returns whether the item is generally editable
     def editable?
-      !self.active? && (self.isFixed? || self.bidders.empty?)
+      !self.active? && (self.is_fixed? || self.bidders.empty?)
     end
 
     # returns whether the item is editable by a certain trader
@@ -194,16 +194,16 @@ module Store
       self.edit_time = Time.now
     end
 
-    def isAuction?
+    def is_auction?
       self.selling_mode == :auction
     end
 
-    def isFixed?
+    def is_fixed?
       self.selling_mode == :fixed
     end
 
     # gets the highest Bidder/Amount pair out of bidders
-    def highestBid
+    def highest_bid
       sorted = self.bidders.sort_by {|key, value| value}
       length = sorted.length.to_i
       if length < 1
@@ -214,7 +214,7 @@ module Store
     end
 
     # gets the second highest Bidder/Amount pair out of bidders
-    def secondInLineBid
+    def second_in_line_bid
       sorted = self.bidders.sort_by {|key, value| value}
       length = sorted.length.to_i
       if length < 2
@@ -224,27 +224,27 @@ module Store
       end
     end
 
-    # the currentSellingPrice is the price you have to pay if you win the auction
-    def currentSellingPrice
+    # the current_selling_price is the price you have to pay if you win the auction
+    def current_selling_price
       if self.bidders.size == 0
         nil
       elsif self.bidders.size == 1
         self.price
       else
-        (self.secondInLineBid.values[0].to_i + increment.to_i > self.highestBid.values[0].to_i ? self.highestBid.values[0].to_i : self.secondInLineBid.values[0].to_i + increment.to_i)
+        self.second_in_line_bid.values[0].to_i + increment.to_i
       end
     end
 
-    def currentAuctionPriceToShow
-      if self.currentSellingPrice == nil
+    def current_auction_price_to_show
+      if self.current_selling_price == nil
         self.price
       else
-        self.currentSellingPrice
+        self.current_selling_price
       end
     end
 
     def current_winner
-      highest_bid = self.highestBid
+      highest_bid = self.highest_bid
       highest_bid != nil ? highest_bid.keys[0] : nil
     end
 
@@ -253,9 +253,8 @@ module Store
     end
     
     def time_delta
-      current_time = elapsed_seconds = DateTime.now
-      delta_in_seconds = ((self.end_time - current_time) * 24 * 60 * 60).to_i
-      delta_in_seconds
+      current_time = DateTime.now
+      ((self.end_time - current_time) * 24 * 60 * 60).to_i
     end
     
     def time_delta_string
@@ -307,7 +306,7 @@ module Store
       end
 
       def allFixed
-        @@items.values.select{|val| val.isFixed? && val.state != :pending}.dup
+        @@items.values.select{|val| val.is_fixed? && val.state != :pending}.dup
       end
 	  
       def allFixed_of_active_users
@@ -316,7 +315,7 @@ module Store
       end
 
       def allAuction
-        @@items.values.select{|val| val.isAuction?}.dup
+        @@items.values.select{|val| val.is_auction?}.dup
       end
 
 	  def allAuction_of_active_users

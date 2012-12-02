@@ -215,62 +215,62 @@ module Store
     end
 
     def bid(item, amount)
-      if canBid?(item, amount)
+      if can_bid?(item, amount)
         previous_winner = item.current_winner
         previous_selling_price = item.bidders[previous_winner]
 
-        if item.highestBid != nil
-          previous_maxBid = item.bidders[previous_winner]
+        if item.highest_bid != nil
+          previous_max_bid = item.bidders[previous_winner]
         else
-          previous_maxBid = 0
+          previous_max_bid = 0
         end
         item.bidders[self] = amount
 
         # reduce money if user is new winner, otherwise nothing happens
         current_winner = item.current_winner
-        current_maxBid = item.bidders[current_winner]
+        current_max_bid = item.bidders[current_winner]
 
         if previous_winner != nil
-          previous_winner.credits += previous_maxBid
+          previous_winner.credits += previous_max_bid
         end
-        current_winner.credits -= current_maxBid
+        current_winner.credits -= current_max_bid
 
         if previous_winner != nil && previous_winner != current_winner && previous_winner.email != nil
           # we got a new winner
-          Security::MailClient.send_new_winner_mail(previous_winner.email, item)
+          #Security::MailClient.send_new_winner_mail(previous_winner.email, item)
         end
       end
     end
 
-    def canBid?(item, amount)
-      enoughMoneyForBid?(amount) && !sameBidExists?(item, amount) && amountBiggerThanCurrentSellingPrice(item, amount) && higherThanLastOwnBid?(item, amount)
+    def can_bid?(item, amount)
+      enough_money_for_bid?(amount) && !same_bid_exists?(item, amount) && amount_bigger_than_current_selling_price(item, amount) && higher_than_last_own_bid?(item, amount)
     end
 
-    def amountBiggerThanCurrentSellingPrice(item, amount)
-      if item.currentSellingPrice != nil
-        amount >= item.currentSellingPrice
+    def amount_bigger_than_current_selling_price(item, amount)
+      if item.current_selling_price != nil
+        amount >= item.current_selling_price
       else
         amount >= item.price
       end
     end
 
-    def enoughMoneyForBid?(amount)
+    def enough_money_for_bid?(amount)
       self.credits >= amount
     end
 
-    def sameBidExists?(item, amount)
+    def same_bid_exists?(item, amount)
       item.bidders.has_value?(amount)
     end
 
-    def higherThanLastOwnBid?(item, amount)
-      if (self.alreadyBade?(item))
+    def higher_than_last_own_bid?(item, amount)
+      if self.already_bade?(item)
         amount >= item.bidders[self]+item.increment  #higher than last own bid
       else
         true
       end
     end
 
-    def alreadyBade?(item)
+    def already_bade?(item)
       item.bidders[self] != nil
     end
 

@@ -74,7 +74,7 @@ class User < Sinatra::Application
     item_id = params[:item_id].to_i
     item = Item.by_id(item_id)
 
-    if item.isAuction?
+    if item.is_auction?
       redirect "user/bid/#{item_id}"
     end
 
@@ -174,7 +174,7 @@ class User < Sinatra::Application
     redirect '/login' unless @user
 
     @user.items.each do |item|
-      redirect '/error/delete_failed' if item.isAuction? && item.active?
+      redirect '/error/delete_failed' if item.is_auction? && item.active?
     end
 
     haml :suspend_prov

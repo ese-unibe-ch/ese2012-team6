@@ -62,14 +62,14 @@ module Store
         seller = item.owner
         buyer = item.current_winner
 
-        if buyer == nil || item.currentSellingPrice == nil
+        if buyer == nil || item.current_selling_price == nil
           item.deactivate
           return
         end
 
         seller.release_item(item)
 
-        selling_price = item.currentSellingPrice
+        selling_price = item.current_selling_price
         buyers_bid = item.bidders[buyer]
 
 
