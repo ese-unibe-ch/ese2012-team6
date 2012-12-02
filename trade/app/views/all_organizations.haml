@@ -5,7 +5,7 @@
     %a.styled-button{:href => "/organization/new"} Create new Organization
 %h3
   The following organizations are registered by the system
-%table.table-minimalistic
+%table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
   %thead
     %tr
       %th Pic
@@ -28,3 +28,4 @@
           #{organization.members.size}
         %td.ralign
           #{organization.items.size}
+=haml :'partials/pagination'

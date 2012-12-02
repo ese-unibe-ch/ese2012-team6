@@ -4,6 +4,7 @@ require 'rdiscount'
 require_relative '../models/helpers/storage/picture_uploader'
 require_relative '../models/helpers/security/string_checker'
 require_relative '../models/store/comment'
+require_relative '../models/helpers/storage/search'
 
 # Handles all requests concerning item display, alteration and deletion
 class Item < Sinatra::Application
@@ -146,7 +147,7 @@ class Item < Sinatra::Application
     redirect url('/error/not_owner_of_item') if changed_owner
     redirect "/item/#{params[:item_id]}" unless @user.on_behalf_of.can_activate?(item)
 
-    if item.selling_mode == "fixed" and activate
+    if item.selling_mode == :fixed and activate
       item.activate_with_end_time(new_end_time)
     else
       item.update_status(activate)
@@ -173,13 +174,12 @@ class Item < Sinatra::Application
     item_quantity = params[:item_quantity].to_i
     item_description = params[:item_description] ? params[:item_description] : ""
 
-    item_selling_mode = params[:selling_mode]
+    item_selling_mode = params[:selling_mode] == "auction" ? :auction : :fixed
     item_increment = params[:item_increment]
     item_end_time = params[:auction_end]
 
     item_owner = Trader.by_name(params[:owner])
     item = item_owner.propose_item_with_quantity(item_name, item_price, item_quantity, item_selling_mode, item_increment, item_end_time, item_description)
-
 
     uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/items")
     item.image_path = uploader.upload(file, item.id)
@@ -200,7 +200,7 @@ class Item < Sinatra::Application
     redirect '/error/invalid_quantity' unless Item.valid_price?(params[:item_quantity])
     item_quantity = params[:item_quantity].to_i
 
-    item = @user.on_behalf_of.propose_item_with_quantity(item_name, item_price, item_quantity, "fixed", nil, nil)
+    item = @user.on_behalf_of.propose_item_with_quantity(item_name, item_price, item_quantity, :fixed, nil, nil)
 
 
     redirect "/item/#{item.id}" if back == url('/item/new')
@@ -228,5 +228,12 @@ class Item < Sinatra::Application
     if item != nil
       Haml::Filters::Plain.render(item.time_delta_string)
     end
+  end
+
+  get '/search/items' do
+    redirect '/login' unless @user
+    description = params[:search_desc]
+    matched_items = Search.search(description)
+    haml :search_items, :locals => {:matched_items => matched_items}
   end
 end

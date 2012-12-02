@@ -18,7 +18,7 @@ module Store
 
     @@last_id = 0
 
-    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path, :pending_purchases, :active
+    attr_accessor :id, :name, :email, :credits, :items, :description, :open_item_page_time, :image_path, :pending_purchases, :state
 
     def initialize
       @@last_id += 1
@@ -31,7 +31,7 @@ module Store
       self.open_item_page_time = Time.now
       self.image_path = "/images/no_image.gif"
       self.pending_purchases = []
-	    self.active = true
+	    self.state = :active
     end
 
     # creates a new trader object, options include :description and :credits
@@ -53,16 +53,16 @@ module Store
 
     # propose a new item
     def propose_item(name, price, selling_mode, increment, end_time, quantity = 1, description = "", log = true)
-      if selling_mode == "fixed"
-        item = Item.named_priced_with_owner_fixed(name, price, self, description)
-      else
-        item = Item.named_priced_with_owner_auction(name, price, self, increment.to_i, end_time, description)
+      if selling_mode == :fixed
+        item = Item.fixed(name, price, self, description)
+      elsif selling_mode == :auction
+        item = Item.auction(name, price, self, increment.to_i, end_time, description)
       end
       item.quantity = quantity
       item.save
 
       self.attach_item(item)
-      ItemAddActivity.with_creator_item(self, item).log if log
+      ItemAddActivity.create(self, item).log if log
 
       item
     end
@@ -111,7 +111,7 @@ module Store
       item.owner.release_item(item)
       item.delete
 
-      ItemDeleteActivity.with_remover_item(self, item).log if log
+      ItemDeleteActivity.create(self, item).log if log
     end
 
     # Purchase the indicated amount of the indicated item. PurchaseError will be raised if an error occured.
@@ -121,26 +121,26 @@ module Store
       purchased_item = item
 
       if seller.nil?
-        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        PurchaseActivity.failed(self, purchased_item, quantity).log if log
         raise PurchaseError, "ITEM_NO_OWNER" #Item does not belong to anybody
       elsif quantity > purchased_item.quantity
-        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        PurchaseActivity.failed(self, purchased_item, quantity).log if log
         raise PurchaseError, "INVALID_QUANTITY" #Seller doesn't have enough items
       elsif !purchased_item.active?
-        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        PurchaseActivity.failed(self, purchased_item, quantity).log if log
         raise PurchaseError, "BUY_INACTIVE_ITEM" #Trying to buy inactive item
       elsif !seller.items.include?(purchased_item)
-        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        PurchaseActivity.failed(self, purchased_item, quantity).log if log
         raise PurchaseError, "SELLER_NOT_ITEM_OWNER" #Seller does not own item to buy
       elsif self.credits < (purchased_item.price * quantity)
-        ItemBuyActivity.with_buyer_item_price_success(self, purchased_item, quantity, false).log if log
+        PurchaseActivity.failed(self, purchased_item, quantity).log if log
         raise PurchaseError, "NOT_ENOUGH_CREDITS" #Buyer does not have enough credits
       end
 
       purchase = Purchase.create(item, quantity, seller, self)
       purchase.prepare
 
-      ItemBuyActivity.with_buyer_item_price_success(self, item, quantity).log if log
+      PurchaseActivity.successful(purchase).log if log
 
       purchase
     end
@@ -215,62 +215,62 @@ module Store
     end
 
     def bid(item, amount)
-      if canBid?(item, amount)
+      if can_bid?(item, amount)
         previous_winner = item.current_winner
         previous_selling_price = item.bidders[previous_winner]
 
-        if item.highestBid != nil
-          previous_maxBid = item.bidders[previous_winner]
+        if item.highest_bid != nil
+          previous_max_bid = item.bidders[previous_winner]
         else
-          previous_maxBid = 0
+          previous_max_bid = 0
         end
         item.bidders[self] = amount
 
         # reduce money if user is new winner, otherwise nothing happens
         current_winner = item.current_winner
-        current_maxBid = item.bidders[current_winner]
+        current_max_bid = item.bidders[current_winner]
 
         if previous_winner != nil
-          previous_winner.credits += previous_maxBid
+          previous_winner.credits += previous_max_bid
         end
-        current_winner.credits -= current_maxBid
+        current_winner.credits -= current_max_bid
 
         if previous_winner != nil && previous_winner != current_winner && previous_winner.email != nil
           # we got a new winner
-          Security::MailClient.send_new_winner_mail(previous_winner.email, item)
+          #Security::MailClient.send_new_winner_mail(previous_winner.email, item)
         end
       end
     end
 
-    def canBid?(item, amount)
-      enoughMoneyForBid?(amount) && !sameBidExists?(item, amount) && amountBiggerThanCurrentSellingPrice(item, amount) && higherThanLastOwnBid?(item, amount)
+    def can_bid?(item, amount)
+      enough_money_for_bid?(amount) && !same_bid_exists?(item, amount) && amount_bigger_than_current_selling_price(item, amount) && higher_than_last_own_bid?(item, amount)
     end
 
-    def amountBiggerThanCurrentSellingPrice(item, amount)
-      if item.currentSellingPrice != nil
-        amount >= item.currentSellingPrice
+    def amount_bigger_than_current_selling_price(item, amount)
+      if item.current_selling_price != nil
+        amount >= item.current_selling_price
       else
         amount >= item.price
       end
     end
 
-    def enoughMoneyForBid?(amount)
+    def enough_money_for_bid?(amount)
       self.credits >= amount
     end
 
-    def sameBidExists?(item, amount)
+    def same_bid_exists?(item, amount)
       item.bidders.has_value?(amount)
     end
 
-    def higherThanLastOwnBid?(item, amount)
-      if (self.alreadyBade?(item))
+    def higher_than_last_own_bid?(item, amount)
+      if self.already_bade?(item)
         amount >= item.bidders[self]+item.increment  #higher than last own bid
       else
         true
       end
     end
 
-    def alreadyBade?(item)
+    def already_bade?(item)
       item.bidders[self] != nil
     end
 

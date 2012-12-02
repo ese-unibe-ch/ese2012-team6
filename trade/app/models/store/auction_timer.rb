@@ -62,26 +62,21 @@ module Store
         seller = item.owner
         buyer = item.current_winner
 
-        if buyer == nil || item.currentSellingPrice == nil
+        if buyer == nil || item.current_selling_price == nil
           item.deactivate
           return
         end
 
-        seller.release_item(item)
-
-        selling_price = item.currentSellingPrice
+        item.price = item.current_selling_price
+        # unfreeze money
         buyers_bid = item.bidders[buyer]
+        buyer.credits += buyers_bid
 
+        purchase = Purchase.create(item, item.quantity, seller, buyer)
+        purchase.prepare
+        purchase.confirm
 
-        seller.credits += selling_price # + Integer((price * SELL_BONUS).ceil)
-        buyer.credits += buyers_bid - selling_price
-
-        item.deactivate
-        buyer.attach_item(item)
-
-        item.notify_change
-
-        Analytics::ItemBuyActivity.with_buyer_item_price_success(buyer, item).log
+        Analytics::PurchaseActivity.successful(purchase).log
       end
     end
   end

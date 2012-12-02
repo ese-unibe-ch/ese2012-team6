@@ -1,9 +1,12 @@
+require 'orderedhash'
+require 'fastercsv'
 require_relative '../store/item'
 
 module Store
   class Purchase
     attr_accessor :id, :item, :quantity, :seller, :buyer
     @@last_id = 0
+    @@purchases = []
 
     def initialize
       @@last_id += 1
@@ -28,7 +31,7 @@ module Store
       if self.item.quantity == self.quantity
         self.seller.release_item(self.item)
       else
-        self.seller.release_quantity_of_item(self.item, quantity)
+        self.seller.release_quantity_of_item(self.item, self.quantity)
         self.item = self.item.clone
         self.item.id = Item.next_id!
         self.item.owner = nil
@@ -39,7 +42,9 @@ module Store
 
       self.item.notify_change
       self.buyer.add_to_pending(self)
-      self.buyer.credits -= self.item.price * quantity
+      self.buyer.credits -= self.item.price * self.quantity
+
+      self.save
     end
 
     def confirm
@@ -50,9 +55,33 @@ module Store
       self.buyer.delete_pending(self)
     end
 
+    def save
+      hash = OrderedHash.new
+      hash[:item_name] = self.item.name
+      hash[:price] = self.item.price
+      hash[:from] = self.seller.name
+      hash[:to] = self.buyer.name
+      hash[:when] = Time.now.asctime
+
+      @@purchases << hash
+    end
+
     class << self
       def clear_id
         @@last_id = 0
+      end
+
+      def get_all_purchases
+        @@purchases
+      end
+
+      def dump(filename)
+        FasterCSV.open(filename, "w") do |csv|
+          csv << ["When", "Item", "Price", "From", "To"]
+          @@purchases.each { |purchase|
+            csv << [purchase[:when], purchase[:item_name], purchase[:price], purchase[:from], purchase[:to]]
+          }
+        end
       end
     end
   end

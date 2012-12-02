@@ -75,7 +75,7 @@ class User < Sinatra::Application
     item_id = params[:item_id].to_i
     item = Item.by_id(item_id)
 
-    if item.isAuction?
+    if item.is_auction?
       redirect "user/bid/#{item_id}"
     end
 
@@ -109,6 +109,7 @@ class User < Sinatra::Application
   get '/user/bid/:item_id' do
     item_id = params[:item_id].to_i
     item = Item.by_id(item_id)
+    @user.on_behalf_of.acknowledge_item_properties!
     haml :bid, :locals => {:action_url => "/user/bid/#{params[:item_id]}", :item => item}
   end
 
@@ -140,9 +141,8 @@ class User < Sinatra::Application
     redirect '/login' unless @user
 
     file = params[:file_upload]
+
     redirect to("/user/#{params[:name]}") unless file
-    puts file[:tempfile].path
-    puts file[:filename]
     redirect '/error/wrong_size' if file[:tempfile].size > 400*1024
 
     uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/users")
@@ -175,7 +175,7 @@ class User < Sinatra::Application
     redirect '/login' unless @user
 
     @user.items.each do |item|
-      redirect '/error/delete_failed' if item.isAuction? && item.active?
+      redirect '/error/delete_failed' if item.is_auction? && item.active?
     end
 
     haml :suspend_prov
@@ -184,10 +184,8 @@ class User < Sinatra::Application
   # Displays the 'suspend' page
   get '/suspend' do
     redirect '/login' unless @user
-
-    @user.active = false
+    @user.suspend!
     @user.logout
-    @user.suspend_time = Time.now
     @user = nil
     session[:name] = nil
 

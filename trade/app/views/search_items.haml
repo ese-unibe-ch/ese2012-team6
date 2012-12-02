@@ -1,7 +1,7 @@
 %h2
   Items
 %h3
-  The following items are registered by the system
+  The following items match your input
 %table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
   %thead
     %tr
@@ -12,7 +12,7 @@
       %th Owner
       %th Active
   %tbody
-    -for item in Store::Item.allFixed_of_active_users
+    -for item in matched_items
       %tr
         %td
           %img{:src => item.image_path, :height => "40px"}

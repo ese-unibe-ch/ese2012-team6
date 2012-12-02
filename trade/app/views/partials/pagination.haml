@@ -1,0 +1,27 @@
+%div{:id => "pager", :class => "pager"}
+  %form
+    %img{:src => "../images/pager/first.png", :class => "first", :alt =>"first"}
+    %img{:src => "../images/pager/prev.png", :class => "prev", :alt =>"prev"}
+    %input{:class => "pagedisplay", :type => "text"}
+    %img{:src => "../images/pager/next.png", :class => "next", :alt =>"next"}
+    %img{:src => "../images/pager/last.png", :class => "last", :alt =>"last"}
+    %select{:class => "pagesize"}
+      %option{:selected => "selected", :value => "10"} 10
+      %option{:value => "20"} 20
+      %option{:value => "30"} 30
+      %option{:value => "50"} 50
+
+:javascript
+  $(document).ready(function() {
+
+    $("#Table")
+      .tablesorter({
+              headers: {3: {sorter: false}},
+              sortList: [[0,0], [1,0]],
+              widgets: ['zebra']
+      })
+      .tablesorterPager({
+              container: $("#pager"),
+              positionFixed: false
+      });
+  })

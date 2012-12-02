@@ -8,6 +8,7 @@ require_relative('models/store/user')
 require_relative('models/store/organization')
 require_relative('models/store/trading_authority')
 require_relative('models/store/auction_timer')
+require_relative('models/store/suspender')
 
 require_relative('controllers/authentication_ctrl')
 require_relative('controllers/main_ctrl')
@@ -45,15 +46,22 @@ class App < Sinatra::Base
     (user_ese = User.named("ese")).save
     (user_ese2 = User.named("ese2")).save
     (user_ese3 = User.named("ese3")).save
+    (user_ese4 = User.named("ese4")).save
+    (user_ese5 = User.named("ese5")).save
+    (user_ese6 = User.named("ese6")).save
+    (user_ese7 = User.named("ese7")).save
+    (user_ese8 = User.named("ese8")).save
+    (user_ese9 = User.named("ese9")).save
+    (user_ese10 = User.named("ese10")).save
     (umbrella_corp = User.named("umbrellacorp")).save
     (peter_griffin = User.named("petergriffin")).save
 
     #add default items
-    (liver = user_ese.propose_item("Liver", 40, "auction", 5, "2013-11-11 20:00:00")).activate
-    (heart = umbrella_corp.propose_item("Heart", 80, "fixed", nil, nil)).activate
-    (meg = user_ese2.propose_item_with_quantity("Meg", 2, 4, "fixed", nil, nil, "This is a description")).activate
-    random = umbrella_corp.propose_item("Random", 50, "fixed", nil, nil)
-    (bender = umbrella_corp.propose_item("Bender", 110, "fixed", nil, nil)).activate
+    (liver = user_ese.propose_item("Liver", 40, :auction, 5, "2013-11-11 20:00:00")).activate
+    (heart = umbrella_corp.propose_item("Heart", 80, :fixed, nil, nil)).activate
+    (meg = user_ese2.propose_item_with_quantity("Meg", 2, 4, :fixed, nil, nil, "This is a description")).activate
+    random = umbrella_corp.propose_item("Random", 50, :fixed, nil, nil)
+    (bender = umbrella_corp.propose_item("Bender", 110, :fixed, nil, nil)).activate
 
     user_ese.comment(meg, "This is a comment by ese")
     user_ese2.comment(meg, "This is another comment by ese2")
@@ -68,6 +76,7 @@ class App < Sinatra::Base
     TradingAuthority.start
     AuctionTimer.check_auctions
     AuctionTimer.timed(10).start
+    Suspender.timed('1s')
     super
   end
 end

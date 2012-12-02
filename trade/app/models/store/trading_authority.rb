@@ -31,13 +31,6 @@ module Store
             self.last_refresh = Time.now
           end
 
-          for suspended_user in User.all_inactive do
-            if suspended_user.delete_suspended_user?
-              suspended_user.delete
-            end
-
-            end
-
           sleep 1
         end
       }
