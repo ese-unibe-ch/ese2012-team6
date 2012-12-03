@@ -1,0 +1,92 @@
+%h2
+  Item Details
+%div.action_buttons.float_right
+  :javascript
+      //addListener();
+      $(document).ready(function() {
+        $('#datetimepicker').datetimepicker({ dateFormat: 'dd-mm-yy', minDate: 0 });
+        updateForm();
+      });
+  -if @user.on_behalf_of.can_activate?(item)
+    -if item.active?
+      %form{:action => "/item/#{item.id}/update_status?activate=false", :method => "POST"}
+        %input.styled-button{:type => "submit", :value => "Deactivate", :text => "deacBtn"}
+    -else
+      %form{:action => "/item/#{item.id}/update_status?activate=true", :method => "POST"}
+        %input.styled-button{:type => "submit", :value => "Activate", :text => "deacBtn"}
+        -if item.is_fixed?
+          %input.textbox8{:type => "text", :id => "datetimepicker", :name => "new_end_time", :style => "width: 60px", :value => nil}
+  -if @user.on_behalf_of.can_edit?(item)
+    %a.styled-button{:href => "/item/#{item.id}/edit"} Edit
+  -if @user.on_behalf_of.can_delete?(item)
+    %form{:action => "/item/#{item.id}", :method => "POST"}
+      %input{:name => "_method", :type => "hidden", :value => "delete"}
+      %input.styled-button.delete-color{:type => "submit", :value => "Delete", :text => "delBtn"}
+%h4
+  -if item.active?
+    This item is currently being traded
+  -else
+    This item is currently not being traded
+%div#item_details
+  %div.picture_container
+    %img{:src => "#{item.image_path}", :width => "200"}
+  %div.details_container
+    %h3.no_top_margin
+      Name
+    %p
+      :escaped
+        #{item.name}
+    %h3
+      Price
+    %p
+      #{item.price}
+    %h3
+      Quantity
+    %p
+      #{item.quantity}
+    -unless item.end_time.nil? or !item.active?
+      %h3
+        End Time
+      %p
+        #{item.end_time.to_s}
+    %h3
+      Owner
+    %p
+      -if item.owner.nil? && item.state == :pending
+        Pending
+      -else
+        :escaped
+          #{item.owner.name unless item.owner == nil}
+    -if item.is_auction?
+      %h3
+        Increment
+      %p
+        #{item.increment}
+      %h3
+        Current winner
+      %p
+        -if item.current_winner != nil
+          :escaped
+            #{item.current_winner.name}
+        -else
+          No winner yet
+
+%h3
+  Description
+-if item.description == ""
+  %p
+    No description available
+-else
+  %div.markdown_view
+    =marked_down_description
+  %br(clear="all")
+%h3
+  Description
+  %p
+    %form{:action => "/admin/edit/#{item.id}/", :method => "POST"}
+      %textarea.textbox8.about_yourself{:name => "description"}
+        - lines = ("#{item.description}").split("\n")
+        - unless lines.empty?
+          - lines.each do |line|
+            =line
+      %input.styled-button{:type => "submit", :value => "Save", :text => "save"}

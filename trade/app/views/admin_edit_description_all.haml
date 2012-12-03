@@ -1,0 +1,35 @@
+%h2
+  Items
+%h3
+  The following items are registered by the system
+%table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
+  %thead
+    %tr
+      %th Pic
+      %th Name
+      %th Price
+      %th Qty
+      %th Owner
+      %th
+
+  %tbody
+    -for item in Store::Item.allFixed_of_active_users
+      %tr
+        %td
+          %img{:src => item.image_path, :height => "40px"}
+        %td
+          %a{:href => url("/item/#{item.id}")}
+            :escaped
+              #{item.name}
+        %td.ralign
+          #{item.price}
+        %td.ralign
+          #{item.quantity}
+        %td
+          %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
+            :escaped
+              #{item.owner.name}
+        %td
+          %a{:href => url("admin/editdescription/#{item.id}/")}
+            Edit Description
+=haml :'partials/pagination'
