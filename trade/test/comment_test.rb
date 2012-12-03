@@ -21,23 +21,23 @@ class CommentTest < Test::Unit::TestCase
     user = User.named("John")
     description = ":)"
     comment = Comment.new_comment(description, user)
-    assert_equal(comment.format_description, "![alternative text](/images/smileys/smile.gif)")
+    assert_equal(comment.get_formatted_description, "![alternative text](/images/smileys/smile.gif)")
     comment.description = ":D"
-    assert_equal(comment.format_description, "![alternative text](/images/smileys/laugh.gif)")
+    assert_equal(comment.get_formatted_description, "![alternative text](/images/smileys/laugh.gif)")
     comment.description = ":("
-    assert_equal(comment.format_description, "![alternative text](/images/smileys/disappointed.gif)")
+    assert_equal(comment.get_formatted_description, "![alternative text](/images/smileys/disappointed.gif)")
     comment.description = ":,("
-    assert_equal(comment.format_description, "![alternative text](/images/smileys/sad.gif)")
+    assert_equal(comment.get_formatted_description, "![alternative text](/images/smileys/sad.gif)")
     comment.description = ":/"
-    assert_equal(comment.format_description, "![alternative text](/images/smileys/double_minded.gif)")
+    assert_equal(comment.get_formatted_description, "![alternative text](/images/smileys/double_minded.gif)")
     comment.description = "8)"
-    assert_equal(comment.format_description, "![alternative text](/images/smileys/cool.gif)")
+    assert_equal(comment.get_formatted_description, "![alternative text](/images/smileys/cool.gif)")
     comment.description = ":O"
-    assert_equal(comment.format_description, "![alternative text](/images/smileys/shocked.gif)")
+    assert_equal(comment.get_formatted_description, "![alternative text](/images/smileys/shocked.gif)")
     comment.description = ":crazy:"
-    assert_equal(comment.format_description, "![alternative text](/images/smileys/crazy.gif)")
+    assert_equal(comment.get_formatted_description, "![alternative text](/images/smileys/crazy.gif)")
     comment.description = ":yeah:"
-    assert_equal(comment.format_description, "![alternative text](/images/smileys/yeah.gif)")
+    assert_equal(comment.get_formatted_description, "![alternative text](/images/smileys/yeah.gif)")
   end
 
   def test_delete_comment

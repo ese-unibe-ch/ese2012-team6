@@ -34,13 +34,14 @@ class TradingAuthorityTest < Test::Unit::TestCase
     user.save
     org.save
 
-    TradingAuthority.swing_hammer_of_doom
+    TradingAuthority.reduce_all_user_credits
 
-    assert_equal(100-Integer(100*TradingAuthority.credit_reduce_rate), user.credits)
-    assert_equal(100-Integer(100*TradingAuthority.credit_reduce_rate), org.credits)
+    assert_equal(100-Integer(100*TradingAuthority.credit_reduce_rate*0.01), user.credits)
+    assert_equal(100-Integer(100*TradingAuthority.credit_reduce_rate*0.01), org.credits)
   end
 
   # time dependent unit test, result dependent on machine
+=begin
   def test_reduce_credits_timed
     user = User.named("User", :credits => 100)
     org = Organization.named("Org", :credits => 100)
@@ -54,9 +55,10 @@ class TradingAuthorityTest < Test::Unit::TestCase
 
     sleep 1.5
 
-    assert_equal(100-Integer(100*TradingAuthority.credit_reduce_rate), user.credits)
-    assert_equal(100-Integer(100*TradingAuthority.credit_reduce_rate), org.credits)
+    assert_equal(100-Integer(100*TradingAuthority.credit_reduce_rate*0.01), user.credits)
+    assert_equal(100-Integer(100*TradingAuthority.credit_reduce_rate*0.01), org.credits)
 
     TradingAuthority.stop
   end
+=end
 end

@@ -5,7 +5,7 @@ require_relative('../models/store/organization')
 require_relative('../models/helpers/storage/picture_uploader')
 require_relative('../models/store/trader')
 require_relative('../models/store/purchase')
-require_relative('../models/helpers/exceptions/purchase_error')
+require_relative('../models/helpers/exceptions/trade_error')
 require_relative('../models/store/trading_authority')
 
 # Handles all requests concerning user display and actions
@@ -86,7 +86,7 @@ class User < Sinatra::Application
 
     begin
       @user.on_behalf_of.purchase(item, quantity)
-    rescue Exceptions::PurchaseError => error
+    rescue Exceptions::TradeError => error
       redirect "/error/#{error.message}"
     end
 
@@ -163,9 +163,11 @@ class User < Sinatra::Application
 
     amount = params[:gift_amount].to_i
 
-    success = @user.send_money_to(org, amount)
-
-    redirect '/error/user_credit_transfer_failed' unless success
+    begin
+      @user.transfer_credits_to(org, amount)
+    rescue Exceptions::TradeError
+      redirect '/error/user_credit_transfer_failed'
+    end
 
     redirect back
   end

@@ -10,7 +10,7 @@ module Store
       attr_accessor :credit_reduce_time, :last_refresh, :reduce_thread, :credit_reduce_rate, :sell_bonus
     end
 
-    @sell_bonus=5
+    @sell_bonus = 5
     @credit_reduce_rate = 5
     @credit_reduce_time = 60*60*24
 
@@ -27,8 +27,7 @@ module Store
       self.reduce_thread = Thread.new {
         while true do
           if Time.now - self.last_refresh >= self.credit_reduce_time
-            puts "swing hammer of doom"
-            TradingAuthority.swing_hammer_of_doom
+            TradingAuthority.reduce_all_user_credits
             self.last_refresh = Time.now
           end
 
@@ -45,7 +44,7 @@ module Store
 
     class << self
       # all credits get reduced in a special time interval
-      def swing_hammer_of_doom
+      def reduce_all_user_credits
         all_users = Trader.all
         all_users.each { |user| self.reduce_credits(user) }
       end

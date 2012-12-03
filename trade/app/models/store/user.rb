@@ -4,7 +4,7 @@ require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
 require_relative '../store/trader'
 require_relative '../helpers/security/password_generator'
-require_relative '../helpers/security/mail_client'
+require_relative '../helpers/security/mail_dispatcher'
 require_relative '../store/suspender'
 
 module Store
@@ -113,7 +113,7 @@ module Store
     def reset_password(sendMail = true)
       new_password = Security::PasswordGenerator.generate_new_password()
       self.change_password(new_password)
-      Security::MailClient.send_password_mail(self.email, new_password) if sendMail
+      Security::MailDispatcher.send_password_mail(self.email, new_password) if sendMail
       new_password
     end
 

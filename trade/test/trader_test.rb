@@ -5,6 +5,7 @@ require_relative '../app/models/store/user'
 require_relative '../app/models/store/trader'
 require_relative '../app/models/store/organization'
 require_relative '../app/models/store/item'
+require_relative '../app/models/helpers/exceptions/trade_error'
 
 class TraderTest < Test::Unit::TestCase
   include Store
@@ -86,10 +87,20 @@ class TraderTest < Test::Unit::TestCase
     user1 = Trader.named("User1", :credits => 100)
     user2 = Trader.named("User2", :credits => 100)
 
-    user1.send_money_to(user2, 50)
+    user1.transfer_credits_to(user2, 50)
 
     assert_equal(50, user1.credits)
     assert_equal(150, user2.credits)
+  end
+
+  def test_send_money_to_trader_failed
+    user1 = Trader.named("User1", :credits => 100)
+    user2 = Trader.named("User2", :credits => 100)
+
+    assert_raise(Exceptions::TradeError) {user1.transfer_credits_to(user2, 101)}
+
+    assert_equal(100, user1.credits)
+    assert_equal(100, user2.credits)
   end
 
   def test_user_can_buy_own_item

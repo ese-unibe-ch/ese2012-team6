@@ -3,7 +3,7 @@ require_relative '../models/store/item'
 require_relative '../models/store/trader'
 require_relative '../models/store/user'
 require_relative '../models/helpers/security/string_checker'
-require_relative '../models/helpers/exceptions/purchase_error'
+require_relative '../models/helpers/exceptions/trade_error'
 require_relative '../models/api/api_response'
 
 class ExternalApi < Sinatra::Application
@@ -102,7 +102,7 @@ class ExternalApi < Sinatra::Application
             begin
               purchase = user.purchase(item, params[:quantity].to_i)
               ApiResponse.success(purchase.item)
-            rescue Exceptions::PurchaseError => error
+            rescue Exceptions::TradeError => error
               ApiResponse.failed(error.message)
             end
           else

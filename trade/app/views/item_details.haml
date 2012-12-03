@@ -108,7 +108,7 @@
             wrote at: #{comment.time_stamp}
           %br
           %div.markdown_view
-            = RDiscount.new(comment.format_description, :smart, :filter_html).to_html
+            = RDiscount.new(comment.get_formatted_description, :smart, :filter_html).to_html
     %tr
       %td.textarea
         %div.smiley-view
