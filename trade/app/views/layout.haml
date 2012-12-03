@@ -67,6 +67,12 @@
             %li
               -if @user.name == 'admin'
                 %a{:href => url("/admin/")} Admin
+            %li
+              -if @user.name == 'admin'
+                %a{:href => url("/admin/editdescription/")}Edit Description
+
+
+
           %div#context_switch
             %p
               Work on behalf of:

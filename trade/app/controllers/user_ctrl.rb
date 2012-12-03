@@ -201,16 +201,14 @@ class User < Sinatra::Application
   end
 
   post '/admin/changeParams/' do
-
-    redirect '/error/wrong_transfer_amount' unless (StringChecker.is_numeric?(params[:frequency]) )
-    redirect '/error/wrong_transfer_amount' unless (StringChecker.is_numeric?(params[:tax])        )
-    redirect '/error/wrong_transfer_amount' unless (StringChecker.is_numeric?(params[:bonus])       )
+    redirect '/login' unless @user and @user.name=='admin'
+    redirect '/error/not_numeric' unless (StringChecker.is_numeric?(params[:frequency]) )
+    redirect '/error/not_numeric' unless (StringChecker.is_numeric?(params[:tax])        )
+    redirect '/error/not_numeric' unless (StringChecker.is_numeric?(params[:bonus])       )
 
     frequency     =(params[:frequency]).to_i
     tax           =(params[:tax]).to_i
     bonus         =(params[:bonus]).to_i
-
-
 
 
     if !tax.nil? and tax >= 0 and tax <100
@@ -227,6 +225,30 @@ class User < Sinatra::Application
     end
 
     redirect '/admin/'
+  end
+
+  get "/admin/editdescription/" do
+    redirect '/login' unless @user and @user.name=='admin'
+    haml :admin_edit_description_all
+  end
+
+  get "/admin/editdescription/:item_id/" do
+    redirect '/login' unless @user and @user.name=='admin'
+    item = Item.by_id(params[:item_id].to_i)
+    marked_down_description = RDiscount.new(item.description, :smart, :filter_html)
+    haml :admin_edit_description, :locals => {
+        :item => item,
+        :marked_down_description => marked_down_description.to_html,
+    }
+    end
+
+  post "/admin/edit/:item_id/"do
+    redirect "/login" unless @user and @user.name=='admin'
+    item = item = Item.by_id(params[:item_id].to_i)
+    item.description= params[:description].to_s
+    redirect "admin/editdescription/#{params[:item_id].to_i}/"
+
+
   end
 end
 
