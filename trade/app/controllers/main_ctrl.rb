@@ -25,6 +25,30 @@ class Main < Sinatra::Application
     }
   end
 
+  get '/store/item' do
+    redirect '/login' unless @user
+
+    @user.on_behalf_of.acknowledge_item_properties!
+
+    most_recent_purchases = ActivityLogger.get_most_recent_purchases(10)
+
+    haml :item_store, :locals => { :users => Store::User.all_active,
+                              :most_recent_purchases => most_recent_purchases
+    }
+  end
+
+  get '/store/auction' do
+    redirect '/login' unless @user
+
+    @user.on_behalf_of.acknowledge_item_properties!
+
+    most_recent_purchases = ActivityLogger.get_most_recent_purchases(10)
+
+    haml :auction_store, :locals => { :users => Store::User.all_active,
+                              :most_recent_purchases => most_recent_purchases
+    }
+  end
+
   # Error handler, shows error message
   get '/error/:error_msg' do
 
