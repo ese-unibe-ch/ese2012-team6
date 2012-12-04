@@ -1,7 +1,8 @@
 :javascript
   $(document).ready(function() {
      $('.powertip').powerTip({
-          placement: 's' // north-east tooltip positio
+          placement: 's', // north-east tooltip positio
+          mouseOnToPopup: 'true'
      });
   })
 %h2
@@ -23,7 +24,8 @@
         %td
           %img{:src => item.image_path, :height => "40px"}
         %td
-          %a.powertip{:href => url("/item/#{item.id}"), "data-powertip" => RDiscount.new(item.description, :smart, :filter_html).to_html}
+          -popup_text = Haml::Engine.new(File.read('views/partials/item_popup.haml')).render(Object.new, :item => item)
+          %a.powertip{:href => url("/item/#{item.id}"), "data-powertip" => popup_text}
             :escaped
               #{item.name}
         %td.ralign

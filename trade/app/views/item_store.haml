@@ -3,14 +3,9 @@
     Store
   %div.action_buttons.float_right
     %a.styled-button{:href => "/item/new"} Propose new Item
-  %div.action_buttons.float_right
-    %a.styled-button{:href => "/store/auction"} Auction Store
-  %div.action_buttons.float_right
-    %a.styled-button{:href => "/store/item"} Item Store
-
 %h3
   Items currently in store:
-%table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
+%table.table-minimalistic{:id => "Table", :class => "tablesorter pager"}
   %thead
     %tr
       %th Pic
@@ -44,3 +39,22 @@
                   %input.textbox8{:type => "text", :name => "buy_amount", :style => "width: 30px", :value => "1"}
                   %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Buy" : "Buy as #{@user.on_behalf_of.name}"}
 =haml :'partials/pagination'
+%br
+%h3
+  Recent purchases:
+- if most_recent_purchases.empty?
+  %p No recent purchases
+-else
+  %table.table-minimalistic{:id => "Table2", :class => "tablesorter pager"}
+    %thead
+      %tr
+        %th Date
+        %th Activity
+    %tbody
+      -for activity in most_recent_purchases
+        %tr
+          %td
+            =activity.timestamp.asctime.to_s
+          %td
+            =activity.what_happened
+  =haml :'partials/pagination2'

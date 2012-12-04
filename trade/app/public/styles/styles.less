@@ -61,37 +61,47 @@ a, a.visited {
 }
 
 #nav_bar {
-  display: inline-block;
-  background-color: @background_color;
   width: 100%;
+  display:inline-block;
+  background-color: @background_color;
 
   ul {
-    list-style-type: none;
-    display: block;
-    margin: 0px;
-    padding: 0px;
-    height:100%;
-  }
+    height: 100%;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 
-  li  {
-    height:100%;
-    float: left;
-    display: inline;
-
-    a {
-      height:100%;
+    li {
       display: block;
-      padding: 10px 1em;
-      text-align: center;
-      text-transform: uppercase;
-      font-weight: bold;
-      font-size: 14px;
+      position: relative;
+      float: left;
+
+      a {
+        height:100%;
+        display: block;
+        text-decoration: none;
+        text-transform: uppercase;
+        font-weight: bold;
+        padding: 10px 1em;
+        margin-left: 1px;
+        white-space: nowrap;
+      }
+      a:hover { background-color: rgb(206, 224, 241); }
     }
   }
 
-  li:hover {
-    background-color: rgb(206, 224, 241);
+  li ul { display: none; }
+  li:hover ul {
+    display: block;
+    position: absolute;
   }
+  li:hover li {
+    float: none;
+    font-size: 11px;
+  }
+  li:hover a { background-color: rgb(206, 224, 241); }
+  li:hover li a:hover { background-color: #829dbb; }
 
   div#context_switch {
     float:right;
@@ -370,7 +380,7 @@ div.money-sender {
 
 #pager{
   padding-top: 25px;
-  text-align: center;
+  margin-left: 7em;
 
   span {
     padding: 0 5px 0 5px;
@@ -392,74 +402,30 @@ div.money-sender {
   }
 }
 
-.user-pager {
+#pager2{
+  padding-top: 25px;
+  margin-left: 5em;
 
-  font-size: 12px;
-  background: #fff;
-  //margin-left: 18em;
-  border-collapse: collapse;
-  text-align: center;
-
-  th  {
-    font-size: 14px;
-    font-weight: normal;
-    color: #039;
-    padding: 20px 20px;
-    border-bottom: 2px solid #6678b1;
-    text-align: center;
+  span {
+    padding: 0 5px 0 5px;
   }
-
-  td {
-    border-bottom: 1px solid #ccc;
-    color: #669;
-    text-align: center;
-    padding: 8px 8px;
+  img {
+    cursor: pointer;
+    .prev {
+      width: auto;
+      margin-right: 10px;
+    }
+    .next {
+      width: auto;
+      margin-left: 10px;
+    }
   }
-
-  tbody tr:hover td {
-    background: #eff2ff;
-    color: #009;
-    text-align: center;
-  }
-
-  a:hover {
-    text-decoration: underline;
+  input {
+    width: 50px;
     text-align: center;
   }
 }
 
-.item-pager {
-
-  font-size: 12px;
-  table-layout: center;
-  background: #fff;
-
-  border-collapse: collapse;
-
-  th  {
-    font-size: 14px;
-    font-weight: normal;
-    color: #039;
-    padding: 20px 20px;
-    border-bottom: 2px solid #6678b1;
-  }
-
-  td {
-    border-bottom: 1px solid #ccc;
-    color: #669;
-    text-align: center;
-    padding: 8px 8px;
-  }
-
-  tbody tr:hover td {
-    background: #eff2ff;
-    color: #009;
-  }
-
-  a:hover {
-    text-decoration: underline;
-  }
-}
 
 #footer {
  p {

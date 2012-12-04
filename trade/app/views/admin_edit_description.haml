@@ -70,7 +70,6 @@
             #{item.current_winner.name}
         -else
           No winner yet
-
 %h3
   Description
 -if item.description == ""
@@ -83,7 +82,7 @@
 %h3
   Description
   %p
-    %form{:action => "/admin/edit/#{item.id}/", :method => "POST"}
+    %form{:action => "/admin/edit/#{item.id}", :method => "POST"}
       %textarea.textbox8.about_yourself{:name => "description"}
         - lines = ("#{item.description}").split("\n")
         - unless lines.empty?
