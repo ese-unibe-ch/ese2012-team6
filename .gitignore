@@ -4,6 +4,7 @@
 *.png
 *.jpeg
 *.gif
+*.csv
 !bg_site.jpg
 !banner_trading.png
 !no_image.gif

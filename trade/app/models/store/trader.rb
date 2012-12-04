@@ -235,7 +235,7 @@ module Store
     end
 
     def can_bid?(item, amount)
-      enough_money_for_bid?(amount) && !same_bid_exists?(item, amount) && amount_bigger_than_current_selling_price(item, amount) && higher_than_last_own_bid?(item, amount)
+      enough_money_for_bid?(item, amount) && !same_bid_exists?(item, amount) && amount_bigger_than_current_selling_price(item, amount) && higher_than_last_own_bid?(item, amount)
     end
 
     def amount_bigger_than_current_selling_price(item, amount)
@@ -246,8 +246,12 @@ module Store
       end
     end
 
-    def enough_money_for_bid?(amount)
-      self.credits >= amount
+    def enough_money_for_bid?(item, amount)
+      if item.current_winner == self
+        self.credits + item.bidders[self] >= amount
+      else
+        self.credits >= amount
+      end
     end
 
     def same_bid_exists?(item, amount)
