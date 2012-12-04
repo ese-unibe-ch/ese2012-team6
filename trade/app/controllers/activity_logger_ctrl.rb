@@ -48,7 +48,7 @@ class ActivityLogger < Sinatra::Application
 
   post '/purchases/dump' do
     redirect '/login' unless @user
-    Store::Purchase.dump("purchases_#{Time.now.asctime}".gsub(" ", "_"))
+    Store::Purchase.dump("purchases_#{Time.now.asctime}.csv".gsub(" ", "_"))
     redirect back
   end
 
