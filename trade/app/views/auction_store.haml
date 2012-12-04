@@ -1,0 +1,45 @@
+%div#actionbar
+  %h2.float_left
+    Store
+  %div.action_buttons.float_right
+    %a.styled-button{:href => "/item/new"} Propose new Item
+  %div.action_buttons.float_right
+    %a.styled-button{:href => "/store/auction"} Auction Store
+  %div.action_buttons.float_right
+    %a.styled-button{:href => "/store/item"} Item Store
+
+%h3
+  Current auctions:
+%table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
+  %thead
+    %tr
+      %th Pic
+      %th Item
+      %th Price
+      %th Owner
+      %th finishes in
+      %th
+  %tbody
+    -for user in Store::Trader.all
+      -for item in user.get_active_items
+        -if item.is_auction?
+          %tr
+            %td
+              %img{:src => item.image_path, :height => "40px"}
+            %td
+              %a{:href => url("/item/#{item.id}")}
+                :escaped
+                  #{item.name}
+            %td
+              #{item.current_auction_price_to_show}
+            %td
+              %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
+                :escaped
+                  #{item.owner.name}
+            %td{:title => item.end_time.strftime("%Y-%m-%d %H:%M")}
+              %p #{item.time_delta_string}
+            %td
+              -if @user.on_behalf_of.can_buy?(item)
+                %form{:action => "/user/buy/#{item.id}", :method => "POST"}
+                  %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Bid" : "Bid as #{@user.on_behalf_of.name}"}
+=haml :'partials/pagination'

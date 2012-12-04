@@ -53,7 +53,7 @@ class StringCheckerTest < Test::Unit::TestCase
 
   def test_destroy_script
     string = "<script>alert()</script>"
-    destroyed = StringChecker.destroy_script(string)
+    destroyed = StringChecker.remove_script_tags(string)
     assert(!destroyed.include?("<script>"))
     assert(!destroyed.include?("</script>"))
   end

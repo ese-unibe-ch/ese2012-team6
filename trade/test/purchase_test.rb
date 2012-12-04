@@ -7,7 +7,7 @@ require_relative '../app/models/store/trader'
 require_relative '../app/models/store/organization'
 require_relative '../app/models/store/item'
 require_relative '../app/models/store/purchase'
-require_relative '../app/models/helpers/exceptions/purchase_error'
+require_relative '../app/models/helpers/exceptions/trade_error'
 
 class PurchaseTest < Test::Unit::TestCase
   include Store
@@ -147,7 +147,7 @@ class PurchaseTest < Test::Unit::TestCase
 
     purchase = nil
 
-    assert_nothing_raised(Exceptions::PurchaseError) { purchase = buyer.purchase(item) }
+    assert_nothing_raised(Exceptions::TradeError) { purchase = buyer.purchase(item) }
 
     assert_equal(0, buyer.credits, "Buyer has too many credits left")
     assert_equal(100, seller.credits, "Seller has too few credits")
@@ -170,7 +170,7 @@ class PurchaseTest < Test::Unit::TestCase
     buyer.acknowledge_item_properties!
     assert(!item.active?)
 
-    assert_raise(Exceptions::PurchaseError) { buyer.purchase(item) }
+    assert_raise(Exceptions::TradeError) { buyer.purchase(item) }
 
     assert_equal(100, buyer.credits, "Buyer's credits changed when they should not have")
     assert_equal(100, seller.credits, "Seller's credits changed when they should not have")
@@ -189,7 +189,7 @@ class PurchaseTest < Test::Unit::TestCase
     buyer.acknowledge_item_properties!
     assert(item.active?)
 
-    assert_raise(Exceptions::PurchaseError) { buyer.purchase(item) }
+    assert_raise(Exceptions::TradeError) { buyer.purchase(item) }
 
     assert_equal(100, buyer.credits, "Buyer has wrong amount of credits")
     assert_equal(100, seller.credits, "Seller has wrong amount of credits")
@@ -208,7 +208,7 @@ class PurchaseTest < Test::Unit::TestCase
 
     buyer.acknowledge_item_properties!
 
-    assert_raise(Exceptions::PurchaseError) { buyer.purchase(item, 2) }
+    assert_raise(Exceptions::TradeError) { buyer.purchase(item, 2) }
 
     assert_equal(100, buyer.credits, "Buyer has wrong amount of credits")
     assert_equal(100, seller.credits, "Seller has wrong amount of credits")

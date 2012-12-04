@@ -2,11 +2,11 @@ require 'bcrypt'
 
 require_relative '../analytics/activity_logger'
 require_relative '../analytics/activity'
-require_relative '../helpers/security/mail_client'
+require_relative '../helpers/security/mail_dispatcher'
 require_relative '../store/trading_authority'
 require_relative '../store/item'
 require_relative '../store/purchase'
-require_relative '../helpers/exceptions/purchase_error'
+require_relative '../helpers/exceptions/trade_error'
 
 # superclass for user and organization
 # A Trader is the main actor in the system. The class provides services for trading items between users and creating new items.
@@ -122,19 +122,19 @@ module Store
 
       if seller.nil?
         PurchaseActivity.failed(self, purchased_item, quantity).log if log
-        raise PurchaseError, "ITEM_NO_OWNER" #Item does not belong to anybody
+        raise TradeError, "ITEM_NO_OWNER" #Item does not belong to anybody
       elsif quantity > purchased_item.quantity
         PurchaseActivity.failed(self, purchased_item, quantity).log if log
-        raise PurchaseError, "INVALID_QUANTITY" #Seller doesn't have enough items
+        raise TradeError, "INVALID_QUANTITY" #Seller doesn't have enough items
       elsif !purchased_item.active?
         PurchaseActivity.failed(self, purchased_item, quantity).log if log
-        raise PurchaseError, "BUY_INACTIVE_ITEM" #Trying to buy inactive item
+        raise TradeError, "BUY_INACTIVE_ITEM" #Trying to buy inactive item
       elsif !seller.items.include?(purchased_item)
         PurchaseActivity.failed(self, purchased_item, quantity).log if log
-        raise PurchaseError, "SELLER_NOT_ITEM_OWNER" #Seller does not own item to buy
+        raise TradeError, "SELLER_NOT_ITEM_OWNER" #Seller does not own item to buy
       elsif self.credits < (purchased_item.price * quantity)
         PurchaseActivity.failed(self, purchased_item, quantity).log if log
-        raise PurchaseError, "NOT_ENOUGH_CREDITS" #Buyer does not have enough credits
+        raise TradeError, "NOT_ENOUGH_CREDITS" #Buyer does not have enough credits
       end
 
       purchase = Purchase.create(item, quantity, seller, self)
@@ -145,7 +145,7 @@ module Store
       purchase
     end
 
-    # handles the shop of an item , returns true if buy process was successful, false otherwise
+    # confirm a previously prepared purchase
     def confirm_purchase(purchase)
       purchase.confirm
     end
@@ -155,10 +155,12 @@ module Store
       self.pending_purchases.each{|purchase| purchase.confirm}
     end
 
+    # add purchase to user's pending purchases list
     def add_to_pending(purchase)
       self.pending_purchases.push(purchase)
     end
 
+    # delete purchase from user's pending purchases list
     def delete_pending(purchase)
       self.pending_purchases.delete(purchase)
     end
@@ -185,23 +187,13 @@ module Store
       "#{self.name}, #{self.credits}"
     end
 
-    # sends a certain amount of money from the user/org to a another user/org
-    def send_money_to(receiver, amount)
+    # sends a certain amount of money from the user/org to a another user/org. Raises TradeException if operation failed
+    def transfer_credits_to(receiver, amount)
       fail if receiver.nil?
-      return false unless self.credits >= amount
+      raise TradeError, "NOT_ENOUGH_CREDITS " unless self.credits >= amount
 
       self.credits -= amount
-      receiver.send_money(amount)
-
-      fail if self.credits < 0
-
-      true
-    end
-
-    # making the transfer of credit
-    def send_money(amount)
-      fail unless amount >= 0
-      self.credits += amount
+      receiver.credits += amount
     end
 
     # save time for item page
@@ -237,7 +229,7 @@ module Store
 
         if previous_winner != nil && previous_winner != current_winner && previous_winner.email != nil
           # we got a new winner
-          #Security::MailClient.send_new_winner_mail(previous_winner.email, item)
+          #Security::MailDispatcher.send_new_winner_mail(previous_winner.email, item)
         end
       end
     end

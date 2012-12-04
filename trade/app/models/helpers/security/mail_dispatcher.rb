@@ -3,7 +3,7 @@ require 'tlsmail'
 
 module Security
   # provides service to send mails to recipients
-  class MailClient
+  class MailDispatcher
     # send a mail with content to recipient
     def self.send_password_mail(to, contents)
 

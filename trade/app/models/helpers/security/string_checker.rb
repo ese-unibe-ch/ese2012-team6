@@ -22,7 +22,7 @@ module Security
     end
 
     # destroy script tags within a string
-    def self.destroy_script(string)
+    def self.remove_script_tags(string)
       string = string.strip
       string = string.gsub(/\<(\/)*[a-zA-Z]*\>/, "")
       string

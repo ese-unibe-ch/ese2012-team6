@@ -164,9 +164,13 @@ class Organization < Sinatra::Application
     redirect '/error/wrong_transfer_amount' unless (StringChecker.is_numeric?(params[:gift_amount]) && Integer(params[:gift_amount]) >= 0)
 
     amount = params[:gift_amount].to_i
-    success = org.send_money_to(@user, amount)
 
-    redirect '/error/organization_credit_transfer_failed' unless success
+    begin
+      org.transfer_credits_to(@user, amount)
+    rescue Exceptions::TradeError
+      redirect '/error/organization_credit_transfer_failed'
+    end
+
     redirect back
   end
 end

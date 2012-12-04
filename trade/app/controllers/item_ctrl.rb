@@ -164,7 +164,7 @@ class Item < Sinatra::Application
     file = params[:file_upload]
     redirect '/error/wrong_size' if file && file[:tempfile].size > 400*1024
 
-    item_name = StringChecker.destroy_script(params[:item_name])
+    item_name = StringChecker.remove_script_tags(params[:item_name])
 
     redirect '/error/invalid_price' unless Store::Item.valid_price?(params[:item_price])
     fail unless StringChecker.is_numeric?(params[:item_quantity])
@@ -193,7 +193,7 @@ class Item < Sinatra::Application
     redirect '/login' unless @user
     redirect back if params[:item_name] == "" or params[:item_price] == ""
 
-    item_name = StringChecker.destroy_script(params[:item_name])
+    item_name = StringChecker.remove_script_tags(params[:item_name])
 
     redirect '/error/invalid_price' unless Item.valid_price?(params[:item_price])
     item_price = params[:item_price].to_i
