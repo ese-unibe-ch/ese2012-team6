@@ -67,16 +67,16 @@
 
             -if @user.name == 'admin'
               %li
-                %a{:href => url("/admin/")} Admin
+                %a{:href => url("/admin")} Admin
                 %ul
                   %li
                     %a{:href => url("/activities")} Activities
                   %li
-                    %a{:href => url("/admin/transactions/")}Recent Transactions
+                    %a{:href => url("/admin/transactions")}Recent Transactions
                   %li
-                    %a{:href => url("/admin/editdescription/")}Edit Description
+                    %a{:href => url("/admin/editdescription")}Edit Description
                   %li
-                    %a{:href => url("/admin/")} Change system parameters
+                    %a{:href => url("/admin")} Change system parameters
           %div#context_switch
             %p
               Work on behalf of:

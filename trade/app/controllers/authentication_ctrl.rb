@@ -45,7 +45,7 @@ class Authentication < Sinatra::Application
     @user = user
 
     if @user.name == "admin"
-      redirect "/admin/"
+      redirect "/admin"
     end
 
     redirect '/'

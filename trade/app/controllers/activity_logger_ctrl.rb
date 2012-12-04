@@ -52,13 +52,9 @@ class ActivityLogger < Sinatra::Application
     redirect back
   end
 
-  get '/admin/transactions/'do
+  get '/admin/transactions' do
     redirect '/login' unless @user and @user.name == 'admin'
 
-
-
     haml :admin_transaction_overview
-
-
   end
 end

@@ -194,13 +194,13 @@ class User < Sinatra::Application
     haml :suspend
   end
 
-  get '/admin/' do
+  get '/admin' do
     redirect '/login' unless @user
     redirect '/login' unless @user.name =='admin'
     haml :admin
   end
 
-  post '/admin/changeParams/' do
+  post '/admin/changeParams' do
     redirect '/login' unless @user and @user.name=='admin'
     redirect '/error/not_numeric' unless (StringChecker.is_numeric?(params[:frequency]) )
     redirect '/error/not_numeric' unless (StringChecker.is_numeric?(params[:tax])        )
@@ -224,15 +224,15 @@ class User < Sinatra::Application
       TradingAuthority.credit_reduce_time = frequency
     end
 
-    redirect '/admin/'
+    redirect '/admin'
   end
 
-  get "/admin/editdescription/" do
+  get "/admin/editdescription" do
     redirect '/login' unless @user and @user.name=='admin'
     haml :admin_edit_description_all
   end
 
-  get "/admin/editdescription/:item_id/" do
+  get "/admin/editdescription:item_id/" do
     redirect '/login' unless @user and @user.name=='admin'
     item = Item.by_id(params[:item_id].to_i)
     marked_down_description = RDiscount.new(item.description, :smart, :filter_html)
@@ -242,7 +242,7 @@ class User < Sinatra::Application
     }
     end
 
-  post "/admin/edit/:item_id/"do
+  post "/admin/edit/:item_id"do
     redirect "/login" unless @user and @user.name=='admin'
     item = item = Item.by_id(params[:item_id].to_i)
     item.description= params[:description].to_s
