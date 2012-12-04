@@ -57,22 +57,22 @@ class AuctionTest < Test::Unit::TestCase
 
     assert(!@userC.can_bid?(item, 3))
     assert(!@userC.can_bid?(item, 4))
-    assert(@userC.can_bid?(item, 5))
+    assert(@userC.can_bid?(item, 7))
 
-    ###### SECOND BID :: Price = 5, Minimal Bid = 5 ######
-    @userC.bid(item, 5)
+    ###### SECOND BID :: Price = 7, Minimal Bid = 7 ######
+    @userC.bid(item, 7)
     ### AFTER :: Bidders = [5, 10], Price = 7
-    assert(item.current_selling_price == 7)
+    assert(item.current_selling_price == 9)
 
     assert(!@userC.can_bid?(item, 5))
     assert(!@userC.can_bid?(item, 6))
-    assert(@userC.can_bid?(item, 7))
+    assert(@userC.can_bid?(item, 11))
 
     ###### THIRD BID :: Price = 7, Minimal Bid = 7 ######
-    @userC.bid(item, 7)
+    @userC.bid(item, 11)
     ### AFTER :: Bidders = [7, 10], Price = 9
 
-    assert(item.current_selling_price == 9)
+    assert(item.current_selling_price == 11)
   end
 
   def test_current_winner
