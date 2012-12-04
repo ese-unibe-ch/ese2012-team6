@@ -26,6 +26,7 @@ module Store
       organization
     end
 
+
     # adds a member to an organization
     def add_member(member)
       member.enter_organization(self)
