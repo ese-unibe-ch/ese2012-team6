@@ -1,0 +1,105 @@
+!!! 5
+%html{:xmlns => "http://www.w3.org/1999/xhtml", "xml:lang" => "en", :lang => "en"}
+  %head
+    %link{:rel=> "stylesheet/less", :type => "text/css", :href => url("styles/styles.less")}
+    %link{:rel=> "stylesheet", :type => "text/css", :href => url("styles/jquery-ui-timepicker-addon.css")}
+    %link{:rel => "stylesheet", :type => "text/css", :href => url("styles/jquery-ui-1.9.1.custom.min.css")}
+    %link{:rel => "stylesheet", :type => "text/css", :href => url("styles/jquery.powertip.css")}
+
+    %script{:type => "text/javascript", :src => url("scripts/jquery-1.8.2.js")}
+    %script{:type => "text/javascript", :src => url("scripts/jquery-ui-1.9.1.js")}
+    %script{:type => "text/javascript", :src => url("scripts/jquery-ui-timepicker-addon.js")}
+    %script{:type => "text/javascript", :src => url("scripts/less-1.3.0.min.js")}
+    %script{:type => "text/javascript", :src => url("scripts/form_validation.js")}
+    %script{:type => "text/javascript", :src => url("scripts/form_update.js")}
+    %script{:type => "text/javascript", :src => url("scripts/jquery.tablesorter.min.js")}
+    %script{:type => "text/javascript", :src => url("scripts/jquery.tablesorter.pager.js")}
+    %script{:type => "text/javascript", :src => url("scripts/jquery.powertip-1.1.0.min.js")}
+    %title
+      Awesome Trading App
+  %body
+    %div#page
+      %div#header
+        %img{:src => url("/images/page/banner_trading.png")}
+      %div#status_bar
+        -if not @user.nil?
+          %span.credit_status
+            Credits: $#{@user.credits} | Items: #{@user.items.size}
+            -unless @user.working_as_self?
+              || #{@user.on_behalf_of.name}: Credits: $#{@user.on_behalf_of.credits} | Items: #{@user.on_behalf_of.items.size}
+          %span.login_status
+            %form{:action => "/search/items", :method => "GET", :onsubmit => "return validate_search(this);"}
+              %input.textbox8{:type => "text", :name => "search_desc", :style => "width: 60px"}
+              %input{:type => "submit", :value => "Search"}
+            Logged in as
+            %a{:href => url("/user/#{@user.name}")}
+              :escaped
+                #{@user.name}
+            |
+            %a{:href => url("/logout")} Logout
+        -else
+          %span.login_status
+            Not logged in!
+            |
+            %a{:href => url("/register")}
+              Register
+      -if not @user.nil?
+        %div#nav_bar
+          %ul
+            %li
+              %a{:href => url("/")} Store
+              %ul
+                %li
+                  %a{:href => "/store/item"} Fixed Price Items
+                %li
+                  %a{:href => "/store/auction"} Auctions
+            %li
+              %a{:href => url("/users")} Users
+            %li
+              %a{:href => url("/items")} Items
+            %li
+              %a{:href => url("/organizations")} Organizations
+            %li
+              -if @user.working_as_self?
+                %a{:href => url("/user/#{@user.name}")} Profile
+              -else
+                %a{:href => url("/organization/#{@user.on_behalf_of.name}")} Profile
+
+            -if @user.name == 'admin'
+              %li
+                %a{:href => url("/admin/")} Admin
+                %ul
+                  %li
+                    %a{:href => url("/activities")} Activities
+                  %li
+                    %a{:href => url("/admin/transactions/")}Recent Transactions
+                  %li
+                    %a{:href => url("/admin/editdescription/")}Edit Description
+                  %li
+                    %a{:href => url("/admin/")} Change system parameters
+          %div#context_switch
+            %p
+              Work on behalf of:
+            %form{:action => "/user/work_on_behalf_of/", :method => "POST"}
+              %select.float_right{:onchange => "this.form.submit();", :name => "on_behalf_of"}
+                - if @user.working_as_self?
+                  %option{:value => @user.name, :selected => "true"} Myself
+                - else
+                  %option{:value => @user.name} Myself
+                - for org in @user.organizations
+                  - if @user.working_on_behalf_of?(org)
+                    %option{:value => org.name, :selected => "true"}
+                      =org.name
+                  - else
+                    %option{:value => org.name}
+                      =org.name
+      %div#content
+        %p#error_message
+        =yield
+      %div#footer
+        %hr
+        %p
+          Are you an App developer? Please check out our
+          %a{:href => "https://github.com/ese-unibe-ch/ese2012-team6/wiki/API-Documentation"}
+            API Documentation
+          to get started!
