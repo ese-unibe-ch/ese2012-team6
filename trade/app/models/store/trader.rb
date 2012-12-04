@@ -242,7 +242,7 @@ module Store
 
     def amount_bigger_than_current_selling_price(item, amount)
       if item.current_selling_price != nil
-        amount >= item.current_selling_price
+        amount >= item.current_selling_price + item.increment
       else
         amount >= item.price
       end
