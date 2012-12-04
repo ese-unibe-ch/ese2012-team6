@@ -48,13 +48,20 @@ class ActivityLogger < Sinatra::Application
 
   post '/purchases/dump' do
     redirect '/login' unless @user
-    Store::Purchase.dump("purchases_#{Time.now.asctime}")
+    Store::Purchase.dump("purchases_#{Time.now.asctime}".gsub(" ", "_"))
     redirect back
   end
 
   get '/admin/transactions' do
     redirect '/login' unless @user and @user.name == 'admin'
 
-    haml :admin_transaction_overview
+    purchases = Store::Purchase.get_purchases_of_last '24h'
+    transaction_count, total_credits = ActivityLogger.get_transaction_statistics_of_last '24h'
+
+    haml :admin_transaction_overview, :locals => {
+        :transaction_count => transaction_count,
+        :total_credits => total_credits,
+        :purchases => purchases
+    }
   end
 end

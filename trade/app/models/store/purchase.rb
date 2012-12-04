@@ -61,7 +61,7 @@ module Store
       hash[:price] = self.item.price
       hash[:from] = self.seller.name
       hash[:to] = self.buyer.name
-      hash[:when] = Time.now.asctime
+      hash[:when] = Time.now
 
       @@purchases << hash
     end
@@ -73,6 +73,12 @@ module Store
 
       def get_all_purchases
         @@purchases
+      end
+
+      # Get all purchases in the specified timeframe (format 'value[smhd]')
+      def get_purchases_of_last(time_string)
+        timeframe = Time.from_string time_string
+        @@purchases.select {|purchase| purchase[:when] > Time.now - timeframe}
       end
 
       def dump(filename)
