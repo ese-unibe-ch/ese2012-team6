@@ -1,0 +1,37 @@
+%h2
+  Recent Transactions
+%table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
+  %thead
+    %tr
+      %th Date
+      %th Item
+      %th Price
+      %th From:
+      %th To
+      %th
+  %tbody
+    -credits=0
+    -for purchase in Store::Purchase.get_all_purchases
+      -if Time.parse(purchase[:when]) > Time.now-86400
+        -credits =credits+purchase[:price].to_i
+        %tr
+          %td
+            #{purchase[:when]}
+          %td
+            #{purchase[:item_name]}
+          %td
+            #{ purchase[:price]}
+          %td
+            #{purchase[:from]}
+          %td
+            #{purchase[:to]}
+
+%h3
+  Credits transferred in the last 24 hours:
+%p
+  #{credits}
+
+
+
+
+=haml :'partials/pagination'

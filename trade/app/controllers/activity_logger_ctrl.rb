@@ -51,4 +51,14 @@ class ActivityLogger < Sinatra::Application
     Store::Purchase.dump("purchases_#{Time.now.asctime}")
     redirect back
   end
+
+  get '/admin/transactions/'do
+    redirect '/login' unless @user and @user.name == 'admin'
+
+
+
+    haml :admin_transaction_overview
+
+
+  end
 end
