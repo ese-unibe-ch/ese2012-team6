@@ -1,4 +1,4 @@
-§ require 'rbtree'
+require 'rbtree'
 require 'parsedate'
 require 'json'
 require 'orderedhash'
