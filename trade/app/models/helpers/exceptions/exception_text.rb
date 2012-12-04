@@ -15,6 +15,8 @@ module Exceptions
             error_message = "Trying to buy inactive item"
           when "SELLER_NOT_ITEM_OWNER"
             error_message = "Seller does not own item to buy"
+          when "INVALID_BID"
+            error_message = "Bid is too small or already exists, or bidder does not have enough credits."
           when "user_no_exists"
             error_message = "User is not registered in the system"
           when "login_no_pwd_user"

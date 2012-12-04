@@ -231,6 +231,8 @@ module Store
           # we got a new winner
           #Security::MailDispatcher.send_new_winner_mail(previous_winner.email, item)
         end
+      else
+        raise TradeError, "INVALID_BID" #Bid is too small or already exists or user doesn't have enough money.
       end
     end
 

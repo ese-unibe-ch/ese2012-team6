@@ -122,9 +122,11 @@ class User < Sinatra::Application
     item = Item.by_id(item_id)
 
     redirect url('/error/item_changed_details') unless @user.on_behalf_of.knows_item_properties?(item)
-
-    @user.on_behalf_of.bid(item, amount)
-
+    begin
+      @user.on_behalf_of.bid(item, amount)
+    rescue Exceptions::TradeError => error
+      redirect "/error/#{error.message}"
+    end
     # redirect url("/error/#{buy_message}") unless buy_success
     redirect back
   end

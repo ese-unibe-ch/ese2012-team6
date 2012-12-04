@@ -63,6 +63,8 @@ class Main < Sinatra::Application
         should_refresh = true
       when "BUY_INACTIVE_ITEM"
         should_refresh = true
+      when "INVALID_BID"
+        should_refresh = true
       when "user_credit_transfer_failed"
         should_refresh = true
       when "organization_credit_transfer_failed"
