@@ -202,11 +202,11 @@ class User < Sinatra::Application
 
   post '/admin/changeParams/' do
     redirect '/login' unless @user and @user.name=='admin'
-    redirect '/error/not_numeric' unless (StringChecker.is_numeric?(params[:frequency]) )
+    redirect '/error/not_numeric' unless (Time.from_string(params[:frequency])).kind_of? Fixnum
     redirect '/error/not_numeric' unless (StringChecker.is_numeric?(params[:tax])        )
     redirect '/error/not_numeric' unless (StringChecker.is_numeric?(params[:bonus])       )
 
-    frequency     =(params[:frequency]).to_i
+    frequency     =Time.from_string(params[:frequency])
     tax           =(params[:tax]).to_i
     bonus         =(params[:bonus]).to_i
 
@@ -240,7 +240,7 @@ class User < Sinatra::Application
         :item => item,
         :marked_down_description => marked_down_description.to_html,
     }
-    end
+  end
 
   post "/admin/edit/:item_id/"do
     redirect "/login" unless @user and @user.name=='admin'
