@@ -48,12 +48,15 @@
           %ul
             %li
               %a{:href => url("/")} Store
+              %ul
+                %li
+                  %a{:href => "/store/item"} Fixed Price Items
+                %li
+                  %a{:href => "/store/auction"} Auctions
             %li
               %a{:href => url("/users")} Users
             %li
               %a{:href => url("/items")} Items
-            %li
-              %a{:href => url("/auctions")} Auctions
             %li
               %a{:href => url("/organizations")} Organizations
             %li
@@ -61,18 +64,17 @@
                 %a{:href => url("/user/#{@user.name}")} Profile
               -else
                 %a{:href => url("/organization/#{@user.on_behalf_of.name}")} Profile
-            %li
-              -if @user.name == 'admin'
-                %a{:href => url("/activities")} Activities
-            %li
-              -if @user.name == 'admin'
+
+            -if @user.name == 'admin'
+              %li
                 %a{:href => url("/admin/")} Admin
-            %li
-              -if @user.name == 'admin'
-                %a{:href => url("/admin/editdescription/")}Edit Description
-
-
-
+                %ul
+                  %li
+                    %a{:href => url("/activities")} Activities
+                  %li
+                    %a{:href => url("/admin/editdescription/")}Edit Description
+                  %li
+                    %a{:href => url("/admin/")} Change system parameters
           %div#context_switch
             %p
               Work on behalf of:

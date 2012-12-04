@@ -247,8 +247,6 @@ class User < Sinatra::Application
     item = item = Item.by_id(params[:item_id].to_i)
     item.description= params[:description].to_s
     redirect "admin/editdescription/#{params[:item_id].to_i}/"
-
-
   end
 end
 
