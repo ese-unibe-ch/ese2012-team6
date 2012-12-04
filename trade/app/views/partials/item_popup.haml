@@ -1,6 +1,7 @@
 #{RDiscount.new(item.description, :smart, :filter_html).to_html}
 
--if item.buyable_by? @user
+-if item.buyable_by?(user)
   %form{:action => "/user/buy/#{item.id}", :method => "POST"}
-    %input.textbox8{:type => "text", :name => "buy_amount", :style => "width: 30px", :value => "1"}
-    %input{:type => "submit", :value => "Buy"}
+    -if !item.is_auction?
+      %input.textbox8{:type => "text", :name => "buy_amount", :style => "width: 30px", :value => "1"}
+    %input{:type => "submit", :value => item.is_auction? ? "Bid" : "Buy"}
