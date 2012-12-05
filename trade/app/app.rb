@@ -9,6 +9,7 @@ require_relative('models/store/organization')
 require_relative('models/store/trading_authority')
 require_relative('models/store/auction_timer')
 require_relative('models/store/suspender')
+require_relative('models/store/offer')
 
 require_relative('controllers/authentication_ctrl')
 require_relative('controllers/main_ctrl')

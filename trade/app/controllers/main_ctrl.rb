@@ -2,6 +2,7 @@ require 'haml'
 require_relative('../models/store/user')
 require_relative('../models/store/item')
 require_relative('../models/helpers/exceptions/exception_text')
+require_relative('../models/helpers/security/string_checker')
 
 # Handles all requests concerning item store and error display
 class Main < Sinatra::Application
@@ -47,6 +48,26 @@ class Main < Sinatra::Application
     haml :auction_store, :locals => { :users => Store::User.all_active,
                                       :most_recent_purchases => most_recent_purchases
     }
+  end
+
+  get '/store/offers' do
+    redirect '/login' unless @user
+
+    haml :offers_store
+
+  end
+
+  post '/offer/new' do
+    #redirect '/error/invalid_admin_input' unless StringChecker.is_numeric?(params[:price].to_i)
+    #redirect '/error/invalid_admin_input' unless StringChecker.is_numeric?(params[:qty].to_i)
+    item_name=params[:item_name]
+    price    =params[:price].to_i
+    quantity =params[:qty].to_i
+    from     =@user.on_behalf_of
+
+    Offer.create(item_name,price,quantity,from)
+    redirect '/store/offers'
+
   end
 
   # Error handler, shows error message
