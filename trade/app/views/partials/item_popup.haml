@@ -1,7 +1,35 @@
-#{RDiscount.new(item.description, :smart, :filter_html).to_html}
+-if item.is_auction?
+  %table
+    %tr
+      %td Min Price:
+      %td #{item.price}
+    %tr
+      %td Increment:
+      %td #{item.increment}
+    -if !item.bidders.empty?
+      %tr
+        %td Current price:
+        %td #{item.current_selling_price}
+      %tr
+        %td Current winner:
+        %td #{item.current_winner.name}
+    -else
+      %tr
+        %td No bids yet!
+  -if item.buyable_by?(user.on_behalf_of) && actionable
+    %form{:action => "/user/buy/#{item.id}", :method => "POST"}
+      %input{:type => "submit", :value => "Bid"}
+  -if item.description.nil? || item.description == ""
+    %p No description
+  -else
+    #{RDiscount.new(item.description, :smart, :filter_html).to_html}
 
--if item.buyable_by?(user)
-  %form{:action => "/user/buy/#{item.id}", :method => "POST"}
-    -if !item.is_auction?
+-else
+  -if item.description.nil? || item.description == ""
+    %p No description
+  -else
+    #{RDiscount.new(item.description, :smart, :filter_html).to_html}
+  -if item.buyable_by?(user.on_behalf_of)  && actionable
+    %form{:action => "/user/buy/#{item.id}", :method => "POST"}
       %input.textbox8{:type => "text", :name => "buy_amount", :style => "width: 30px", :value => "1"}
-    %input{:type => "submit", :value => item.is_auction? ? "Bid" : "Buy"}
+      %input{:type => "submit", :value => "Buy"}

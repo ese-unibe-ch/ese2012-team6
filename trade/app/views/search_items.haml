@@ -24,7 +24,7 @@
         %td
           %img{:src => item.image_path, :height => "40px"}
         %td
-          -popup_text = Haml::Engine.new(File.read('views/partials/item_popup.haml')).render(Object.new,:user => @user, :item => item)
+          -popup_text = Haml::Engine.new(File.read('views/partials/item_popup.haml')).render(Object.new,:user => @user, :item => item, :actionable => true)
           %a.powertip{:href => url("/item/#{item.id}"), "data-powertip" => popup_text}
             :escaped
               #{item.name}
