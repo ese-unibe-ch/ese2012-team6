@@ -67,6 +67,8 @@ class Main < Sinatra::Application
         should_refresh = true
       when "organization_credit_transfer_failed"
         should_refresh = true
+      when "invalid_admin_input"
+        should_refresh = true
     end
 
     error_message = Exceptions::ExceptionText.get(params[:error_msg])

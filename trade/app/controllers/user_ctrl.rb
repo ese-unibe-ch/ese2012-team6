@@ -7,6 +7,7 @@ require_relative('../models/store/trader')
 require_relative('../models/store/purchase')
 require_relative('../models/helpers/exceptions/trade_error')
 require_relative('../models/store/trading_authority')
+require_relative('../models/helpers/security/string_checker')
 
 # Handles all requests concerning user display and actions
 class User < Sinatra::Application
@@ -202,27 +203,23 @@ class User < Sinatra::Application
 
   post '/admin/changeParams' do
     redirect '/login' unless @user and @user.name=='admin'
-    redirect '/error/not_numeric' unless (Time.from_string(params[:frequency])).kind_of? Fixnum
-    redirect '/error/not_numeric' unless (StringChecker.is_numeric?(params[:tax])        )
-    redirect '/error/not_numeric' unless (StringChecker.is_numeric?(params[:bonus])       )
 
-    frequency     =Time.from_string(params[:frequency])
-    tax           =(params[:tax]).to_i
-    bonus         =(params[:bonus]).to_i
-
-
-    if !tax.nil? and tax >= 0 and tax <100
-      TradingAuthority.credit_reduce_rate = tax
+    if Security::StringChecker.matches_regex?(params[:frequency], /\d+[smhd]/)
+      frequency = Time.from_string(params[:frequency])
+    else
+      redirect '/error/invalid_admin_input' unless StringChecker.is_numeric?(params[:frequency])
+      frequency = params[:frequency].to_i
     end
 
+    redirect '/error/invalid_admin_input' unless StringChecker.is_numeric?(params[:tax])
+    redirect '/error/invalid_admin_input' unless StringChecker.is_numeric?(params[:bonus])
 
-    if !bonus.nil? and bonus >= 0 and bonus <100
-      TradingAuthority.sell_bonus = bonus
-    end
+    tax = params[:tax].to_i
+    bonus = params[:bonus].to_i
 
-    if !frequency.nil?
-      TradingAuthority.credit_reduce_time = frequency
-    end
+    TradingAuthority.credit_reduce_rate = tax unless tax.nil? || tax < 0 || tax > 100
+    TradingAuthority.sell_bonus = bonus unless bonus.nil? || bonus < 0 || bonus > 100
+    TradingAuthority.credit_reduce_time = frequency unless frequency.nil? || frequency < 1
 
     redirect '/admin'
   end

@@ -52,6 +52,8 @@ module Exceptions
             error_message = "This user was created for fast program testing, thus it hasn't got an email address"
           when "delete_failed"
             error_message = "You cannot delete your account because you have active auctions"
+          when "invalid_admin_input"
+            error_message = "Your input is invalid"
           else
             error_message = "Unknown error"
         end
