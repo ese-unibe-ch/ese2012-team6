@@ -20,7 +20,7 @@ class Main < Sinatra::Application
 
     most_recent_purchases = ActivityLogger.get_most_recent_purchases(10)
 
-    haml :store, :locals => { :users => Store::User.all_active,
+    haml :item_store, :locals => { :users => Store::User.all_active,
                               :most_recent_purchases => most_recent_purchases
     }
   end
@@ -33,7 +33,7 @@ class Main < Sinatra::Application
     most_recent_purchases = ActivityLogger.get_most_recent_purchases(10)
 
     haml :item_store, :locals => { :users => Store::User.all_active,
-                              :most_recent_purchases => most_recent_purchases
+                                   :most_recent_purchases => most_recent_purchases
     }
   end
 
@@ -45,7 +45,7 @@ class Main < Sinatra::Application
     most_recent_purchases = ActivityLogger.get_most_recent_purchases(10)
 
     haml :auction_store, :locals => { :users => Store::User.all_active,
-                              :most_recent_purchases => most_recent_purchases
+                                      :most_recent_purchases => most_recent_purchases
     }
   end
 
@@ -62,6 +62,8 @@ class Main < Sinatra::Application
       when "NOT_ENOUGH_CREDITS"
         should_refresh = true
       when "BUY_INACTIVE_ITEM"
+        should_refresh = true
+      when "INVALID_BID"
         should_refresh = true
       when "user_credit_transfer_failed"
         should_refresh = true

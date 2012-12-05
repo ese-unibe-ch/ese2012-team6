@@ -231,23 +231,29 @@ module Store
           # we got a new winner
           #Security::MailDispatcher.send_new_winner_mail(previous_winner.email, item)
         end
+      else
+        raise TradeError, "INVALID_BID" #Bid is too small or already exists or user doesn't have enough money.
       end
     end
 
     def can_bid?(item, amount)
-      enough_money_for_bid?(amount) && !same_bid_exists?(item, amount) && amount_bigger_than_current_selling_price(item, amount) && higher_than_last_own_bid?(item, amount)
+      enough_money_for_bid?(item, amount) && !same_bid_exists?(item, amount) && amount_bigger_than_current_selling_price(item, amount) && higher_than_last_own_bid?(item, amount)
     end
 
     def amount_bigger_than_current_selling_price(item, amount)
       if item.current_selling_price != nil
-        amount >= item.current_selling_price
+        amount >= item.current_selling_price + item.increment
       else
         amount >= item.price
       end
     end
 
-    def enough_money_for_bid?(amount)
-      self.credits >= amount
+    def enough_money_for_bid?(item, amount)
+      if item.current_winner == self
+        self.credits + item.bidders[self] >= amount
+      else
+        self.credits >= amount
+      end
     end
 
     def same_bid_exists?(item, amount)

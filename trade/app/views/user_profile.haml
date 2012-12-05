@@ -10,6 +10,7 @@
       %a.styled-button{:href => "/item/new"} Create new Item
       %a.styled-button{:href => "/user/#{@user.name}/edit"} Edit Profile
       %a.styled-button.delete-color{:href => "/suspend_prov"} Delete account
+
 %h3
   :escaped
     #{is_my_profile ? "Your Credits" : "Credits of " + viewed_user.name}:
@@ -19,6 +20,7 @@
 %div.picture_container.float_right
   %img{:src => "#{viewed_user.image_path}", :width => "200"}
 
+
 %h3
   :escaped
     #{is_my_profile ? "You own" : viewed_user.name + " owns"} the following items:
@@ -26,7 +28,7 @@
   %p
     No items available
 -else
-  %table.table-minimalistic
+  %table.table-minimalistic{:id => "Table", :class => "tablesorter pager"}
     %thead
       %tr
         %th Name
@@ -77,13 +79,14 @@
                 %form{:action => "/item/#{item.id}", :method => "POST"}
                   %input{:name => "_method", :type => "hidden", :value => "delete"}
                   %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
+  =haml :'partials/pagination'
 
-
+%br
 -if !@user.on_behalf_of.pending_purchases.empty? and is_my_profile
   %h3
     Pending Items:
   %p
-  %table.table-minimalistic
+  %table.table-minimalistic{:id => "Table2", :class => "tablesorter pager"}
     %thead
       %tr
         %th Name
@@ -109,12 +112,14 @@
             %div.action_button
               %form{:action => "/user/confirm/#{purchase.id}", :method => "POST"}
                 %input.styled-button.small.float_left{:type => "submit", :value => "Validate Reception"}
+  =haml :'partials/pagination2'
 -elsif @user.on_behalf_of.pending_purchases.empty? and is_my_profile
   %h3
     Pending Items:
   %p
     No pending items
 
+%br
 %h3
   Member of Organizations:
 -if viewed_user.organizations.empty?
@@ -127,6 +132,7 @@
         %a{:href => "/organization/#{org.name}"}
           :escaped
             #{org.name}
+%br
 %h3
   #{is_my_profile ? "Your Description" : "Description of " + viewed_user.name}:
 -if viewed_user.description == ""

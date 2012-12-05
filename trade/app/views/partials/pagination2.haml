@@ -1,4 +1,4 @@
-%div{:id => "pager", :class => "pager"}
+%div{:id => "pager2", :class => "pager"}
   %form
     %img{:src => "../images/pager/first.png", :class => "first", :alt =>"first"}
     %img{:src => "../images/pager/prev.png", :class => "prev", :alt =>"prev"}
@@ -14,14 +14,14 @@
 :javascript
   $(document).ready(function() {
 
-    $("#Table")
+    $("#Table2")
       .tablesorter({
               headers: {3: {sorter: false}},
               sortList: [[0,0], [1,0]],
               widgets: ['zebra']
       })
       .tablesorterPager({
-              container: $("#pager"),
+              container: $("#pager2"),
               positionFixed: false
       });
   })

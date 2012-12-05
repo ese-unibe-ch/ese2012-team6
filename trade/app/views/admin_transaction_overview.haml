@@ -1,32 +1,37 @@
-%h2
-  Recent Transactions
-%table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
-  %thead
-    %tr
-      %th Date
-      %th Item
-      %th Price
-      %th From:
-      %th To
-      %th
-  %tbody
-    -credits=0
-    -for purchase in Store::Purchase.get_all_purchases
-      -if Time.parse(purchase[:when]) > Time.now-86400
-        -credits =credits+purchase[:price].to_i
+%div#actionbar
+  %h2.float_left
+    Recent Transactions
+  %div.action_buttons.float_right
+    %form{:action => "/purchases/dump", :method => "POST"}
+      %input.styled-button{:type => "submit", :value => "Dump transactions to disk"}
+-if purchases.length > 0
+  %table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
+    %thead
+      %tr
+        %th Date
+        %th Item
+        %th Price
+        %th From:
+        %th To
+        %th
+    %tbody
+      -for purchase in purchases
         %tr
           %td
-            #{purchase[:when]}
+            #{purchase[:when].asctime}
           %td
             #{purchase[:item_name]}
           %td
-            #{ purchase[:price]}
+            #{purchase[:price]}
           %td
             #{purchase[:from]}
           %td
             #{purchase[:to]}
-=haml :'partials/pagination'
+  =haml :'partials/pagination'
+-else
+  %p
+    No transactions in last 24 hours
 %h3
-  Credits transferred in the last 24 hours:
+  Summary
 %p
-  #{credits}
+  #{transaction_count} transactions were carried out to a total of #{total_credits} Credits
