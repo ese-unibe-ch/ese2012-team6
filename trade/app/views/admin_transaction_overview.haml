@@ -5,7 +5,7 @@
     %form{:action => "/purchases/dump", :method => "POST"}
       %input.styled-button{:type => "submit", :value => "Dump transactions to disk"}
 -if purchases.length > 0
-  %table.table-minimalistic{:id => "Table", :class => "tablesorter pager", :align => "center"}
+  %table.table-minimalistic{:id => "Table", :class => "tablesorter pager"}
     %thead
       %tr
         %th Date

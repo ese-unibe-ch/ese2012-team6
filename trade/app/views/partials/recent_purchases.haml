@@ -1,11 +1,6 @@
-%div#actionbar
-  %h2.float_left
-    Store
-  %div.action_buttons.float_right
-    %a.styled-button{:href => "/item/new"} Propose new Item
 %h3
   Recent purchases:
-- if most_recent_purchases.empty?
+- if mrp.empty?
   %p No recent purchases
 -else
   %table.table-minimalistic{:id => "Table2", :class => "tablesorter pager"}
@@ -14,7 +9,7 @@
         %th Date
         %th Activity
     %tbody
-      -for activity in most_recent_purchases
+      -for activity in mrp
         %tr
           %td
             =activity.timestamp.asctime.to_s

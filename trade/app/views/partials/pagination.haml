@@ -6,10 +6,10 @@
     %img{:src => "../images/pager/next.png", :class => "next", :alt =>"next"}
     %img{:src => "../images/pager/last.png", :class => "last", :alt =>"last"}
     %select{:class => "pagesize"}
-      %option{:selected => "selected", :value => "10"} 10
+      %option{:selected => "selected", :value => "5"} 5
+      %option{:value => "10"} 10
+      %option{:value => "15"} 15
       %option{:value => "20"} 20
-      %option{:value => "30"} 30
-      %option{:value => "50"} 50
 
 :javascript
   $(document).ready(function() {
@@ -22,6 +22,7 @@
       })
       .tablesorterPager({
               container: $("#pager"),
-              positionFixed: false
+              positionFixed: false,
+              size:5
       });
   })
