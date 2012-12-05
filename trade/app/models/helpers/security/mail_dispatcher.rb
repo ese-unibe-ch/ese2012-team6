@@ -49,7 +49,7 @@ EOF
       Net::SMTP.enable_tls(OpenSSL::SSL::VERIFY_NONE)
       Net::SMTP.start('smtp.gmail.com', 587, 'gmail.com', from, pw, :login) do |smtp|
         to.each {|recipient|
-          smtp.send_message content, from, recipient
+          smtp.send_message content, from, recipient unless [nil, ""].include?(recipient)
         }
       end
     end
@@ -75,7 +75,7 @@ EOF
       Net::SMTP.enable_tls(OpenSSL::SSL::VERIFY_NONE)
       Net::SMTP.start('smtp.gmail.com', 587, 'gmail.com', from, pw, :login) do |smtp|
         to.each {|recipient|
-          smtp.send_message content, from, recipient
+          smtp.send_message content, from, recipient unless [nil, ""].include?(recipient)
         }
       end
     end
