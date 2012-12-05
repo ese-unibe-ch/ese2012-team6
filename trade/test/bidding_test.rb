@@ -36,8 +36,8 @@ class AuctionTest < Test::Unit::TestCase
     assert(!@userD.can_bid?(item,1)) # bid not high enough
     assert(!@userD.can_bid?(item,2)) # not enough money
 
-    assert(!@userA.can_bid?(item,4)) # bid not high enough
-    assert(@userA.can_bid?(item,5))  # bid high enough & enough money
+    assert(!@userA.can_bid?(item,20))  #auction owner cannot bid
+    assert(!@userD.can_bid?(item,5))  #auction owner cannot bid
   end
 
   def test_createAuction

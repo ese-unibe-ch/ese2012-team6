@@ -211,28 +211,24 @@ module Store
     def bid(item, amount)
       if can_bid?(item, amount)
         previous_winner = item.current_winner
-        previous_selling_price = item.bidders[previous_winner]
+        previous_max_bid = item.highest_bid.nil? ? 0 : item.bidders[previous_winner]
 
-        if item.highest_bid != nil
-          previous_max_bid = item.bidders[previous_winner]
-        else
-          previous_max_bid = 0
-        end
         item.bidders[self] = amount
 
         # reduce money if user is new winner, otherwise nothing happens
         current_winner = item.current_winner
         current_max_bid = item.bidders[current_winner]
 
-        if previous_winner != nil
-          previous_winner.credits += previous_max_bid
-        end
+        previous_winner.credits += previous_max_bid unless previous_winner.nil?
         current_winner.credits -= current_max_bid
 
-        if previous_winner != nil && previous_winner != current_winner && previous_winner.email != nil
+=begin
+        if !previous_winner.nil? && previous_winner != current_winner
           # we got a new winner
-          #Security::MailDispatcher.send_new_winner_mail(previous_winner.email, item)
+
+          Security::MailDispatcher.send_new_winner_mail(previous_winner.email, item) unless [nil, ""].include?(previous_winner.email)
         end
+=end
       else
         raise TradeError, "INVALID_BID" #Bid is too small or already exists or user doesn't have enough money.
       end

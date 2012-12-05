@@ -107,7 +107,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
     user.purchase(item2)
     user2.purchase(item)
 
-    cnt, sum = ActivityLogger.get_transaction_statistics_of_last '1s'
+    cnt, sum = ActivityLogger.get_transaction_statistics_of_last '2s'
 
     assert_equal(2, cnt)
     assert_equal(200, sum)
