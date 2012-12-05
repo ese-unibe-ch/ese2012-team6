@@ -43,9 +43,9 @@ class App < Sinatra::Base
   configure :development do
     #add default users
     (user_admin = User.named("admin")).save
-    (user_ese = User.named("ese")).save
-    (user_ese2 = User.named("ese2")).save
-    (user_ese3 = User.named("ese3")).save
+    (user_ese = User.named("ese", :email => 'awesome.trading.app@gmail.com')).save
+    (user_ese2 = User.named("ese2", :email => 'awesome.trading.app@gmail.com')).save
+    (user_ese3 = User.named("ese3", :email => 'awesome.trading.app@gmail.com')).save
     (user_ese4 = User.named("ese4")).save
     (user_ese5 = User.named("ese5")).save
     (user_ese6 = User.named("ese6")).save
