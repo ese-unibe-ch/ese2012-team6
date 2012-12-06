@@ -71,6 +71,7 @@ module Store
     def sell_to_offer(offer,item)
       item.activate if !item.active?
       item.price = offer.price
+      offer.from.credits +=item.price*offer.quantity
       purchase = Purchase.create(item,offer.quantity,item.owner,offer.from)
       purchase.prepare
       offer.delete

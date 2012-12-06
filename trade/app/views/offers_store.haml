@@ -36,7 +36,8 @@
     -for offer in Store::Offer.all
       %tr
         %td
-          #{offer.item_name}
+          :escaped
+            #{offer.item_name}
         %td
           #{offer.price}
         %td

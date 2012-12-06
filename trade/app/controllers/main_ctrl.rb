@@ -58,12 +58,18 @@ class Main < Sinatra::Application
   end
 
   post '/offer/new' do
-    #redirect '/error/invalid_admin_input' unless StringChecker.is_numeric?(params[:price].to_i)
-    #redirect '/error/invalid_admin_input' unless StringChecker.is_numeric?(params[:qty].to_i)
-    item_name=params[:item_name]
+    redirect '/login' unless @user
+
+    item_name=params[:item_name].to_s
     price    =params[:price].to_i
     quantity =params[:qty].to_i
     from     =@user.on_behalf_of
+
+    redirect '/store/offers' if price.nil? or !price.kind_of? Integer or price<0
+    redirect '/store/offers' if quantity.nil? or !quantity.kind_of? Integer or quantity <= 0
+    redirect '/store/offers' if item_name.nil? or item_name==''
+    redirect '/store/offers' if @user.on_behalf_of.credits < price
+    @user.on_behalf_of.credits -= price*quantity
 
     Offer.create(item_name,price,quantity,from)
     redirect '/store/offers'
