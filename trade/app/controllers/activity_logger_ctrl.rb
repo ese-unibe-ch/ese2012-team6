@@ -17,10 +17,14 @@ class ActivityLogger < Sinatra::Application
   get '/activities' do
     redirect '/login' unless @user and @user.name=='admin'
 
-    activities = ActivityLogger.get_all_activities
+    filters = params[:filters] ? params[:filters] : []
+    filters.each_index {|idx| filters[idx] = filters[idx].to_sym}
+
+    activities = ActivityLogger.get_activities(filters)
 
     haml :all_activities, :locals => {
-        :activities => activities
+        :activities => activities,
+        :active_filters => filters
     }
   end
 

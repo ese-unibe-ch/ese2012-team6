@@ -29,7 +29,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
     ActivityLogger.log(act1)
     ActivityLogger.log(act2)
 
-    logged_activities = ActivityLogger.get_all_activities
+    logged_activities = ActivityLogger.get_activities
 
     assert_equal(:ITEM_ADD, logged_activities[1].type)
     assert_equal(item.id, logged_activities[1].item_id)
@@ -54,7 +54,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
     ActivityLogger.log(act3)
     ActivityLogger.log(act4)
 
-    assert_equal([act4, act3, act2, act1], ActivityLogger.get_all_activities)
+    assert_equal([act4, act3, act2, act1], ActivityLogger.get_activities)
   end
 
   def test_previous_description
