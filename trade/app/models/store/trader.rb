@@ -285,9 +285,11 @@ module Store
       return items[index] unless index == nil
     end
 
-    def has_item_for_offer(name)
-      index = items.index {|x| x.name.match("(?i)(#{name})") }
-      return items[index] unless index == nil
+    def has_item_for_offer(offer)
+      if offer.from != self
+        index = items.index {|x| x.name.match("(?i)(#{offer.item_name})") }
+        return items[index] unless index == nil
+      end
     end
 
     def non_pending_items

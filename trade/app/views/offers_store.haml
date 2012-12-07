@@ -45,7 +45,7 @@
         %td
           #{offer.from.name}
         %td
-          - item = @user.on_behalf_of.has_item_for_offer(offer.item_name)
+          - item = @user.on_behalf_of.has_item_for_offer(offer)
           -if !item.nil? and item.quantity>=offer.quantity
             %form{:action => "/user/sell/#{offer.id}/#{item.id}", :method => "POST"}
               %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Sell" : "Sell as #{@user.on_behalf_of.name}"}
