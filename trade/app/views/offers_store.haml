@@ -43,7 +43,7 @@
         %td
           #{offer.quantity}
         %td
-          #{offer.from}
+          #{offer.from.name}
         %td
           - item = @user.on_behalf_of.has_item_for_offer(offer.item_name)
           -if !item.nil? and item.quantity>=offer.quantity
