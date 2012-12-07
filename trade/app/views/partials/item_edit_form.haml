@@ -5,49 +5,59 @@
       $('#datetimepicker').datetimepicker({ dateFormat: 'dd-mm-yy', minDate: 0 });
       updateForm();
     });
-  %h3.no_top_margin
-    Name
-  %p
-    %input.textbox8{:type => "text", :name => "item_name", :style => "width: 60px", :value => item_name}
-  %h3
-    Price
-  %p
-    %input.textbox8{:type => "text", :name => "item_price", :style => "width: 60px", :value => item_price}
-  %h3
-    Selling mode
-  %p
-    %input{ :type => "radio", :name => "selling_mode", :value => "fixed", :id =>"selling_mode_fixed", :onclick => "updateForm()", :checked => !defined?(selling_mode) ? true : selling_mode == :fixed}
-      Fixed
-    %input{ :type => "radio", :name => "selling_mode", :value => "auction", :id =>"selling_mode_auction", :onclick => "updateForm()", :checked => !defined?(selling_mode) ? false : selling_mode == :auction }
-      Auction
-  %div{ :id => "auction_options", :style => "display: none"}
-    %h3
-      Increment (auction only)
-    %p
-      %input.textbox8{:type => "text", :name => "item_increment", :style => "width: 60px", :value => item_increment}
-    %h3
-      End-Date (auction only)
-    %p
-      %input.textbox8{:type => "text", :id => "datetimepicker", :name => "auction_end", :style => "width: 60px", :value => auction_end}
-  -if not edit
-    %h3
-      Owner
-    %p
-      %select{:name => "owner"}
-        - if @user.on_behalf_of == @user
-          %option{:value => @user.name, :selected => "true"} Myself
-        - else
-          %option{:value => @user.name} Myself
-        - for org in @user.organizations
-          - if @user.on_behalf_of == org
-            %option{:value => org.name, :selected => "true"}
-              =org.name
-          - else
-            %option{:value => org.name}
-              =org.name
-    %h3
-      Quantity
-    %input.textbox8{:type => "text", :name => "item_quantity", :style => "width: 60px"}
+  %table
+    %tr
+      %td
+        %b Name:
+      %td
+        %input.textbox8{:type => "text", :name => "item_name", :style => "width: 60px", :value => item_name}
+    %tr
+      %td
+        %b Price:
+      %td
+        %input.textbox8{:type => "text", :name => "item_price", :style => "width: 60px", :value => item_price}
+    %tr
+      %td
+        %b Selling Mode:
+      %td
+        %input{ :type => "radio", :name => "selling_mode", :value => "fixed", :id =>"selling_mode_fixed", :onclick => "updateForm()", :checked => !defined?(selling_mode) ? true : selling_mode == :fixed}
+          Fixed
+        %input{ :type => "radio", :name => "selling_mode", :value => "auction", :id =>"selling_mode_auction", :onclick => "updateForm()", :checked => !defined?(selling_mode) ? false : selling_mode == :auction }
+          Auction
+    -if not edit
+      %tr
+        %td
+          %b Owner:
+        %td
+          %select{:name => "owner"}
+            - if @user.on_behalf_of == @user
+              %option{:value => @user.name, :selected => "true"} Myself
+            - else
+              %option{:value => @user.name} Myself
+            - for org in @user.organizations
+              - if @user.on_behalf_of == org
+                %option{:value => org.name, :selected => "true"}
+                  =org.name
+              - else
+                %option{:value => org.name}
+                  =org.name
+      %tr
+        %td
+          %b Quantity:
+        %td
+          %input.textbox8{:type => "text", :name => "item_quantity", :style => "width: 60px"}
+  %div{:id => "auction_options", :style => "display: none"}
+    %table
+      %tr
+        %td
+          %b Increment
+        %td
+          %input.textbox8{:type => "text", :name => "item_increment", :style => "width: 60px", :value => item_increment}
+      %tr
+        %td
+          %b End-Date
+        %td
+          %input.textbox8{:type => "text", :id => "datetimepicker", :name => "auction_end", :style => "width: 60px", :value => auction_end}
   %h3
     Description
   %p
