@@ -7,6 +7,7 @@ require_relative '../store/trading_authority'
 require_relative '../store/item'
 require_relative '../store/purchase'
 require_relative '../helpers/exceptions/trade_error'
+require_relative  '../store/offer'
 
 # superclass for user and organization
 # A Trader is the main actor in the system. The class provides services for trading items between users and creating new items.
@@ -65,6 +66,15 @@ module Store
       ItemAddActivity.create(self, item).log if log
 
       item
+    end
+
+    def sell_to_offer(offer,item)
+      item.activate if !item.active?
+      item.price = offer.price
+      offer.from.credits +=item.price*offer.quantity
+      purchase = Purchase.create(item,offer.quantity,item.owner,offer.from)
+      purchase.prepare
+      offer.delete
     end
 
     # get a list of all active items of a user
@@ -273,6 +283,13 @@ module Store
     def check_for_equal_item(name, price, description, item_not_to_compare = nil)
       index = items.index {|x| x.name.eql?(name) and x.price.eql?(price) and x.description.eql?(description) and x != item_not_to_compare}
       return items[index] unless index == nil
+    end
+
+    def has_item_for_offer(offer)
+      if offer.from != self
+        index = items.index {|x| x.name.match("(?i)(#{offer.item_name})") }
+        return items[index] unless index == nil
+      end
     end
 
     def non_pending_items
