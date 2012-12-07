@@ -286,7 +286,7 @@ module Store
     end
 
     def has_item_for_offer(name)
-      index = items.index {|x| x.name.eql?(name) }
+      index = items.index {|x| x.name.match("(?i)(#{name})") }
       return items[index] unless index == nil
     end
 
