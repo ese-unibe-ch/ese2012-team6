@@ -4,7 +4,7 @@ require_relative '../store/item'
 
 module Store
   class Purchase
-    attr_accessor :id, :item, :quantity, :seller, :buyer
+    attr_accessor :id, :item, :quantity, :seller, :buyer, :price
     @@last_id = 0
     @@purchases = []
 
@@ -38,6 +38,7 @@ module Store
         self.item.quantity = self.quantity
         self.item.save
       end
+      self.item.price = self.price unless self.price == nil
       self.item.state = :pending
 
       self.item.notify_change
@@ -45,6 +46,10 @@ module Store
       self.buyer.credits -= self.item.price * self.quantity
 
       self.save
+    end
+
+    def set_to_offer(offer)
+      self.price = offer.price
     end
 
     def confirm
