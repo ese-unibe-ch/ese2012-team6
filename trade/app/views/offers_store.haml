@@ -1,0 +1,52 @@
+:javascript
+  $(document).ready(function() {
+     $('.powertip').powerTip({
+          placement: 'e', // north-east tooltip positio
+          mouseOnToPopup: 'true'
+     });
+  })
+%div#actionbar
+  %h2.float_left
+    Offers
+
+%h3
+  Items currently in store:
+%table.table-minimalistic{:id => "Table", :class => "tablesorter pager"}
+  %thead
+    %tr
+      %th Item
+      %th Price
+      %th Avail.Qty
+      %th From
+      %th
+  %tbody
+    %tr
+      %form{:action => '/offer/new', :method => "POST"}
+        %td
+          %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
+        %td
+          %input.textbox8(type="text" name="price" style="width: 30px" value=20)
+        %td
+          %input.textbox8(type="text" name="qty" style="width: 30px" value=1)
+        %td
+          #{@user.on_behalf_of.name}
+        %td
+          %input.styled-button.small{:type => "submit", :value => "make offer"}
+
+    -for offer in Store::Offer.all
+      %tr
+        %td
+          :escaped
+            #{offer.item_name}
+        %td
+          #{offer.price}
+        %td
+          #{offer.quantity}
+        %td
+          #{offer.from.name}
+        %td
+          - item = @user.on_behalf_of.has_item_for_offer(offer.item_name)
+          -if !item.nil? and item.quantity>=offer.quantity
+            %form{:action => "/user/sell/#{offer.id}/#{item.id}", :method => "POST"}
+              %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Sell" : "Sell as #{@user.on_behalf_of.name}"}
+=haml :'partials/pagination'
