@@ -48,7 +48,7 @@ module Store
       self.save
     end
 
-    def set_to_offer(offer)
+    def adapt_price_to_offer(offer)
       self.price = offer.price
     end
 

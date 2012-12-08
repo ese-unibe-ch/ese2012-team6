@@ -73,7 +73,7 @@ module Store
       item.activate if !active
       offer.from.credits +=offer.price*offer.quantity
       purchase = Purchase.create(item,offer.quantity,item.owner,offer.from)
-      purchase.set_to_offer(offer)
+      purchase.adapt_price_to_offer(offer)
       purchase.prepare
       offer.delete
       item.deactivate if !active
