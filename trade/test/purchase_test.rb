@@ -16,6 +16,7 @@ class PurchaseTest < Test::Unit::TestCase
     Trader.clear_all
   end
 
+  # tests the quantity reduction and owner of a purchased item
   def test_create_item_with_quantity
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
@@ -28,6 +29,7 @@ class PurchaseTest < Test::Unit::TestCase
     assert(your_item.quantity == 4)
   end
 
+  # tests the purchase of an item by it's state, quantity and reduction of owner credits
   def test_make_a_purchase
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
@@ -42,6 +44,7 @@ class PurchaseTest < Test::Unit::TestCase
     assert_equal(you.pending_purchases, [purchase])
   end
 
+  # tests the confirmation of a purchased item by changing owner, state and owner's credit reduction
   def test_confirm_purchase
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
@@ -57,6 +60,7 @@ class PurchaseTest < Test::Unit::TestCase
     assert_equal(you.pending_purchases, [])
   end
 
+  # tests the purchase of an item with the quantity more than 1
   def test_make_several_purchases
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
@@ -71,6 +75,7 @@ class PurchaseTest < Test::Unit::TestCase
     assert_equal(me.pending_purchases, [purchase])
   end
 
+  # tests the confirmation by checking pending list, item quantity and item owner
   def test_confirm_several_purchases
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
@@ -86,6 +91,7 @@ class PurchaseTest < Test::Unit::TestCase
     assert_equal(me.pending_purchases, [])
   end
 
+  # tests the purchase of different items and different quantities
   def test_make_different_purchases
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
@@ -106,6 +112,7 @@ class PurchaseTest < Test::Unit::TestCase
     assert_equal(you.pending_purchases, [purchase3])
   end
 
+  # tests the confirmation of different purchases in the pending list
   def test_confirm_different_purchases
     me = Trader.named("Me", :credits => 100)
     you = Trader.named("You", :credits => 100)
@@ -136,6 +143,7 @@ class PurchaseTest < Test::Unit::TestCase
     assert_equal(me.non_pending_items, me.items)
   end
 
+  # tests the activation, owner change and exception handling in buy success
   def test_user_buy_success
     buyer = Trader.named("Buyer", :credits => 100)
     seller = Trader.named("Seller", :credits => 100)
@@ -162,6 +170,7 @@ class PurchaseTest < Test::Unit::TestCase
     assert(!item.active?, "Item is still active")
   end
 
+  # tests the exception throwing when trying to buy an inactive item
   def test_user_buy_inactive_item
     buyer = Trader.named("Buyer", :credits => 100)
     seller = Trader.named("Seller", :credits => 100)
@@ -180,6 +189,7 @@ class PurchaseTest < Test::Unit::TestCase
     assert_equal(seller, item.owner, "Item has the wrong owner")
   end
 
+  # tests the exception throwing when trying to buy an item with higher price than client's credits
   def test_user_buy_too_expensive
     buyer = Trader.named("Buyer", :credits => 100)
     seller = Trader.named("Seller", :credits => 100)
@@ -199,6 +209,7 @@ class PurchaseTest < Test::Unit::TestCase
     assert_equal(seller, item.owner, "Item has the wrong owner")
   end
 
+  # tests the exception throwing when trying to buy more from an item than available
   def test_user_wants_higher_quantity_than_available
     buyer = Trader.named("Buyer", :credits => 100)
     seller = Trader.named("Seller", :credits => 100)
@@ -218,6 +229,7 @@ class PurchaseTest < Test::Unit::TestCase
     assert_equal(seller, item.owner, "Item has the wrong owner")
   end
 
+  # tests the seller's credits with sell bonus after selling an item
   def test_settle_purchase
     seller = User.named("seller", :credits => 100)
     buyer = User.named("buyer", :credits => 100)
