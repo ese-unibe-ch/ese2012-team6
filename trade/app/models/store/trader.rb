@@ -69,12 +69,14 @@ module Store
     end
 
     def sell_to_offer(offer,item)
-      item.activate if !item.active?
-      item.price = offer.price
-      offer.from.credits +=item.price*offer.quantity
+      active = item.active?
+      item.activate if !active
+      offer.from.credits +=offer.price*offer.quantity
       purchase = Purchase.create(item,offer.quantity,item.owner,offer.from)
+      purchase.adapt_price_to_offer(offer)
       purchase.prepare
       offer.delete
+      item.deactivate if !active
     end
 
     # get a list of all active items of a user
