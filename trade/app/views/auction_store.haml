@@ -47,5 +47,5 @@
                   %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Bid" : "Bid as #{@user.on_behalf_of.name}"}
 =haml :'partials/pagination'
 %br
-  %br
+%br
 =haml :'partials/recent_purchases', :locals => {:mrp => most_recent_purchases}
