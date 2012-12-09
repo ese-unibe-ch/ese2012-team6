@@ -22,9 +22,19 @@ module Analytics
       @@activities[activity.id] = activity
     end
 
-    # get all stored activities in descending order by timestamp (more recent come first)
-    def self.get_all_activities
-      @@activities.values.reverse
+    # get stored activities in descending order by timestamp (more recent come first)
+    # you can specify filters. Supported filters are: :ITEM_BUY, :ITEM_EDIT, :ITEM_ADD, :ITEM_STATUS_CHANGE, :ITEM_DELETE, :USER_LOGIN, :USER_LOGOUT
+    def self.get_activities(filters = [])
+      return @@activities.values.reverse if filters.empty? || filters == ActivityLogger.filters
+
+      activities = []
+
+      filters.each { |filter|
+        activities << @@activities.values.select { |act| act.type == filter}
+      }
+
+      activities.flatten!
+      activities.sort { |a, b| b.id <=> a.id }
     end
 
     # retrieve activity by id
@@ -70,6 +80,10 @@ module Analytics
       purchases_in_time.each {|act| total_credits += act.price}
 
       return activity_count, total_credits
+    end
+
+    def self.filters
+      [:ITEM_BUY, :ITEM_ADD, :ITEM_EDIT]
     end
   end
 end

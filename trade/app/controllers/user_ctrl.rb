@@ -247,5 +247,13 @@ class User < Sinatra::Application
     item.description= params[:description].to_s
     redirect "admin/editdescription/#{params[:item_id].to_i}"
   end
+
+  post '/user/sell/:offer_id/:item_id' do
+    offer = Offer.by_id(params[:offer_id].to_i)
+    item  = Item.by_id(params[:item_id].to_i)
+    @user.on_behalf_of.sell_to_offer(offer,item)
+    redirect "store/offers"
+  end
+
 end
 
