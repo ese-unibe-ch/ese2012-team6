@@ -16,6 +16,7 @@ class UserTest < Test::Unit::TestCase
     Trader.clear_all
   end
 
+  # Checks whether the user has the correct name
   def test_check_user_name
     user = User.named("HansliCaramell")
 
@@ -23,6 +24,7 @@ class UserTest < Test::Unit::TestCase
     assert_equal("HansliCaramell", user.name, "Wrong User name")
   end
 
+  # Checks whether a user is created and deleted correctly
   def test_user_handling
     (user1 = User.named("me")).save
     (user2 = User.named("you")).save
@@ -34,6 +36,7 @@ class UserTest < Test::Unit::TestCase
     assert(!User.exists?("you"), "user doesn't exist")
   end
 
+  # Checks whether an organization is created correctly with an admin and whether a member is added correctly to it
   def test_user_organization_creating
     user = User.named("me")
     member = User.named("you")
@@ -52,6 +55,7 @@ class UserTest < Test::Unit::TestCase
     assert_equal(member.organizations, [org1, org2], "is in wrong organization")
   end
 
+  # Checks whether a user is working on behalf of himself or an organization
   def test_work_as
     (user = User.named("user")).save
     (org = Organization.named("org")).save
@@ -64,6 +68,7 @@ class UserTest < Test::Unit::TestCase
     assert(!user.working_as_self?, "is still working on behalf of himself")
   end
 
+  # Checks whether a user can edit an item of an organization only if he is working on behalf of this organization
   def test_can_edit_org_item
     user = User.named("user")
     org = Organization.named("org")
@@ -75,6 +80,7 @@ class UserTest < Test::Unit::TestCase
     assert(user.on_behalf_of.can_edit?(item))
   end
 
+  # Checks whether a user can buy an item of an organization only if he is not working on behalf of this organization
   def test_can_buy_org_item
     user = User.named("user")
     org = Organization.named("org")
@@ -88,18 +94,21 @@ class UserTest < Test::Unit::TestCase
     assert(!user.on_behalf_of.can_buy?(item))
   end
 
+  # Checks whether the password matches the default password
   def test_password_matches_default_password
     user = User.named("user")
     assert(!user.password_matches?("blabla"))
     assert(user.password_matches?("user"))
   end
 
+  # Checks whether the password matches the password that the user chose
   def test_password_matches_custom_password
     user = User.named("user", :password => "verysecret")
     assert(!user.password_matches?("user"))
     assert(user.password_matches?("verysecret"))
   end
 
+  # Checks whether the password is changed correctly
   def test_change_password
     user = User.named("user")
     assert(user.password_matches?("user"))
@@ -109,6 +118,7 @@ class UserTest < Test::Unit::TestCase
     assert(user.password_matches?("newpass"))
   end
 
+  # Checks whether the reset of the password generated a new one
   def test_reset_password
     user = User.named("user")
     assert(user.password_matches?("user"))
