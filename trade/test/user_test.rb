@@ -23,6 +23,7 @@ class UserTest < Test::Unit::TestCase
     assert_equal("HansliCaramell", user.name, "Wrong User name")
   end
 
+  # tests the existence of a created user and the existence after deletion
   def test_user_handling
     (user1 = User.named("me")).save
     (user2 = User.named("you")).save
@@ -52,6 +53,7 @@ class UserTest < Test::Unit::TestCase
     assert_equal(member.organizations, [org1, org2], "is in wrong organization")
   end
 
+  # tests functionality of changing the mode of working as self or as organization
   def test_work_as
     (user = User.named("user")).save
     (org = Organization.named("org")).save
@@ -64,6 +66,7 @@ class UserTest < Test::Unit::TestCase
     assert(!user.working_as_self?, "is still working on behalf of himself")
   end
 
+  # tests whether a member of an organization can edit an item
   def test_can_edit_org_item
     user = User.named("user")
     org = Organization.named("org")
@@ -75,6 +78,7 @@ class UserTest < Test::Unit::TestCase
     assert(user.on_behalf_of.can_edit?(item))
   end
 
+  # tests whether a member of an org can buy it's item
   def test_can_buy_org_item
     user = User.named("user")
     org = Organization.named("org")
