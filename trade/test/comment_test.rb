@@ -6,7 +6,8 @@ require_relative '../app/models/store/user'
 
 class CommentTest < Test::Unit::TestCase
   include Store
-  
+
+  # Checks whether a comment is created correctly with thei right description, owner and time stamp
   def test_create_comment
     user = User.named("John")
     comment = Comment.new_comment("hallo", user)
@@ -17,6 +18,7 @@ class CommentTest < Test::Unit::TestCase
     assert_not_nil(comment.time_stamp, "Comment has no time_stamp")
   end
 
+  # Checks whether the smilies are formatted correctly
   def test_format_description
     user = User.named("John")
     description = ":)"
@@ -40,6 +42,7 @@ class CommentTest < Test::Unit::TestCase
     assert_equal(comment.get_formatted_description, "![alternative text](/images/smileys/yeah.gif)")
   end
 
+  # Checks whether a comment is deleted correctly
   def test_delete_comment
     comment = Comment.new_comment("hallo", nil)
     comment_id = comment.id

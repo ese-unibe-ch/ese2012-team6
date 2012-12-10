@@ -11,6 +11,7 @@ class ItemTest < Test::Unit::TestCase
     Item.clear_all
   end
 
+  # Creates a new item and checks whether the item is fixpriced and has a name
   def test_item_name
     item_name = "TestItem"
     item = Item.fixed(item_name, 0, nil)
@@ -20,23 +21,27 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(item_name, item.name)
   end
 
+  # Checks whether the item has the correct price
   def test_item_price
     item_price = 555
     item = Item.fixed("TestItem", item_price, nil)
     assert_equal(item_price, item.price)
   end
 
+  # Checks whether the item is inactive after it is created
   def test_item_inactive_after_creation
     item = Item.new
     assert_equal(false, item.active?, "New items must be set inactive!")
   end
 
+  # Creates a new item and checks whether the user is the owner of the item
   def test_item_has_owner
     user = User.named("User")
     item = user.propose_item("TestItem", 100, :fixed, nil, nil)
     assert_equal(user, item.owner)
   end
 
+  # Checks if the price of the item is valid
   def test_item_valid_price
     p1 = "20"
     p2 = "+20"
@@ -51,6 +56,7 @@ class ItemTest < Test::Unit::TestCase
     assert(!Item.valid_price?(p5), "empty is an invalid price")
   end
 
+  # Checks whether the item is editable in the active and inactive state for fixpriced items and auctions
   def test_is_editable?
     item = Item.fixed("test",20,nil)
     item.activate
@@ -65,6 +71,7 @@ class ItemTest < Test::Unit::TestCase
     assert item.editable?
   end
 
+  # Checks the state of the item
   def test_change_status
     item = Item.fixed("TestItem", 0, nil)
     assert_equal(false, item.active?)
@@ -74,6 +81,7 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(true, item.active?)
   end
 
+  # Checks whether the name, price and description of an item are updated correctly
   def test_item_update
     item = Item.fixed("TestItem", 0, nil)
     item.update("NewName", 100, "NewDescription", :fixed, nil, nil)
@@ -83,12 +91,14 @@ class ItemTest < Test::Unit::TestCase
     assert_equal("NewDescription", item.description)
   end
 
+  # Checks whether the item is correctly saved into the system
   def test_item_save
     item = Item.fixed("TestItem", 0, nil)
     item.save
     assert_equal(item, Item.by_id(item.id))
   end
 
+  # Checks whether the item is deleted correctly
   def test_item_delete
     item = Item.fixed("TestItem", 0, nil)
     item.save
@@ -98,6 +108,7 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(nil, Item.by_id(item.id))
   end
 
+  # Checks whether all items are correctly saved and returned from the system
   def test_get_all_items
     Item.clear_all
 
@@ -112,6 +123,7 @@ class ItemTest < Test::Unit::TestCase
     assert_equal([item1, item2, item3], Item.all)
   end
 
+  # Checks whether an item is editable by his owner and only in an inactive state
   def test_is_editable_by_owner
     user = User.named("Hans")
     item = user.propose_item("TestItem", 100, :fixed, nil, nil, "", false)
@@ -120,6 +132,7 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(false, item.editable_by?(user))
   end
 
+  # Checks whether an item is editable by his owner and not by somebody else
   def test_is_editable_by_other
     user = User.named("Hans")
     other = User.named("Herbert")
@@ -129,6 +142,7 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(false, item.editable_by?(other))
   end
 
+  # Checks whether the item is activatable by his owner
   def test_activatable_by_owner
     user = User.named("Hans")
     item = user.propose_item("TestItem", 100, :fixed, nil, nil, "", false)
@@ -137,6 +151,7 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(true, item.activatable_by?(user))
   end
 
+  # Checks whether the item is only activatable by his owner and not by somebody else
   def test_activatable_by_other
     user = User.named("Hans")
     other = User.named("Herbert")
@@ -148,6 +163,7 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(false, item.activatable_by?(other))
   end
 
+  # Checks whether the comment is added to the item's comment array
   def test_add_comment
     comment = Comment.new_comment("newComment", nil)
 
@@ -157,6 +173,7 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(true, item.comments.include?(comment))
   end
 
+  # Checks whether a comment is deleted correctly from the item's comment array
   def test_delete_comment
     comment = Comment.new_comment("newComment", nil)
 
@@ -166,7 +183,8 @@ class ItemTest < Test::Unit::TestCase
     assert_equal(false, item.comments.include?(comment))
     assert_equal(nil, Comment.by_id(comment))
   end
-  
+
+  # Checks whether the time until the end time is converted to the correct string
   def test_time_delta
     item = Item.auction("myItem", 10, nil, 2, DateTime.now + 1105, description = "test") # more than two hours valid
     assert item.time_delta_string == "3 years"
