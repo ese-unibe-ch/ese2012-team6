@@ -8,17 +8,17 @@
   %table
     %tr
       %td
-        %b Name:
+        %b Name*:
       %td
         %input.textbox8{:type => "text", :name => "item_name", :style => "width: 60px", :value => item_name}
     %tr
       %td
-        %b Price:
+        %b Price*:
       %td
         %input.textbox8{:type => "text", :name => "item_price", :style => "width: 60px", :value => item_price}
     %tr
       %td
-        %b Selling Mode:
+        %b Selling Mode*:
       %td
         %input{ :type => "radio", :name => "selling_mode", :value => "fixed", :id =>"selling_mode_fixed", :onclick => "updateForm()", :checked => !defined?(selling_mode) ? true : selling_mode == :fixed}
           Fixed
@@ -27,7 +27,7 @@
     -if not edit
       %tr
         %td
-          %b Owner:
+          %b Owner*:
         %td
           %select{:name => "owner"}
             - if @user.on_behalf_of == @user
@@ -43,19 +43,19 @@
                   =org.name
       %tr
         %td
-          %b Quantity:
+          %b Quantity*:
         %td
           %input.textbox8{:type => "text", :name => "item_quantity", :style => "width: 60px"}
   %div{:id => "auction_options", :style => "display: none"}
     %table
       %tr
         %td
-          %b Increment
+          %b Increment*:
         %td
           %input.textbox8{:type => "text", :name => "item_increment", :style => "width: 60px", :value => item_increment}
       %tr
         %td
-          %b End-Date
+          %b End-Date*:
         %td
           %input.textbox8{:type => "text", :id => "datetimepicker", :name => "auction_end", :style => "width: 60px", :value => auction_end}
   %h3

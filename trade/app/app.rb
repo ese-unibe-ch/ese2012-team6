@@ -64,6 +64,8 @@ class App < Sinatra::Base
     random = umbrella_corp.propose_item("Random", 50, :fixed, nil, nil)
     (bender = umbrella_corp.propose_item("Bender", 110, :fixed, nil, nil)).activate
 
+    fresh_air = Store::Offer.create("fresh air", 7, 3, user_ese)
+
     user_ese.comment(meg, "This is a comment by ese")
     user_ese2.comment(meg, "This is another comment by ese2")
 

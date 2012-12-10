@@ -7,38 +7,43 @@
   })
 %h2
   Search Results
-%h3
-  The following items match your input
-%table.table-minimalistic{:id => "Table", :class => "tablesorter pager"}
-  %thead
-    %tr
-      %th Pic
-      %th Name
-      %th Price
-      %th Qty
-      %th Owner
-      %th Active
-  %tbody
-    -for item in matched_items
+-if matched_items.empty?
+  No matched results found for search request
+  %br
+  %br
+-else
+  %h3
+    The following items match your input
+  %table.table-minimalistic{:id => "Table", :class => "tablesorter pager"}
+    %thead
       %tr
-        %td
-          %img{:src => item.image_path, :height => "40px"}
-        %td
-          -popup_text = Haml::Engine.new(File.read('views/partials/item_popup.haml')).render(Object.new,:user => @user, :item => item, :actionable => true)
-          %a.powertip{:href => url("/item/#{item.id}"), "data-powertip" => popup_text}
-            :escaped
-              #{item.name}
-        %td.ralign
-          #{item.price}
-        %td.ralign
-          #{item.quantity}
-        %td
-          %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
-            :escaped
-              #{item.owner.name}
-        %td
-          -if item.active?
-            %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
-          -else
-            %input{:type => "checkbox", :disabled => "disabled"}
-=haml :'partials/pagination'
+        %th Pic
+        %th Name
+        %th Price
+        %th Qty
+        %th Owner
+        %th Active
+    %tbody
+      -for item in matched_items
+        %tr
+          %td
+            %img{:src => item.image_path, :height => "40px"}
+          %td
+            -popup_text = Haml::Engine.new(File.read('views/partials/item_popup.haml')).render(Object.new,:user => @user, :item => item, :actionable => true)
+            %a.powertip{:href => url("/item/#{item.id}"), "data-powertip" => popup_text}
+              :escaped
+                #{item.name}
+          %td.ralign
+            #{item.price}
+          %td.ralign
+            #{item.quantity}
+          %td
+            %a{:href => url("#{item.owner.class == Store::User ? "/user/" : "/organization/"}#{item.owner.name}")}
+              :escaped
+                #{item.owner.name}
+          %td
+            -if item.active?
+              %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
+            -else
+              %input{:type => "checkbox", :disabled => "disabled"}
+  =haml :'partials/pagination'
