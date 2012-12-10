@@ -43,58 +43,8 @@
             |
             %a{:href => url("/register")}
               Register
-      -if not @user.nil?
-        %div#nav_bar
-          %ul
-            %li
-              %a{:href => url("/")} Store
-              %ul
-                %li
-                  %a{:href => "/store/item"} Fixed Price Items
-                %li
-                  %a{:href => "/store/auction"} Auctions
-                %li
-                  %a{:href => "/store/offers"} Offers
-            %li
-              %a{:href => url("/users")} Users
-            %li
-              %a{:href => url("/items")} Items
-            %li
-              %a{:href => url("/organizations")} Organizations
-            %li
-              -if @user.working_as_self?
-                %a{:href => url("/user/#{@user.name}")} Profile
-              -else
-                %a{:href => url("/organization/#{@user.on_behalf_of.name}")} Profile
-
-            -if @user.name == 'admin'
-              %li
-                %a{:href => url("/admin")} Admin
-                %ul
-                  %li
-                    %a{:href => url("/activities")} Activities
-                  %li
-                    %a{:href => url("/admin/transactions")}Recent Transactions
-                  %li
-                    %a{:href => url("/admin/editdescription")}Edit Description
-                  %li
-                    %a{:href => url("/admin")} Change system parameters
-          %div#context_switch
-            %p
-              Work on behalf of:
-            %form{:action => "/user/work_on_behalf_of/", :method => "POST"}
-              %select.float_right{:onchange => "this.form.submit();", :name => "on_behalf_of"}
-                - if @user.working_as_self?
-                  %option{:value => @user.name, :selected => "true"} Myself
-                - else
-                  %option{:value => @user.name} Myself
-                - for org in @user.organizations
-                  - if @user.working_on_behalf_of?(org)
-                    %option{:value => org.name, :selected => "true"}
-                      =org.name
-                  - else
-                    %option{:value => org.name}
-                      =org.name
+      -if @user
+        =haml :"partials/nav_menu"
       %div#content
         %p#error_message
         =yield
