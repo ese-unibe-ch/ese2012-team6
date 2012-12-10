@@ -154,7 +154,7 @@ module Store
 
       PurchaseActivity.successful(purchase).log if log
 
-      Security::MailDispatcher.send_notice_seller_mail(seller.email, self.name, self.email, purchase.item)
+      #Security::MailDispatcher.send_notice_seller_mail(seller.email, self.name, self.email, purchase.item)
 
       purchase
     end
