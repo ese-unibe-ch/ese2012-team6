@@ -255,5 +255,17 @@ class User < Sinatra::Application
     redirect "store/offers"
   end
 
+  get '/my_items' do
+    redirect '/login' unless @user
+
+    haml :my_items
+  end
+
+  get '/my_pending_items' do
+    redirect '/login' unless @user
+
+    haml :my_pending_items
+  end
+
 end
 
