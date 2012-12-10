@@ -1,7 +1,11 @@
--if !@user.on_behalf_of.pending_purchases.empty?
-  %h3
-    Pending Items:
-  %p
+%div#actionbar
+  %h2.float_left
+    Pending Items
+  %div.action_buttons.float_right
+    %form{:action => '/user/confirm_all_purchases', :method => "POST"}
+      %input.styled-button{:type => "submit", :value => "Confirm all purchases"}
+
+-if @user.on_behalf_of.pending_purchases.size > 0
   %table.table-minimalistic{:id => "Table2", :class => "tablesorter pager"}
     %thead
       %tr
@@ -30,7 +34,4 @@
                 %input.styled-button.small.float_left{:type => "submit", :value => "Validate Reception"}
   =haml :'partials/pagination2'
 -else
-  %h3
-    Pending Items:
-  %p
-    No pending items
+  %p No pending items

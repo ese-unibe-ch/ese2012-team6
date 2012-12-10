@@ -27,6 +27,11 @@ class User < Sinatra::Application
     redirect back
   end
 
+  post '/user/confirm_all_purchases' do
+    @user.on_behalf_of.confirm_all_pending_purchases
+    redirect back
+  end
+
   # Handles user display page, shows profile of user
   get '/user/:user_name' do
     redirect '/login' unless @user
@@ -91,7 +96,7 @@ class User < Sinatra::Application
       redirect "/error/#{error.message}"
     end
 
-    redirect "/user/#{@user.name}" if @user.working_as_self?
+    redirect '/my_pending_items' if @user.working_as_self?
     redirect "/organization/#{@user.on_behalf_of.name}"
   end
 
