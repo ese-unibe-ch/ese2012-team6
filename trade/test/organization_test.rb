@@ -24,6 +24,7 @@ class OrganizationTest < Test::Unit::TestCase
     assert_equal(name, organization.name, "Wrong User name")
   end
 
+  #creates two organizations and checks whether they exist or not and checks if its possible to delete one.
   def test_organization_handling
     (org1 = Organization.named("me")).save
     (org2 = Organization.named("you")).save
@@ -35,6 +36,7 @@ class OrganizationTest < Test::Unit::TestCase
     assert(Organization.exists?("me"), "also removed org1")
   end
 
+  #creates organization with an user and checks if he is the admin
   def test_org_creation_with_admin
     user = User.named("admin")
     org = Organization.named("Org", :admin => user)
@@ -42,6 +44,7 @@ class OrganizationTest < Test::Unit::TestCase
     assert(org.has_member?(user))
   end
 
+  #checks if the right user is made or revoked as admin
   def test_add_and_remove_admin
     user1 = User.named("admin")
     user2 = User.named("user")
@@ -56,6 +59,7 @@ class OrganizationTest < Test::Unit::TestCase
     assert(organization.admins.include?(user2), "wrong user as admin")
   end
 
+  #checks whether you can add and remove admins to an organization and if these are the right users
   def test_add_and_remove_member
     org_name = "org"
     member_name = "you"
@@ -73,6 +77,8 @@ class OrganizationTest < Test::Unit::TestCase
     assert(!organization.has_member?(member), "member still in list")
   end
 
+  #tests if an email sendt by an organization would be sendt to the correct person
+  #(doesn't actually send the email)
   def test_organization_email
     organization = Organization.named("org")
     member = User.named("you", :email => "you@mail.com")
