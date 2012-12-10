@@ -47,6 +47,9 @@
         =haml :"partials/nav_menu"
       %div#content
         %p#error_message
+        -if flash[:notice]
+          %div#feedback
+            =flash[:notice]
         =yield
       %div#footer
         %hr

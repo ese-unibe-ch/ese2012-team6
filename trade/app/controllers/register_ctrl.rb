@@ -30,6 +30,7 @@ class Register < Sinatra::Application
     new_user = User.named(user_name, :password => user_pwd, :description => user_description, :email => user_email)
     new_user.save
 
+    flash[:notice] = "Thanks for signing up! You can now login..."
     redirect '/'
   end
 end

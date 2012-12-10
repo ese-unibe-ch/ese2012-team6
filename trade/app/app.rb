@@ -2,6 +2,7 @@ require 'rubygems'
 require 'sinatra'
 require 'haml'
 require 'require_relative'
+require 'rack-flash'
 
 require_relative('models/store/item')
 require_relative('models/store/user')
@@ -26,6 +27,7 @@ PUBLIC_FOLDER = File.join(APP_STARTUP_PATH, "public")
 class App < Sinatra::Base
 
   # Controllers
+  use Rack::Flash
   use Authentication
   use Main
   use Register

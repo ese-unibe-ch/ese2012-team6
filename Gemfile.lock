@@ -15,6 +15,9 @@ GEM
       commonjs (~> 0.2.6)
     orderedhash (0.0.6)
     rack (1.4.1)
+    rack-flash3 (1.0.1)
+      rack
+      rack
     rack-protection (1.2.0)
       rack
     rack-test (0.6.2)
@@ -57,6 +60,7 @@ DEPENDENCIES
   json (~> 1.7.5)
   less (~> 2.2.2)
   orderedhash (~> 0.0.6)
+  rack-flash3
   rbtree (~> 0.3.0)
   rcov (~> 1.0.0)
   rdiscount (~> 1.6.8)

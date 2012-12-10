@@ -124,7 +124,7 @@ class Item < Sinatra::Application
     end
 
     item_to_show_id = item.update(item_name, item_price, item_description, item_selling_mode, item_increment, item_end_time)
-
+    flash[:notice] = "Saved..."
     redirect "/item/#{item_to_show_id}"
   end
 
@@ -184,6 +184,8 @@ class Item < Sinatra::Application
     uploader = PictureUploader.with_path(PUBLIC_FOLDER, "/images/items")
     item.image_path = uploader.upload(file, item.id)
 
+    flash[:notice] = "Item created. Activate it to put it on shelf..."
+
     redirect "/item/#{item.id}" if back == url('/item/new')
     redirect back
   end
@@ -202,6 +204,7 @@ class Item < Sinatra::Application
 
     item = @user.on_behalf_of.propose_item_with_quantity(item_name, item_price, item_quantity, :fixed, nil, nil)
 
+    flash[:notice] = "Item created. Activate it to put it on shelf..."
 
     redirect "/item/#{item.id}" if back == url('/item/new')
     redirect back
@@ -214,6 +217,7 @@ class Item < Sinatra::Application
     item_id = params[:item_id].to_i
     @user.on_behalf_of.delete_item(item_id)
 
+    flash[:notice] = "Item deleted..."
     redirect back
   end
 

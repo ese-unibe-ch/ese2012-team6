@@ -96,8 +96,8 @@ class User < Sinatra::Application
       redirect "/error/#{error.message}"
     end
 
-    redirect '/my_pending_items' if @user.working_as_self?
-    redirect "/organization/#{@user.on_behalf_of.name}"
+    flash[:notice] = "You successfully bought item. Confirm the purchase in your profile to complete transaction..."
+    redirect '/'
   end
 
   # Handles user buy request
