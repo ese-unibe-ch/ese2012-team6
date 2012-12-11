@@ -1,7 +1,7 @@
 %h3
   :escaped
     You own the following items:
--if @user.items.empty?
+-if @user.on_behalf_of.items.empty?
   %p
     No items available
 -else
@@ -14,20 +14,19 @@
         %th Qty
         %th
     %tbody
-      -if @user.working_as_self?
-        %tr
-          %form{:action => "/item/quick_add", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
-            %td
-              %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
-            %td
-              %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
-            %td
-            %td
-              %input.textbox8(type="text" name="item_quantity" style="width: 30px" value="1")
-            %td
-              %input{:name => "_method", :type => "hidden", :value => "put"}
-              %input.styled-button.small{:type => "submit", :value => "Quick Add"}
-      -for item in @user.non_pending_items
+      %tr
+        %form{:action => "/item/quick_add", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
+          %td
+            %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
+          %td
+            %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
+          %td
+          %td
+            %input.textbox8(type="text" name="item_quantity" style="width: 30px" value="1")
+          %td
+            %input{:name => "_method", :type => "hidden", :value => "put"}
+            %input.styled-button.small{:type => "submit", :value => "Quick Add"}
+      -for item in @user.on_behalf_of.non_pending_items
         %tr
           %td
             %a{:href => url("/item/#{item.id}")}

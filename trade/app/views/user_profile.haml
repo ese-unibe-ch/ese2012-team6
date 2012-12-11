@@ -9,7 +9,16 @@
     -if is_my_profile
       %a.styled-button{:href => "/user/#{@user.name}/edit"} Edit Profile
       %a.styled-button.delete-color{:href => "/suspend_prov"} Delete account
-
+-if has_pending_items
+  %p{:style => "font-size: 13px"}
+    You have pending items. Head over to
+    %a{:href => url('/my_pending_items')} Pending Items
+    to confirm reception of these items...
+-if offer_count > 0
+  %p{:style => "font-size: 13px"}
+    You have #{offer_count} items matching offers in the store. Head over to
+    %a{:href => url('/store/offers')} Offers
+    to sell your matching items...
 %h3
   :escaped
     #{is_my_profile ? "Your Credits" : "Credits of " + viewed_user.name}:

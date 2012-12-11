@@ -37,8 +37,6 @@ module Store
 
     # class methods
     class << self
-
-
       # retrieve offer object by id from system
       def by_id(id)
         @@offers[id]
@@ -52,6 +50,14 @@ module Store
       # determines whether a string is a valid price for an item
       def valid_price?(price)
         Security::StringChecker.is_numeric?(price) && price.to_i > 0
+      end
+
+      def get_matching_items_count(user)
+        offer_count = 0
+        Store::Offer.all.each {|offer|
+          offer_count += 1 if user.has_item_for_offer(offer)
+        }
+        offer_count
       end
 
       def next_id!

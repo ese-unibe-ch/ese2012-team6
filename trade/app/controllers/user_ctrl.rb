@@ -38,12 +38,18 @@ class User < Sinatra::Application
 
     viewed_user = User.by_name(params[:user_name])
     is_my_profile = (@user == viewed_user)
+
+    has_pending_items = (@user.pending_purchases.size > 0)
+    offer_count = Store::Offer.get_matching_items_count(@user)
+
     marked_down_description = RDiscount.new(viewed_user.description, :smart, :filter_html)
 
     haml :user_profile, :locals => {
         :viewed_user => viewed_user,
         :is_my_profile => is_my_profile,
-        :marked_down_description => marked_down_description.to_html
+        :marked_down_description => marked_down_description.to_html,
+        :has_pending_items => has_pending_items,
+        :offer_count => offer_count
     }
   end
 
