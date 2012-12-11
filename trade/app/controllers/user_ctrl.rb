@@ -261,10 +261,19 @@ class User < Sinatra::Application
 
   post '/user/sell/:offer_id/:item_id' do
     offer = Offer.by_id(params[:offer_id].to_i)
+    redirect "error/offer_deleted" unless offer
     item  = Item.by_id(params[:item_id].to_i)
     @user.on_behalf_of.sell_to_offer(offer,item)
     redirect "store/offers"
   end
+
+  post '/user/delete/:offer_id' do
+    offer = Offer.by_id(params[:offer_id].to_i)
+    redirect "error/offer_sold" unless offer
+    offer.delete
+    redirect "store/offers"
+  end
+
 
   get '/my_items' do
     redirect '/login' unless @user

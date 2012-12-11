@@ -56,6 +56,10 @@ module Exceptions
             error_message = "You cannot delete your account because you have active auctions"
           when "invalid_admin_input"
             error_message = "Your input is invalid"
+          when "offer_deleted"
+            error_message = "Offer doesn't exist anymore"
+          when "offer_sold"
+            error_message = "Offer already sold to you"
           else
             error_message = "Unknown error"
         end

@@ -98,6 +98,10 @@ class Main < Sinatra::Application
         should_refresh = true
       when "invalid_admin_input"
         should_refresh = true
+      when "offer_deleted"
+        should_refresh = true
+      when "offer_sold"
+        should_refresh = true
     end
 
     error_message = Exceptions::ExceptionText.get(params[:error_msg])
