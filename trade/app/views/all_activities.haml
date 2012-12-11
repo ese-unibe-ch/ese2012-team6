@@ -17,6 +17,14 @@
           Item Additions
         -when :ITEM_EDIT
           Item Edits
+        -when :ITEM_STATUS_CHANGE
+          Item Status Changes
+        -when :ITEM_DELETE
+          Item Deletions
+        -when :USER_LOGIN
+          User Logins
+        -when :USER_LOGOUT
+          User Logouts
     %input.styled-button{:type => "submit", :value => "Apply Filter"}
 -if activities.empty?
   %p No activities
