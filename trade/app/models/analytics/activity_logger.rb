@@ -83,7 +83,7 @@ module Analytics
     end
 
     def self.filters
-      [:ITEM_BUY, :ITEM_ADD, :ITEM_EDIT]
+      [:ITEM_BUY, :ITEM_ADD, :ITEM_EDIT, :ITEM_STATUS_CHANGE, :ITEM_DELETE, :USER_LOGIN, :USER_LOGOUT]
     end
   end
 end

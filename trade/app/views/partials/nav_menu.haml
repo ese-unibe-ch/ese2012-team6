@@ -8,7 +8,7 @@
         %li
           %a{:href => "/store/auction"} Auctions
         %li
-          %a{:href => "/store/offers"} Offers
+          %a{:href => "/store/offers"} Offers (#{Store::Offer.get_matching_items_count(@user.on_behalf_of)})
     %li
       %a{:href => url("/users")} Users
     %li
@@ -18,13 +18,13 @@
     %li
       -if @user.working_as_self?
         %a{:href => url("/user/#{@user.name}")} Profile
-        %ul
-          %li
-            %a{:href => url("/my_items")} My Items
-          %li
-            %a{:href => url("/my_pending_items")} My Pending Items (#{@user.pending_purchases.size})
       -else
         %a{:href => url("/organization/#{@user.on_behalf_of.name}")} Profile
+      %ul
+        %li
+          %a{:href => url("/my_items")} My Items
+        %li
+          %a{:href => url("/my_pending_items")} My Pending Items (#{@user.on_behalf_of.pending_purchases.size})
 
     -if @user.name == 'admin'
       %li

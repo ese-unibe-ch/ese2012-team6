@@ -43,10 +43,16 @@
         %td
           #{offer.quantity}
         %td
-          #{offer.from.name}
+          %a{:href => url("#{offer.from.class == Store::User ? "/user/" : "/organization/"}#{offer.from.name}")}
+            :escaped
+              #{offer.from.name}
         %td
-          - item = @user.on_behalf_of.has_item_for_offer(offer)
-          -if !item.nil? and item.quantity>=offer.quantity
-            %form{:action => "/user/sell/#{offer.id}/#{item.id}", :method => "POST"}
-              %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Sell" : "Sell as #{@user.on_behalf_of.name}"}
+          #div.action_buttons
+            -if offer.from == @user.on_behalf_of
+              %form{:action => "/user/delete/#{offer.id}", :method => "POST"}
+                %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
+            -item = @user.on_behalf_of.has_item_for_offer(offer)
+            -if !item.nil? and item.quantity>=offer.quantity
+              %form{:action => "/user/sell/#{offer.id}/#{item.id}", :method => "POST"}
+                %input.styled-button.small.buy-color{:type => "submit", :value => @user.working_as_self? ? "Sell" : "Sell as #{@user.on_behalf_of.name}"}
 =haml :'partials/pagination'

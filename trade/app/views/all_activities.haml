@@ -4,12 +4,12 @@
 %h3
   Monitor the latest activities
 %div.filters
-  %form{:action => '/activities', :method => "GET"}
+  %form{:action => '/activities#Table', :method => "GET"}
     -for filter in Analytics::ActivityLogger.filters
       -if active_filters.include?(filter)
-        %input{:type => "checkbox", :name => "filters[]", :value => filter, :checked => 'true'}
+        %input{:type => "checkbox", :name => "filters[]", :value => filter, :checked => 'true', :onchange => "this.form.submit();"}
       -else
-        %input{:type => "checkbox", :name => "filters[]", :value => filter }
+        %input{:type => "checkbox", :name => "filters[]", :value => filter,:onchange => "this.form.submit();" }
       -case filter
         -when :ITEM_BUY
           Purchases
@@ -17,7 +17,14 @@
           Item Additions
         -when :ITEM_EDIT
           Item Edits
-    %input.styled-button{:type => "submit", :value => "Apply Filter"}
+        -when :ITEM_STATUS_CHANGE
+          Item Status Changes
+        -when :ITEM_DELETE
+          Item Deletions
+        -when :USER_LOGIN
+          User Logins
+        -when :USER_LOGOUT
+          User Logouts
 -if activities.empty?
   %p No activities
 -else
