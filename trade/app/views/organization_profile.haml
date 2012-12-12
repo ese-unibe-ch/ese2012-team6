@@ -23,7 +23,6 @@
               %td
                 %input.styled-button.float_left{:type => "submit", :value => "Transfer"}
 %div.action_buttons.float_right
-  %a.styled-button{:href => "/item/new"} Create new Item
   -if i_am_admin
     %a.styled-button{:href => "/organization/#{viewed_organization.name}/edit"} Make Changes
 %h3
@@ -34,101 +33,6 @@
 
 %div.picture_container.float_right
   %img{:src => "#{viewed_organization.image_path}", :width => "200"}
-
-%h3
-  :escaped
-    #{viewed_organization.name + " owns"} the following items:
--if viewed_organization.items.empty? and not is_my_organization
-  %p
-    No items available
--else
-  %table.table-minimalistic
-    %thead
-      %tr
-        %th Name
-        %th Price
-        %th Active
-        %th Qty
-        %th
-    %tbody
-      -if @user.working_on_behalf_of?(viewed_organization)
-        %tr
-          %form{:action => "/item/quick_add", :method => "POST", :onsubmit => "return validate_quick_add(this);"}
-            %td
-              %input.textbox8(type="text" name="item_name" style="width: 60px" value="Name")
-            %td
-              %input.textbox8(type="text" name="item_price" style="width: 30px" value="20")
-            %td
-            %td
-              %input.textbox8(type="text" name="item_quantity" style="width: 30px" value="1")
-            %td
-              %input{:name => "_method", :type => "hidden", :value => "put"}
-              %input.styled-button.small{:type => "submit", :value => "Quick Add"}
-      -for item in viewed_organization.items
-        %tr
-          %td
-            %a{:href => url("/item/#{item.id}")}
-              =item.name
-          %td
-            #{item.price}
-          %td
-            -if item.active?
-              %input{:type => "checkbox", :disabled => "disabled", :checked => "checked"}
-            -else
-              %input{:type => "checkbox", :disabled => "disabled"}
-          %td
-            #{item.quantity}
-          %td
-            %div.action_buttons
-              -if @user.on_behalf_of.can_activate?(item)
-                -if item.active?
-                  %form{:action => "/item/#{item.id}/update_status?activate=false", :method => "POST"}
-                    %input.styled-button.small.float_left{:type => "submit", :value => "Deactivate"}
-                -else
-                  %form{:action => "/item/#{item.id}/update_status?activate=true", :method => "POST"}
-                    %input.styled-button.small{:type => "submit", :value => "Activate"}
-              -if @user.on_behalf_of.can_edit?(item)
-                %a.styled-button.small{:href => "/item/#{item.id}/edit"} Edit
-              -if @user.on_behalf_of.can_delete?(item)
-                %form{:action => "/item/#{item.id}", :method => "POST"}
-                  %input{:name => "_method", :type => "hidden", :value => "delete"}
-                  %input.styled-button.small.delete-color{:type => "submit", :value => "Delete"}
--if !@user.on_behalf_of.pending_purchases.empty? and is_my_organization
-  %h3
-    Pending Items:
-  %p
-  %table.table-minimalistic
-    %thead
-      %tr
-        %th Name
-        %th Price
-        %th Qty
-        %th Seller
-        %th
-    %tbody
-      -for purchase in @user.on_behalf_of.pending_purchases do
-        -item = purchase.item
-        -quantity = purchase.quantity
-        %tr
-          %td
-            %a{:href => url("/item/#{item.id}")}
-              =purchase.item.name
-          %td
-            #{purchase.item.price}
-          %td
-            #{purchase.quantity}
-          %td
-            #{purchase.seller.name}
-          %td
-            %div.action_button
-              %form{:action => "/user/confirm/#{purchase.id}", :method => "POST"}
-                %input.styled-button.small.float_left{:type => "submit", :value => "Validate Reception"}
--elsif @user.on_behalf_of.pending_purchases.empty? and is_my_organization
-  %h3
-    Pending Items:
-  %p
-    No pending items
-
 %h3
   Members
 %ul
