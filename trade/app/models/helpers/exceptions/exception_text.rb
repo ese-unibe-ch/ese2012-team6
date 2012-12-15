@@ -10,7 +10,7 @@ module Exceptions
           when "ITEM_NO_OWNER"
             error_message = "Item does not belong to anybody"
           when "NOT_ENOUGH_CREDITS"
-            error_message = "Buyer does not have enough credits"
+            error_message = "You don't have enough credits"
           when "BUY_INACTIVE_ITEM"
             error_message = "Trying to buy inactive item"
           when "SELLER_NOT_ITEM_OWNER"
@@ -60,6 +60,8 @@ module Exceptions
             error_message = "Offer doesn't exist anymore"
           when "offer_sold"
             error_message = "Offer already sold to you"
+          when "invalid_name"
+            error_message = "Please enter a valid name"
           else
             error_message = "Unknown error"
         end

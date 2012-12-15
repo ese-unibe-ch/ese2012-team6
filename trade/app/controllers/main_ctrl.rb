@@ -65,10 +65,10 @@ class Main < Sinatra::Application
     quantity =params[:qty].to_i
     from     =@user.on_behalf_of
 
-    redirect '/store/offers' if price.nil? or !price.kind_of? Integer or price<0
-    redirect '/store/offers' if quantity.nil? or !quantity.kind_of? Integer or quantity <= 0
+    redirect '/error/invalid_price' if price.nil? or !price.kind_of? Integer or price<0
+    redirect '/error/INVALID_QUANTITY' if quantity.nil? or !quantity.kind_of? Integer or quantity <= 0
     redirect '/store/offers' if item_name.nil? or item_name==''
-    redirect '/store/offers' if @user.on_behalf_of.credits < price
+    redirect '/error/NOT_ENOUGH_CREDITS' if @user.on_behalf_of.credits < price
     @user.on_behalf_of.credits -= price*quantity
 
     Offer.create(item_name,price,quantity,from)
@@ -101,6 +101,8 @@ class Main < Sinatra::Application
       when "offer_deleted"
         should_refresh = true
       when "offer_sold"
+        should_refresh = true
+      when "invalid_name"
         should_refresh = true
     end
 
