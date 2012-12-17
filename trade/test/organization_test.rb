@@ -77,7 +77,7 @@ class OrganizationTest < Test::Unit::TestCase
     assert(!organization.has_member?(member), "member still in list")
   end
 
-  #tests if an email sendt by an organization would be sendt to the correct person
+  # tests if a sent email by an organization arrives the correct user
   #(doesn't actually send the email)
   def test_organization_email
     organization = Organization.named("org")

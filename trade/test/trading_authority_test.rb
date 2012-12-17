@@ -16,6 +16,7 @@ class TradingAuthorityTest < Test::Unit::TestCase
     TradingAuthority.stop
   end
 
+  # tests the functionality of stopping and starting the Trading Authority
   def test_start
     TradingAuthority.timed(3)
     TradingAuthority.start
@@ -27,6 +28,7 @@ class TradingAuthorityTest < Test::Unit::TestCase
     assert_equal(false, TradingAuthority.reduce_thread.alive?)
   end
 
+  # tests the reduce of credits by 1% for user and organization
   def test_reduce_credits
     user = User.named("User", :credits => 100)
     org = Organization.named("Org", :credits => 100)
