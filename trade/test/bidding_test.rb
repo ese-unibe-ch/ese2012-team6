@@ -26,7 +26,7 @@ class AuctionTest < Test::Unit::TestCase
     Trader.clear_all
   end
 
-  def test_canBid
+  def test_can_bid
     initial_price = 5
     increment = 2
     item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
@@ -40,7 +40,7 @@ class AuctionTest < Test::Unit::TestCase
     assert(!@userD.can_bid?(item,5))  #auction owner cannot bid
   end
 
-  def test_createAuction
+  def test_create_auction
     initial_price = 5
     increment = 2
     item_name = "TestItem"             #(name, price, owner, increment, endTime, description = "")
@@ -87,6 +87,7 @@ class AuctionTest < Test::Unit::TestCase
     assert item.current_winner == @userC
   end
 
+  # the credit of an user is not reserved any more if bid is not current
   def test_get_money_back_if_overbidden
     initial_price = 5
     increment = 2
@@ -109,6 +110,7 @@ class AuctionTest < Test::Unit::TestCase
     assert @userC.credits == 975
   end
 
+  # an auction with a placed bid can not be changed from the owner
   def test_cant_edit_after_bidding
     initial_price = 5
     increment = 2
@@ -150,6 +152,7 @@ class AuctionTest < Test::Unit::TestCase
     assert !item.active?
   end
 
+  # if no winner exists then get reserved money back
   def test_get_money_back_when_deactivated
     initial_price = 5
     increment = 2
