@@ -60,7 +60,7 @@ DEPENDENCIES
   json (~> 1.7.5)
   less (~> 2.2.2)
   orderedhash (~> 0.0.6)
-  rack-flash3
+  rack-flash3 (~> 1.0.1)
   rbtree (~> 0.3.0)
   rcov (~> 1.0.0)
   rdiscount (~> 1.6.8)
