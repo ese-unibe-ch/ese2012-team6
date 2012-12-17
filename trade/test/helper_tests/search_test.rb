@@ -4,9 +4,12 @@ require 'require_relative'
 require_relative '../../app/models/store/item'
 require_relative '../../app/models/store/user'
 require_relative '../../app/models/helpers/storage/search'
+
 class SearchTest < Test::Unit::TestCase
+
   include Store
   include Storage
+
   def setup
     Item.clear_all
 
@@ -32,6 +35,7 @@ class SearchTest < Test::Unit::TestCase
     (@bender = umbrella_corp.propose_item("Bender", 110, :fixed, nil, nil)).activate
   end
 
+  # checks whether the search contains the item name
   def test_name_search
     matched_items = Search.search("Liver")
     assert(matched_items.include?(@liver))
@@ -43,6 +47,7 @@ class SearchTest < Test::Unit::TestCase
     assert(matched_items.length, 2)
   end
 
+  # the search should not differentiate upper and lower case
   def test_case_insensitive
     matched_items = Search.search("LiVeR")
     assert(matched_items.include?(@liver))
@@ -54,6 +59,7 @@ class SearchTest < Test::Unit::TestCase
     assert(matched_items.length, 2)
   end
 
+  # the search should contain also item descriptions
   def test_description_search
     matched_items = Search.search("This is")
     assert(matched_items.include?(@meg))

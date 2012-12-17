@@ -4,6 +4,9 @@ require 'require_relative'
 require_relative '../../app/models/helpers/time/time_helper'
 
 class TimeParserTest < Test::Unit::TestCase
+
+  # this class is testing the functionality of parsing for time inputs
+
   def test_parse_seconds
     assert_equal(1, Time.from_string('1s'))
     assert_equal(60, Time.from_string('60s'))

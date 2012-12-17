@@ -19,6 +19,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
     ActivityLogger.clear
   end
 
+  # listing the correct activities
   def test_log_activity
     user = User.named("Hans")
     item = user.propose_item("Test", 100, :fixed, nil, nil, "", false) #don't log item creation
@@ -40,6 +41,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
     assert_equal(user.name, logged_activities[0].actor_name)
   end
 
+  # shows all activities
   def test_get_all_activities
     user = User.named("Hans")
     item = user.propose_item("Test", 100, :fixed, nil, nil, 1, "", false) #don't log item creation
@@ -57,6 +59,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
     assert_equal([act4, act3, act2, act1], ActivityLogger.get_activities)
   end
 
+  # the previous description method needs the information from activity logger
   def test_previous_description
     user = User.named("Hans")
     item = user.propose_item("Test", 100, :fixed, nil, nil, "Previous Description", false)
@@ -66,6 +69,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
     assert("Previous Description", ActivityLogger.get_previous_description(item))
   end
 
+  # test for listing activity messages for various activities
   def test_recent_purchases
     user = User.named("Hansli")
     user2 = User.named("Fritzli")
@@ -93,6 +97,7 @@ class ActivityLoggerTest < Test::Unit::TestCase
     assert_equal(item.id, recent_purchases[0].item_id)
   end
 
+  # get some statistic information about activities
   def test_purchase_statistics
     user = User.named("Hansli")
     user2 = User.named("Fritzli")

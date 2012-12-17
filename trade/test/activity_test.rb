@@ -8,7 +8,8 @@ require_relative '../app/models/store/item'
 class ActivityTest < Test::Unit::TestCase
   include Store
   include Analytics
-  
+
+  # these tests are checking the activity outputs for various activities
   def test_activity_creation
     activity = ItemActivity.new
     assert_equal(:NONE, activity.type)
