@@ -23,7 +23,8 @@ class ItemTest < Test::Unit::TestCase
     assert offer.quantity == 5
   end
 
-  def test_user
+  #creates two offers and saves/deletes them
+  def test_offer_save_delete
     Offer.all.each {|offer| offer.delete}
     user = User.named("Hans")
     offer = Offer.create("Beer",3,8,user)
@@ -35,15 +36,12 @@ class ItemTest < Test::Unit::TestCase
     assert Offer.by_id(offer2.id).eql? offer2
     assert Offer.all.size ==2
 
+    offer.delete
+
+    assert Offer.by_id(offer.id).eql? nil
+    assert Offer.by_id(offer2.id).eql? offer2
+    assert Offer.all.size ==1
+
 
   end
-
-  # Checks whether the item has the correct price
-  def test_item_price
-    item_price = 555
-    item = Item.fixed("TestItem", item_price, nil)
-    assert_equal(item_price, item.price)
-  end
-
-
 end
