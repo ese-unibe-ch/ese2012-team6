@@ -3,6 +3,8 @@ require 'fastercsv'
 require_relative '../store/item'
 
 module Store
+  # A purchase models a transaction of an item/auction buy process. It is responsible for properly handling
+  # the transaction process
   class Purchase
     attr_accessor :id, :item, :quantity, :seller, :buyer, :price
     @@last_id = 0
@@ -26,6 +28,8 @@ module Store
       purchase
     end
 
+    # Prepare a purchase. Item will be released from the seller and credits will be withdrawn from the buyer
+    # but seller will not yet receive credits. Bought item will be in pending state after this procedure.
     def prepare
       # if buyer bought all items
       if self.item.quantity == self.quantity
@@ -52,6 +56,8 @@ module Store
       self.price = offer.price
     end
 
+    # Confirms a purchase i.e buyer acknowledges reception of item, item will be attached to buyer and seller will
+    # receive credits from purchase
     def confirm
       self.buyer.attach_item(self.item)
 
@@ -86,6 +92,7 @@ module Store
         @@purchases.select {|purchase| purchase[:when] > Time.now - timeframe}
       end
 
+      # Dump all purchase information to disk
       def dump(filename)
         FasterCSV.open(filename, "w") do |csv|
           csv << ["When", "Item", "Price", "From", "To"]

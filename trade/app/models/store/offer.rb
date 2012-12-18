@@ -1,7 +1,7 @@
 require 'rbtree'
 
 module Store
-
+  # Small data class for storing offers created by users
   class Offer
     attr_accessor :item_name, :id, :price, :from, :quantity
     @@last_offer_id = 0
