@@ -109,7 +109,7 @@ class Item < Sinatra::Application
     item_name = params[:item_name]
     item_price = params[:item_price].to_i
     item_description = params[:item_description]
-    item_selling_mode = params[:selling_mode]
+    item_selling_mode = params[:selling_mode] == "fixed" ? :fixed : :auction
     item_increment = params[:item_increment]
     item_end_time = params[:auction_end]
 
@@ -147,7 +147,7 @@ class Item < Sinatra::Application
     redirect url('/error/not_owner_of_item') if changed_owner
     redirect "/item/#{params[:item_id]}" unless @user.on_behalf_of.can_activate?(item)
 
-    if item.selling_mode == :fixed and activate
+    if item.selling_mode == :fixed && activate && new_end_time != nil
       item.activate_with_end_time(new_end_time)
     else
       item.update_status(activate)
