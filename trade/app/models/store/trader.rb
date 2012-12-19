@@ -68,13 +68,15 @@ module Store
       item
     end
 
+    # sell item matching an offer
     def sell_to_offer(offer,item)
       active = item.active?
       item.activate if !active
-      offer.from.credits +=offer.price*offer.quantity
+      #offer.from.credits +=offer.price*offer.quantity
       purchase = Purchase.create(item,offer.quantity,item.owner,offer.from)
       purchase.adapt_price_to_offer(offer)
       purchase.prepare
+      PurchaseActivity.successful(purchase).log
       offer.delete
       item.deactivate if !active
     end
@@ -84,7 +86,8 @@ module Store
       self.items.select { |i| i.active? }       #TODO only fixed or only auction
     end
 
-    # attach a bought item
+    # attach a bought item to the user. If the bought item matches an already owned item, items will be
+    # composed, i.e their respective quantities will be added
     def attach_item(item)
       equal_item = self.check_for_equal_item(item.name,item.price,item.description)
       if equal_item == nil
@@ -220,6 +223,13 @@ module Store
       !(self.open_item_page_time < item.edit_time)
     end
 
+    ##################################################################
+    ## AUCTION CODE NOT BY TEAM 6, made by TEAM 4 during Intermezzo!##
+    ## We are not responsible for auction design #####################
+    ## We just made their code match Ruby method name conventions#####
+    ## because at the beginning they it was all JavaStyle code -.-####
+    ##################################################################
+
     def bid(item, amount)
       if can_bid?(item, amount)
         previous_winner = item.current_winner
@@ -233,7 +243,7 @@ module Store
 
         previous_winner.credits += previous_max_bid unless previous_winner.nil?
         current_winner.credits -= current_max_bid
-
+#Do not always send mail for demo purposes
 =begin
         if !previous_winner.nil? && previous_winner != current_winner
           # we got a new winner
@@ -282,6 +292,7 @@ module Store
       item.bidders[self] != nil
     end
 
+    # checks whether trader already has a similar item in his inventory
     def check_for_equal_item(name, price, description, item_not_to_compare = nil)
       index = items.index {|x| x.name.eql?(name) and x.price.eql?(price) and x.description.eql?(description) and x != item_not_to_compare}
       return items[index] unless index == nil

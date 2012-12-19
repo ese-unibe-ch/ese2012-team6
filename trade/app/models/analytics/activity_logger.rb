@@ -71,6 +71,8 @@ module Analytics
       sorted[0..amount-1]
     end
 
+    # returns transaction count and the total credits moved by these transactions in the given timeframe
+    # return values will be [count, credits]
     def self.get_transaction_statistics_of_last(time_str)
       timeframe = Time.from_string time_str
       purchases = @@activities.values.select { |act| act.type == :ITEM_BUY && act.success == true }
